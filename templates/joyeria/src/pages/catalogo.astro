@@ -22,6 +22,13 @@ const navLinks = [
   { label: 'Contacto', href: '/#contacto' },
 ];
 
+/**
+ * Pieza que se muestra como mosaico grande en la grilla editorial.
+ * Es determinista (no depende del orden tras filtrar): si el filtro la
+ * oculta, la grilla simplemente se recompone con `grid-flow-dense`.
+ */
+const piezaMosaico = piezas.find((p) => p.data.destacada)?.data.slug;
+
 const categorias = [
   { valor: 'todas', label: 'Todas' },
   { valor: 'anillos', label: 'Anillos' },
@@ -51,66 +58,88 @@ const precios = [
 >
   <Header links={navLinks} cta="Consultar" />
 
-  <!-- ── Encabezado ── -->
-  <section class="bg-brand-950 py-16">
-    <div class="container-site" data-hero-title>
-      <span class="eyebrow !text-accent-300">Catálogo</span>
-      <h1 class="mt-3 font-display text-4xl font-bold text-white md:text-5xl">Todas nuestras piezas</h1>
-      <p class="mt-4 max-w-2xl text-brand-200">
+  <!-- ── Encabezado editorial ── -->
+  <section class="relative overflow-hidden bg-brand-950 py-24 md:py-32">
+    <div class="absolute inset-0" data-parallax="0.08">
+      <img
+        src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&q=80"
+        alt=""
+        class="h-[118%] w-full object-cover opacity-20"
+        loading="eager"
+      />
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-950/80 to-brand-950"></div>
+
+    <div class="container-wide relative" data-hero-title>
+      <div class="flex items-center gap-4">
+        <span class="h-px w-10 bg-accent-400/70" aria-hidden="true"></span>
+        <span class="micro text-accent-300">Catálogo</span>
+      </div>
+      <h1 class="type-hero mt-7 text-white">
+        Todas<br /><em class="font-normal text-accent-200 italic">nuestras piezas</em>
+      </h1>
+      <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-200">
         Filtra por tipo de pieza, material o rango de precio. Cada ficha tiene fotos, especificaciones
         y un botón para consultar directo por WhatsApp con la referencia lista.
       </p>
     </div>
+    <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/40 to-transparent" aria-hidden="true"></div>
   </section>
 
-  <!-- ── Filtros ── -->
-  <section class="border-b border-brand-100 bg-white py-6" id="filtros">
-    <div class="container-site flex flex-col gap-4">
-      <div class="flex flex-wrap items-center gap-2" data-filtro="categoria" role="group" aria-label="Filtrar por categoría">
-        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Pieza</span>
-        {categorias.map((c, i) => (
-          <button type="button" class="filtro-btn" data-valor={c.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
-            {c.label}
-          </button>
-        ))}
-      </div>
-      <div class="flex flex-wrap items-center gap-2" data-filtro="material" role="group" aria-label="Filtrar por material">
-        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Material</span>
-        {materiales.map((m, i) => (
-          <button type="button" class="filtro-btn" data-valor={m.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
-            {m.label}
-          </button>
-        ))}
-      </div>
-      <div class="flex flex-wrap items-center gap-2" data-filtro="precio" role="group" aria-label="Filtrar por precio">
-        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Precio</span>
-        {precios.map((p, i) => (
-          <button type="button" class="filtro-btn" data-valor={p.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
-            {p.label}
-          </button>
-        ))}
-      </div>
+  <!-- ── Filtros: barra fina y pegajosa, sin botones genéricos ── -->
+  <!-- Se vuelve pegajosa solo en pantallas altas: en móvil ocuparía media pantalla -->
+  <section class="z-30 border-b border-brand-200 bg-surface/95 backdrop-blur-md lg:sticky lg:top-16" id="filtros">
+    <div class="container-wide divide-y divide-brand-100">
+      {[
+        { nombre: 'categoria', label: 'Pieza', opciones: categorias, aria: 'Filtrar por categoría' },
+        { nombre: 'material', label: 'Material', opciones: materiales, aria: 'Filtrar por material' },
+        { nombre: 'precio', label: 'Precio', opciones: precios, aria: 'Filtrar por precio' },
+      ].map((grupo) => (
+        <div
+          class="flex flex-wrap items-center gap-x-7 gap-y-2 py-3.5"
+          data-filtro={grupo.nombre}
+          role="group"
+          aria-label={grupo.aria}
+        >
+          <span class="micro-sm w-16 shrink-0 text-brand-500">{grupo.label}</span>
+          {grupo.opciones.map((o, i) => (
+            <button type="button" class="filtro-btn" data-valor={o.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      ))}
     </div>
   </section>
 
-  <!-- ── Grid de piezas ── -->
-  <section class="bg-brand-50 py-14">
-    <div class="container-site">
-      <p class="mb-6 text-sm text-brand-500" id="contador-resultados" aria-live="polite">
+  <!-- ── Grid editorial: la pieza destacada ocupa un mosaico 2×2 ── -->
+  <section class="py-16 md:py-24">
+    <div class="container-wide">
+      <p class="micro-sm mb-10 text-brand-500" id="contador-resultados" aria-live="polite">
         Mostrando {piezas.length} piezas
       </p>
 
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="grid-piezas" data-reveal-group>
-        {piezas.map((pieza) => <PiezaCard pieza={pieza} />)}
+      <div
+        class="grid auto-rows-auto grid-flow-dense gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
+        id="grid-piezas"
+        data-reveal-group
+      >
+        {piezas.map((pieza) => (
+          <PiezaCard
+            pieza={pieza}
+            variante={pieza.data.slug === piezaMosaico ? 'destacada' : 'normal'}
+            class={pieza.data.slug === piezaMosaico ? 'sm:col-span-2 lg:row-span-2' : ''}
+          />
+        ))}
       </div>
 
       <!-- Estado vacío -->
-      <div id="sin-resultados" class="rounded-card hidden bg-white p-12 text-center ring-1 ring-brand-100">
-        <p class="font-display text-2xl font-semibold text-brand-950">No encontramos piezas con esos filtros</p>
-        <p class="mx-auto mt-2 max-w-md text-sm text-brand-500">
+      <div id="sin-resultados" class="hidden border border-brand-200 px-6 py-20 text-center">
+        <p class="type-sub text-brand-950">No encontramos piezas con esos filtros</p>
+        <p class="mx-auto mt-5 max-w-md text-[0.9rem] leading-[1.9] font-light text-brand-500">
           Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras piezas se hacen por encargo.
         </p>
-        <button type="button" id="limpiar-filtros" class="btn btn-outline mt-6">Limpiar filtros</button>
+        <button type="button" id="limpiar-filtros" class="btn btn-outline mt-10">Limpiar filtros</button>
       </div>
     </div>
   </section>
@@ -127,25 +156,42 @@ const precios = [
 </BaseLayout>
 
 <style>
+  /* Filtros como texto con hairline: lenguaje de vitrina, no de app */
   .filtro-btn {
-    border: 1px solid var(--color-brand-200);
-    border-radius: 999px;
-    padding: 0.4rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--color-brand-600);
+    position: relative;
+    border: 0;
+    padding: 0.35rem 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-500);
     background: transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.5s var(--ease-silk);
+  }
+  .filtro-btn::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-accent-500);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s var(--ease-silk);
   }
   .filtro-btn:hover {
-    border-color: var(--color-accent-500);
-    color: var(--color-accent-600);
+    color: var(--color-brand-900);
+  }
+  .filtro-btn:hover::after {
+    transform: scaleX(1);
   }
   .filtro-btn[aria-pressed='true'] {
-    background: var(--color-brand-950);
-    border-color: var(--color-brand-950);
-    color: #fff;
+    color: var(--color-brand-950);
+  }
+  .filtro-btn[aria-pressed='true']::after {
+    transform: scaleX(1);
   }
 </style>
 
@@ -165,6 +211,29 @@ const precios = [
   function enRango(precio: number, rango: string): boolean {
     const [min, max] = rango.split('-');
     return precio >= Number(min || 0) && (max === '' || precio < Number(max));
+  }
+
+  // Transición suave al filtrar (Web Animations API, sin dependencias).
+  const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function animarEntrada(): void {
+    if (menosMovimiento) return;
+    cards
+      .filter((c) => !c.classList.contains('hidden'))
+      .forEach((c, i) => {
+        c.animate(
+          [
+            { opacity: 0, transform: 'translateY(14px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ],
+          {
+            duration: 520,
+            delay: Math.min(i * 40, 320),
+            easing: 'cubic-bezier(.22,.61,.36,1)',
+            fill: 'backwards',
+          },
+        );
+      });
   }
 
   function aplicarFiltros(): void {
@@ -208,6 +277,7 @@ const precios = [
       if (!btn) return;
       seleccionar(grupo, btn.dataset.valor!);
       aplicarFiltros();
+      animarEntrada();
     });
   });
 
@@ -217,6 +287,7 @@ const precios = [
       if (primero) seleccionar(grupo, primero.dataset.valor!);
     });
     aplicarFiltros();
+    animarEntrada();
   });
 
   // Preselección vía URL: /catalogo?categoria=anillos&material=oro

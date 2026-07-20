@@ -4,27 +4,43 @@
  * visitante y los datos de src/data/horarios.json.
  *
  * variante:
- *   - "oscuro" (default) → para usar sobre fondos oscuros (hero)
- *   - "claro"            → para usar sobre fondos claros (página de menú)
+ *   - "oscuro" (default) → cápsula sobre fondos oscuros
+ *   - "claro"            → cápsula sobre fondos claros (página de menú)
+ *   - "linea"            → sin cápsula: punto que late + versalitas + filete.
+ *                          Es la del hero, para que el estado se lea como un
+ *                          detalle editorial y no como un chip genérico.
+ *
+ * El script solo necesita [data-estado-local] con un [data-punto] y un
+ * [data-texto] dentro; el envoltorio de cada variante es libre.
  */
 interface Props {
-  variante?: 'oscuro' | 'claro';
+  variante?: 'oscuro' | 'claro' | 'linea';
 }
 const { variante = 'oscuro' } = Astro.props;
 
-const clases =
+const capsula =
   variante === 'oscuro'
-    ? 'border-white/20 bg-white/10 text-white backdrop-blur-sm'
-    : 'border-brand-200 bg-white text-brand-800';
+    ? 'border-white/25 bg-white/10 text-white backdrop-blur-sm'
+    : 'border-hairline bg-white text-brand-800';
 ---
 
-<span
-  data-estado-local
-  class={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${clases}`}
->
-  <span data-punto class="h-2 w-2 rounded-full bg-brand-300"></span>
-  <span data-texto>Consultando horario…</span>
-</span>
+{variante === 'linea' ? (
+  <span data-estado-local class="inline-flex items-center gap-3">
+    <span data-punto class="punto-vivo h-2 w-2 shrink-0 rounded-full bg-brand-300"></span>
+    <span data-texto class="text-[0.68rem] font-semibold tracking-[0.2em] text-white/85 uppercase">
+      Consultando horario…
+    </span>
+    <span class="hidden h-px w-14 bg-gradient-to-r from-white/40 to-transparent sm:block" aria-hidden="true"></span>
+  </span>
+) : (
+  <span
+    data-estado-local
+    class={`inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5 text-xs font-semibold ${capsula}`}
+  >
+    <span data-punto class="punto-vivo h-2 w-2 shrink-0 rounded-full bg-brand-300"></span>
+    <span data-texto>Consultando horario…</span>
+  </span>
+)}
 
 <script>
   import { estadoLocal } from '../scripts/horario';

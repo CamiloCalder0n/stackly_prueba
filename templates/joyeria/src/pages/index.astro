@@ -21,6 +21,36 @@ const colecciones = (await getCollection('colecciones')).sort(
 const piezasDestacadas = (await getCollection('piezas'))
   .filter((p) => p.data.destacada)
   .slice(0, 4);
+/** Pieza superpuesta en el hero: la primera destacada del catálogo. */
+const heroPieza = piezasDestacadas[0];
+
+/** Franja de marca: el "código visual" del oficio, en línea fina. */
+const sello = [
+  {
+    titulo: 'Oro 18k · Plata 950',
+    texto: 'Materiales certificados, con documento de pureza en cada pieza.',
+    icono:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 9l8 13 8-13-8-7z"/><path d="M4 9h16M12 2 8.5 9 12 22M12 2l3.5 7L12 22"/></svg>',
+  },
+  {
+    titulo: 'Hecho en el taller',
+    texto: 'Fundimos, engastamos y pulimos a mano en Bucaramanga.',
+    icono:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5 21 10l-3 3-6.5-6.5z"/><path d="m11.5 6.5-8 8a2.12 2.12 0 0 0 3 3l8-8"/></svg>',
+  },
+  {
+    titulo: 'Garantía escrita',
+    texto: 'Un año contra defectos de fabricación, engastes y broches.',
+    icono:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
+  },
+  {
+    titulo: 'Ajuste sin costo',
+    texto: 'El primer cambio de talla va por nuestra cuenta.',
+    icono:
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M9 4h6l-1.5 4h-3z"/></svg>',
+  },
+];
 
 const navLinks = [
   { label: 'Catálogo', href: '/catalogo' },
@@ -54,38 +84,93 @@ const guia = [
 
   <Hero
     eyebrow={`Joyería fina en ${NEGOCIO.ciudad}`}
-    titulo="Piezas hechas a mano que guardan tu historia"
+    titulo="Piezas hechas a mano"
+    acento="que guardan tu historia"
     subtitulo="Anillos, collares, aretes y pulseras en oro de 18k, plata 950 y oro rosa. Explora el catálogo con precios visibles y resuelve todas tus dudas por WhatsApp antes de visitarnos."
     imagen="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600&q=80"
     ctaTexto="Consultar por WhatsApp"
     ctaMensaje={`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`}
     ctaSecundario={{ label: 'Ver colección', href: '/catalogo' }}
+    destacado={heroPieza && {
+      imagen: heroPieza.data.fotos[0],
+      etiqueta: `${heroPieza.data.categoria} · ${heroPieza.data.material}`,
+      titulo: heroPieza.data.nombre,
+      href: `/piezas/${heroPieza.data.slug}/`,
+    }}
   />
 
-  <!-- ── Colecciones destacadas ── -->
-  <section class="py-20" id="colecciones">
-    <div class="container-site">
-      <SectionHeading
-        eyebrow="Colecciones"
-        titulo="Tres líneas, un mismo taller"
-        descripcion="Cada colección nace de un material y una idea. Todas se fabrican a mano en nuestro taller de Bucaramanga."
-        centrado
-      />
-      <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
-        {colecciones.map((c) => (
-          <a href="/catalogo" class="group rounded-card relative block overflow-hidden bg-brand-950">
+  <!-- ── Franja de marca: sección compacta full-bleed que rompe el ritmo ── -->
+  <section class="border-y border-brand-200/70 bg-paper" aria-label="Nuestro sello">
+    <div class="container-wide">
+      <ul class="grid divide-y divide-brand-200/70 md:grid-cols-2 md:divide-y-0 lg:grid-cols-4 lg:divide-x" data-reveal-group>
+        {sello.map((s) => (
+          <li class="flex items-start gap-4 px-0 py-8 lg:px-8">
+            <span class="mt-0.5 shrink-0 text-accent-600" aria-hidden="true" set:html={s.icono} />
+            <div>
+              <p class="micro-sm text-brand-950">{s.titulo}</p>
+              <p class="mt-2 text-[0.82rem] leading-relaxed font-light text-brand-500">{s.texto}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Colecciones: composición asimétrica (una grande + dos apiladas) ── -->
+  <section class="py-24 md:py-40" id="colecciones">
+    <div class="container-wide">
+      <div class="grid items-end gap-10 lg:grid-cols-12">
+        <div class="lg:col-span-7">
+          <SectionHeading
+            numero="01"
+            eyebrow="Colecciones"
+            titulo="Tres líneas,"
+            acento="un mismo taller"
+            descripcion="Cada colección nace de un material y una idea. Todas se fabrican a mano en nuestro taller de Bucaramanga."
+          />
+        </div>
+        <div class="lg:col-span-4 lg:col-start-9 lg:pb-3" data-reveal>
+          <a href="/catalogo" class="micro link-rule text-brand-700 hover:text-accent-700">
+            Ver el catálogo completo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <span class="rule-hair mt-14 origin-left" data-rule></span>
+
+      <div class="mt-14 grid gap-6 lg:grid-cols-12" data-reveal-group>
+        {colecciones.map((c, i) => (
+          <a
+            href="/catalogo"
+            class={`group relative block overflow-hidden bg-brand-950 ${
+              i === 0 ? 'lg:col-span-7 lg:row-span-2' : 'lg:col-span-5'
+            }`}
+          >
             <img
               src={c.data.portada}
               alt={c.data.nombre}
-              class="aspect-[4/5] w-full object-cover opacity-80 transition-all duration-500 group-hover:scale-105 group-hover:opacity-60"
+              class={`w-full object-cover opacity-85 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-70 ${
+                i === 0 ? 'aspect-[4/5] lg:h-full' : 'aspect-[16/10]'
+              }`}
               loading="lazy"
             />
-            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-950 via-brand-950/70 to-transparent p-6 pt-16">
-              <h3 class="font-display text-2xl font-semibold text-white">{c.data.nombre}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-brand-200">{c.data.descripcion}</p>
-              <span class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-accent-300 uppercase">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/20 to-transparent"></div>
+            <div class={`absolute inset-x-0 bottom-0 ${i === 0 ? 'p-8 md:p-10' : 'p-7'}`}>
+              <span class="micro-sm text-accent-300">Colección</span>
+              <h3
+                class={`mt-2 font-display font-light text-white ${
+                  i === 0 ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl'
+                }`}
+              >
+                {c.data.nombre}
+              </h3>
+              <p class={`mt-3 max-w-md text-[0.85rem] leading-relaxed font-light text-brand-200 ${i === 0 ? '' : 'hidden md:block'}`}>
+                {c.data.descripcion}
+              </p>
+              <span class="micro-sm mt-5 inline-flex items-center gap-2 text-white/70 transition-colors duration-500 group-hover:text-accent-200">
                 Explorar
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                <span class="h-px w-6 bg-current transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:w-10" aria-hidden="true"></span>
               </span>
             </div>
           </a>
@@ -94,62 +179,84 @@ const guia = [
     </div>
   </section>
 
-  <!-- ── Piezas destacadas ── -->
-  <section class="bg-brand-50 py-20" id="destacadas">
-    <div class="container-site">
+  <!-- ── Piezas destacadas: grid escalonado, sin simetría de vitrina ── -->
+  <section class="bg-paper py-24 md:py-36" id="destacadas">
+    <div class="container-wide">
       <SectionHeading
+        numero="02"
         eyebrow="Piezas destacadas"
-        titulo="Las favoritas de la vitrina"
+        titulo="Las favoritas"
+        acento="de la vitrina"
         descripcion="Precios claros y toda la información de cada pieza. Si algo te gusta, se consulta y se reserva por WhatsApp."
       />
-      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
-        {piezasDestacadas.map((pieza) => <PiezaCard pieza={pieza} />)}
+
+      <div class="mt-16 grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+        {piezasDestacadas.map((pieza, i) => (
+          <PiezaCard pieza={pieza} class={i % 2 === 1 ? 'lg:mt-16' : ''} />
+        ))}
       </div>
-      <div class="mt-10 text-center" data-reveal>
-        <a href="/catalogo" class="btn btn-outline">Ver todo el catálogo</a>
+
+      <div class="mt-20 flex justify-center" data-reveal>
+        <a href="/catalogo" class="micro link-rule text-brand-800 hover:text-accent-700">
+          Ver todo el catálogo
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ── Nuestra historia / el taller ── -->
-  <section class="overflow-hidden py-20" id="historia">
-    <div class="container-site grid items-center gap-12 lg:grid-cols-2">
-      <div class="rounded-card relative order-2 overflow-hidden lg:order-1" data-reveal>
-        <div data-parallax="0.12">
+  <!-- ── El taller: momento full-bleed oscuro, la ruptura del ritmo ── -->
+  <section class="relative overflow-hidden bg-brand-950" id="historia">
+    <div class="grid lg:grid-cols-2">
+      <!-- Fotografía que sangra hasta el borde de la pantalla -->
+      <div class="relative min-h-[58vh] overflow-hidden lg:min-h-[88vh]" data-reveal-mask>
+        <div class="absolute inset-0" data-parallax="0.1">
           <img
-            src="https://images.unsplash.com/photo-1601821765780-754fa98637c1?w=1200&q=80"
+            src="https://images.unsplash.com/photo-1601821765780-754fa98637c1?w=1400&q=80"
             alt={`El taller de ${NEGOCIO.nombre}`}
-            class="h-[115%] w-full object-cover"
+            class="h-[118%] w-full object-cover"
             loading="lazy"
           />
         </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-brand-950/60"></div>
       </div>
-      <div class="order-1 lg:order-2" data-reveal>
-        <span class="eyebrow">Nuestra historia</span>
-        <h2 class="mt-2 font-display text-3xl font-bold text-brand-950 md:text-4xl">
-          Un taller familiar, tres generaciones de orfebres
-        </h2>
-        <p class="mt-4 text-base leading-relaxed text-brand-600">
-          Aurea nació como un banco de joyero en el centro de Bucaramanga. Hoy seguimos haciendo
-          cada pieza a mano: fundimos, laminamos, engastamos y pulimos en nuestro propio taller,
-          con materiales certificados y garantía escrita.
-        </p>
-        <p class="mt-3 text-base leading-relaxed text-brand-600">
-          Por eso también recibimos encargos: si sueñas una pieza que no existe, la dibujamos
-          contigo y la fabricamos a tu medida.
-        </p>
-        <div class="mt-8 grid grid-cols-3 gap-6">
-          <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="32">0</span></p>
-            <p class="mt-1 text-sm text-brand-500">Años de oficio</p>
+
+      <div class="flex items-center px-6 py-24 sm:px-10 lg:py-32 xl:px-20">
+        <div class="max-w-xl" data-reveal>
+          <div class="flex items-center gap-4">
+            <span class="section-num !text-accent-400">03</span>
+            <span class="h-px w-8 bg-accent-400/50" aria-hidden="true"></span>
+            <span class="micro text-accent-300">Nuestra historia</span>
           </div>
-          <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="4800">0</span>+</p>
-            <p class="mt-1 text-sm text-brand-500">Piezas entregadas</p>
-          </div>
-          <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="900">0</span>+</p>
-            <p class="mt-1 text-sm text-brand-500">Encargos a la medida</p>
+
+          <h2 class="type-section mt-7 text-white">
+            Un taller familiar,<br />
+            <em class="font-normal text-accent-200 italic">tres generaciones</em>
+          </h2>
+
+          <p class="mt-8 text-[0.95rem] leading-[1.9] font-light text-brand-300">
+            Aurea nació como un banco de joyero en el centro de Bucaramanga. Hoy seguimos haciendo
+            cada pieza a mano: fundimos, laminamos, engastamos y pulimos en nuestro propio taller,
+            con materiales certificados y garantía escrita.
+          </p>
+          <p class="mt-5 text-[0.95rem] leading-[1.9] font-light text-brand-300">
+            Por eso también recibimos encargos: si sueñas una pieza que no existe, la dibujamos
+            contigo y la fabricamos a tu medida.
+          </p>
+
+          <div class="mt-14 grid grid-cols-3 gap-6 border-t border-white/15 pt-10">
+            <div>
+              <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter="32">0</span></p>
+              <p class="micro-sm mt-3 text-brand-400">Años de oficio</p>
+            </div>
+            <div>
+              <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter="4800">0</span>+</p>
+              <p class="micro-sm mt-3 text-brand-400">Piezas entregadas</p>
+            </div>
+            <div>
+              <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter="900">0</span>+</p>
+              <p class="micro-sm mt-3 text-brand-400">Encargos a medida</p>
+            </div>
           </div>
         </div>
       </div>
@@ -157,6 +264,7 @@ const guia = [
   </section>
 
   <Testimonios
+    numero="04"
     items={[
       {
         nombre: 'Laura Méndez',
@@ -179,24 +287,32 @@ const guia = [
     ]}
   />
 
-  <!-- ── Guía educativa breve ── -->
-  <section class="py-20" id="guia">
-    <div class="container-site">
-      <SectionHeading
-        eyebrow="Guía rápida"
-        titulo="Antes de elegir tu joya"
-        descripcion="Lo esencial sobre materiales, tallas y cuidado, para que compres con confianza."
-        centrado
-      />
-      <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
+  <!-- ── Guía: filas con hairlines, encabezado fijo a la izquierda ── -->
+  <section class="py-24 md:py-32" id="guia">
+    <div class="container-wide grid gap-14 lg:grid-cols-12 lg:gap-20">
+      <div class="lg:col-span-4">
+        <div class="lg:sticky lg:top-28">
+          <SectionHeading
+            numero="05"
+            eyebrow="Guía rápida"
+            titulo="Antes de"
+            acento="elegir tu joya"
+            descripcion="Lo esencial sobre materiales, tallas y cuidado, para que compres con confianza."
+          />
+        </div>
+      </div>
+
+      <dl class="lg:col-span-7 lg:col-start-6" data-reveal-group>
         {guia.map((g, i) => (
-          <div class="rounded-card bg-brand-50 p-7 ring-1 ring-brand-100">
-            <span class="font-display text-3xl font-bold text-accent-500">0{i + 1}</span>
-            <h3 class="mt-3 font-display text-xl font-semibold text-brand-950">{g.titulo}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-brand-600">{g.texto}</p>
+          <div class="grid gap-4 border-t border-brand-200 py-10 last:border-b sm:grid-cols-[auto_1fr] sm:gap-10">
+            <dt class="section-num pt-1">0{i + 1}</dt>
+            <dd>
+              <h3 class="type-sub text-brand-950">{g.titulo}</h3>
+              <p class="mt-4 max-w-lg text-[0.9rem] leading-[1.9] font-light text-brand-600">{g.texto}</p>
+            </dd>
           </div>
         ))}
-      </div>
+      </dl>
     </div>
   </section>
 
@@ -231,7 +347,8 @@ const guia = [
   />
 
   <Contacto
-    titulo="Visita la vitrina o escríbenos"
+    numero="07"
+    titulo="Visita la vitrina"
     descripcion="Estamos en Cabecera, Bucaramanga. Si prefieres, te asesoramos por WhatsApp antes de venir."
   />
 

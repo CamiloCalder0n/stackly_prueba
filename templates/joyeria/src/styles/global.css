@@ -40,10 +40,15 @@
 
   --color-surface: #fdfcfa;
   --color-ink: #23211e;
+  /* papel cálido: fondo de las secciones editoriales claras */
+  --color-paper: #f4f1ea;
 
   /* Bordes más sobrios: lenguaje visual de vitrina fina */
   --radius-btn: 0.25rem;
   --radius-card: 0.625rem;
+
+  /* Curva de movimiento lenta y elegante (nada de rebotes) */
+  --ease-silk: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ── Base ── */
@@ -53,13 +58,22 @@ html {
 
 body {
   font-family: var(--font-body);
+  font-weight: 300;
   color: var(--color-ink);
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
+}
+
+/* Foco visible y consistente en toda la plantilla (accesibilidad) */
+:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ── Estados iniciales de animación (GSAP los revela) ──
@@ -70,6 +84,15 @@ h1, h2, h3, h4 {
   html.js [data-reveal-group] > * {
     opacity: 0;
     transform: translateY(28px);
+  }
+  /* Hairlines que se dibujan de izquierda a derecha */
+  html.js [data-rule] {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  /* Imágenes que se revelan con máscara editorial */
+  html.js [data-reveal-mask] {
+    clip-path: inset(0% 0% 100% 0%);
   }
 }
 
@@ -84,16 +107,33 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Contenedor amplio para composiciones editoriales que respiran más */
+@utility container-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 88rem;
+  padding-inline: 1.25rem;
+  @media (width >= 768px) {
+    padding-inline: 2.5rem;
+  }
+  @media (width >= 1280px) {
+    padding-inline: 4rem;
+  }
+}
+
 @utility btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.75rem;
   border-radius: var(--radius-btn);
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background-color 0.45s var(--ease-silk), color 0.45s var(--ease-silk),
+    border-color 0.45s var(--ease-silk);
   cursor: pointer;
 }
 
@@ -101,35 +141,148 @@ h1, h2, h3, h4 {
   background: var(--color-accent-500);
   color: var(--color-brand-950);
   &:hover {
-    background: var(--color-accent-400);
-    transform: translateY(-1px);
+    background: var(--color-accent-300);
   }
 }
 
 @utility btn-outline {
-  border: 1.5px solid var(--color-brand-300);
+  border: 1px solid var(--color-brand-300);
   color: var(--color-brand-800);
   background: transparent;
   &:hover {
-    border-color: var(--color-accent-500);
-    color: var(--color-accent-600);
+    border-color: var(--color-brand-950);
+    background: var(--color-brand-950);
+    color: #fff;
   }
 }
 
 @utility btn-whatsapp {
   background: #25d366;
-  color: #fff;
+  color: #0b3d1e;
   &:hover {
     background: #1fb457;
-    transform: translateY(-1px);
+    color: #fff;
   }
+}
+
+/* ── Escala tipográfica dramática (fluida: degrada bien en móvil) ── */
+
+/* Título de portada: el golpe visual de la página */
+@utility type-hero {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.9rem, 8.2vw, 6.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+/* Título de sección: enorme y contrastado con los micro-labels */
+@utility type-section {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.35rem, 5.6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+/* Subtítulo editorial / citas */
+@utility type-sub {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Micro-label en mayúsculas: el contraste de escala ES el lujo */
+@utility micro {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+@utility micro-sm {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Numeración de sección: 01 / 02 / 03 */
+@utility section-num {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  color: var(--color-accent-600);
+  font-variant-numeric: tabular-nums;
 }
 
 @utility eyebrow {
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-accent-600);
+  color: var(--color-accent-700);
+}
+
+/* Precio: cifras tabulares, tracking ligero, nunca en negrita pesada */
+@utility precio {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ── Detalle de línea fina ── */
+@utility rule-gold {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: color-mix(in srgb, var(--color-accent-500) 60%, transparent);
+}
+
+@utility rule-hair {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--color-brand-200);
+}
+
+/* Link con subrayado hairline que se dibuja al hover */
+@utility link-rule {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.35rem;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    opacity: 0.35;
+    transform-origin: right center;
+    transform: scaleX(1);
+    transition: transform 0.55s var(--ease-silk), opacity 0.55s var(--ease-silk);
+  }
+  &:hover::after {
+    opacity: 1;
+    transform-origin: left center;
+  }
+}
+
+/* Marco sutil de vitrina: 1px, sin sombras pesadas */
+@utility frame-fine {
+  border: 1px solid var(--color-brand-200);
 }

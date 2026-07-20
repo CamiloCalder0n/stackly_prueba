@@ -16,12 +16,14 @@ function formatoHora(hhmm: string): string {
 }
 ---
 
-<section class="bg-brand-950 py-20" id="reservas">
-  <div class="container-site grid items-center gap-12 lg:grid-cols-2">
+<section class="superficie-noche py-24 md:py-32" id="reservas">
+  <div class="container-site grid items-center gap-14 lg:grid-cols-2">
     <div data-reveal>
       <span class="eyebrow text-accent-400">Reservas</span>
-      <h2 class="mt-2 text-3xl font-bold text-white md:text-4xl">Aparta tu mesa en la terraza</h2>
-      <p class="mt-4 max-w-md leading-relaxed text-brand-200">
+      <h2 class="titular-wonk mt-3 text-titulo font-semibold text-white text-balance">
+        Aparta tu mesa en la terraza
+      </h2>
+      <p class="mt-6 max-w-md leading-relaxed text-brand-200 text-pretty">
         Elige cuántos son, el día y la hora. Te confirmamos la disponibilidad
         por WhatsApp en minutos — sin llamadas ni apps.
       </p>
@@ -41,11 +43,19 @@ function formatoHora(hhmm: string): string {
       </ul>
     </div>
 
-    <form id="form-reserva" class="rounded-card space-y-4 bg-white p-7 shadow-xl md:p-8" data-reveal>
+    <form
+      id="form-reserva"
+      class="rounded-card superficie-papel space-y-4 border border-white/10 p-7 shadow-[0_30px_70px_-30px_rgb(0_0_0/0.7)] md:p-9"
+      data-reveal
+    >
+      <div class="mb-2">
+        <span class="eyebrow text-[0.6rem]">Solicitud de mesa</span>
+        <p class="font-display mt-1 text-xl font-semibold text-brand-950">Cuéntanos los detalles</p>
+      </div>
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
-          <label for="reserva-personas" class="mb-1.5 block text-sm font-semibold text-brand-800">Personas</label>
-          <select id="reserva-personas" class="w-full rounded-md border border-brand-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-accent-500">
+          <label for="reserva-personas" class="mb-2 block text-[0.65rem] font-bold tracking-[0.16em] text-brand-500 uppercase">Personas</label>
+          <select id="reserva-personas" class="w-full rounded-btn border border-hairline bg-white px-3.5 py-3 text-sm outline-none transition-colors focus:border-accent-500">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <option value={String(n)} selected={n === 2}>{n} {n === 1 ? 'persona' : 'personas'}</option>
             ))}
@@ -53,23 +63,23 @@ function formatoHora(hhmm: string): string {
           </select>
         </div>
         <div>
-          <label for="reserva-fecha" class="mb-1.5 block text-sm font-semibold text-brand-800">Fecha</label>
-          <input id="reserva-fecha" type="date" required class="w-full rounded-md border border-brand-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-accent-500" />
+          <label for="reserva-fecha" class="mb-2 block text-[0.65rem] font-bold tracking-[0.16em] text-brand-500 uppercase">Fecha</label>
+          <input id="reserva-fecha" type="date" required class="w-full rounded-btn border border-hairline bg-white px-3.5 py-3 text-sm outline-none transition-colors focus:border-accent-500" />
         </div>
       </div>
       <div>
-        <label for="reserva-hora" class="mb-1.5 block text-sm font-semibold text-brand-800">Hora</label>
-        <select id="reserva-hora" class="w-full rounded-md border border-brand-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-accent-500">
+        <label for="reserva-hora" class="mb-2 block text-[0.65rem] font-bold tracking-[0.16em] text-brand-500 uppercase">Hora</label>
+        <select id="reserva-hora" class="w-full rounded-btn border border-hairline bg-white px-3.5 py-3 text-sm outline-none transition-colors focus:border-accent-500">
           {HORAS.map((h) => (
             <option value={formatoHora(h)}>{formatoHora(h)}</option>
           ))}
         </select>
       </div>
       <div>
-        <label for="reserva-nombre" class="mb-1.5 block text-sm font-semibold text-brand-800">A nombre de</label>
-        <input id="reserva-nombre" type="text" required placeholder="Tu nombre" class="w-full rounded-md border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-accent-500" />
+        <label for="reserva-nombre" class="mb-2 block text-[0.65rem] font-bold tracking-[0.16em] text-brand-500 uppercase">A nombre de</label>
+        <input id="reserva-nombre" type="text" required placeholder="Tu nombre" class="w-full rounded-btn border border-hairline bg-white px-3.5 py-3 text-sm outline-none transition-colors focus:border-accent-500" />
       </div>
-      <button type="submit" class="btn btn-whatsapp w-full">Reservar por WhatsApp</button>
+      <button type="submit" class="btn btn-whatsapp mt-2 w-full !py-3.5">Reservar por WhatsApp</button>
       <p class="text-center text-xs text-brand-400">Tu reserva queda confirmada cuando te respondamos por WhatsApp.</p>
     </form>
   </div>

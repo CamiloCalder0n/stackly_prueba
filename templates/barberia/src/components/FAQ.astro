@@ -1,6 +1,9 @@
 ---
-import SectionHeading from './SectionHeading.astro';
-
+/**
+ * Sección #faq — acordeón nativo (<details>) sobre hairlines numeradas.
+ * Sección compacta a propósito: da respiro entre los dos bloques
+ * oscuros que la rodean.
+ */
 interface Pregunta {
   pregunta: string;
   respuesta: string;
@@ -13,19 +16,46 @@ interface Props {
 const { titulo = 'Preguntas frecuentes', eyebrow = 'FAQ', items } = Astro.props;
 ---
 
-<section class="py-20" id="faq">
-  <div class="container-site max-w-3xl">
-    <SectionHeading eyebrow={eyebrow} titulo={titulo} centrado />
-    <div class="mt-10 space-y-3" data-reveal-group>
-      {items.map((item) => (
-        <details class="group rounded-card bg-brand-50 ring-1 ring-brand-100 open:bg-white open:shadow-sm">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 text-sm font-semibold text-brand-950 [&::-webkit-details-marker]:hidden">
-            {item.pregunta}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="shrink-0 text-accent-600 transition-transform group-open:rotate-45" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </summary>
-          <p class="px-6 pb-5 text-sm leading-relaxed text-brand-600">{item.respuesta}</p>
-        </details>
-      ))}
+<section class="bg-white py-20 md:py-24" id="faq">
+  <div class="container-site">
+    <div class="grid gap-10 lg:grid-cols-[18rem_1fr] lg:gap-16">
+      <div class="lg:sticky lg:top-24 lg:self-start" data-reveal>
+        <span class="micro-label micro-label-linea">{eyebrow}</span>
+        <h2 class="titulo-seccion mt-5 text-brand-950">{titulo}</h2>
+        <div class="regla-doble mt-7 w-20 text-accent-500" aria-hidden="true"></div>
+      </div>
+
+      <div class="border-t border-brand-950/15" data-reveal-group>
+        {items.map((item, i) => (
+          <details class="group border-b border-brand-950/15">
+            <summary class="flex cursor-pointer list-none items-start gap-4 py-5 [&::-webkit-details-marker]:hidden">
+              <span
+                class="mt-0.5 font-display text-xs font-semibold tracking-[0.2em] tabular-nums text-brand-400 transition-colors group-open:text-accent-600"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="flex-1 font-display text-lg font-medium tracking-wide text-brand-950 uppercase transition-colors group-hover:text-accent-700">
+                {item.pregunta}
+              </span>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                class="mt-1 shrink-0 text-accent-600 transition-transform duration-200 group-open:rotate-45"
+                aria-hidden="true"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </summary>
+            <p class="pb-6 pl-9 text-sm leading-relaxed text-brand-600">{item.respuesta}</p>
+          </details>
+        ))}
+      </div>
     </div>
   </div>
 </section>

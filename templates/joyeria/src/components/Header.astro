@@ -13,18 +13,18 @@ const { links, cta = 'Escríbenos', ctaMensaje = `Hola, vengo de la página de $
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/85 backdrop-blur-md">
-  <div class="container-site flex h-16 items-center justify-between">
-    <a href="/" class="font-display text-lg font-bold tracking-tight text-white">
+  <div class="container-wide flex h-16 items-center justify-between">
+    <a href="/" class="font-display text-xl font-normal tracking-[0.08em] text-white">
       {NEGOCIO.nombre}
     </a>
 
-    <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
+    <nav class="hidden items-center gap-9 md:flex" aria-label="Navegación principal">
       {links.map((l) => (
-        <a href={l.href} class="text-sm font-medium text-brand-200 transition-colors hover:text-white">
+        <a href={l.href} class="micro-sm text-brand-200 transition-colors duration-500 hover:text-accent-200">
           {l.label}
         </a>
       ))}
-      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary !py-2 text-sm">
+      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary !px-6 !py-2.5">
         {cta}
       </a>
     </nav>
@@ -42,13 +42,13 @@ const { links, cta = 'Escríbenos', ctaMensaje = `Hola, vengo de la página de $
   </div>
 
   <nav id="menu-movil" class="hidden border-t border-white/10 bg-brand-950 md:hidden" aria-label="Navegación móvil">
-    <div class="container-site flex flex-col gap-1 py-4">
+    <div class="container-wide flex flex-col py-3">
       {links.map((l) => (
-        <a href={l.href} class="rounded-md px-3 py-2.5 text-sm font-medium text-brand-200 hover:bg-white/5 hover:text-white">
+        <a href={l.href} class="micro-sm border-b border-white/10 py-4 text-brand-200 transition-colors duration-500 hover:text-accent-200">
           {l.label}
         </a>
       ))}
-      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary mt-2">
+      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary mt-5 mb-2">
         {cta}
       </a>
     </div>

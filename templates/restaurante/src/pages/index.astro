@@ -1,6 +1,10 @@
 ---
 // Portada del restaurante: hero con estado abierto/cerrado, plato del día,
 // destacados del menú, historia, galería, testimonios, reservas y ubicación.
+//
+// Dirección de arte: la fotografía manda. El ritmo vertical alterna secciones
+// amplias (py-24/py-36) con franjas compactas y dos momentos a sangre completa
+// que rompen el patrón de "container + grid".
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
@@ -30,13 +34,21 @@ const destacados = (await getCollection('platos'))
   .filter((p) => p.data.destacado)
   .slice(0, 3);
 
+// Sellos artesanales: refuerzan el relato de cocina local hecha en casa.
+const sellos = [
+  { titulo: 'Cocina', destacado: 'Local', pie: 'Plazas de mercado' },
+  { titulo: 'Hecho', destacado: 'En casa', pie: 'Recetas de familia' },
+  { titulo: 'Desde', destacado: '2014', pie: 'En Cabecera' },
+  { titulo: 'Pide sin', destacado: 'Apps', pie: 'Cero comisiones' },
+];
+
 const galeria = [
-  { src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', alt: 'Plato servido en La Terraza' },
-  { src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', alt: 'Salón principal del restaurante' },
-  { src: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80', alt: 'Parrilla al carbón' },
-  { src: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80', alt: 'Ambiente de la terraza en la noche' },
-  { src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80', alt: 'Mesa compartida con varios platos' },
-  { src: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=80', alt: 'Cena entre amigos en el salón' },
+  { src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80', alt: 'Plato servido en La Terraza', clase: 'col-span-2 row-span-2' },
+  { src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', alt: 'Salón principal del restaurante', clase: '' },
+  { src: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80', alt: 'Parrilla al carbón', clase: '' },
+  { src: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80', alt: 'Ambiente de la terraza en la noche', clase: '' },
+  { src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80', alt: 'Mesa compartida con varios platos', clase: '' },
+  { src: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=80', alt: 'Cena entre amigos en el salón', clase: '' },
 ];
 
 const faqItems = [
@@ -82,76 +94,113 @@ const faqSchema = {
     ctaMensaje={`Hola ${NEGOCIO.nombre} 👋, quiero hacer un pedido.`}
   />
 
-  <!-- ── HERO: plato estrella + estado abierto/cerrado + CTAs ── -->
-  <section class="relative flex min-h-[86vh] items-center overflow-hidden bg-brand-950">
-    <div class="absolute inset-0" data-parallax="0.15">
+  <!-- ══ HERO: la foto del plato ocupa la pantalla ══ -->
+  <section class="relative flex min-h-[92vh] items-end overflow-hidden bg-brand-950">
+    <div class="absolute inset-0" data-parallax="0.12">
       <img
-        src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80"
-        alt="Cabrito al horno, el plato estrella de La Terraza"
-        class="h-[115%] w-full object-cover opacity-45"
+        src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1800&q=85"
+        alt="Cabrito al horno con pepitoria, el plato estrella de La Terraza"
+        class="h-[118%] w-full object-cover"
         loading="eager"
         fetchpriority="high"
       />
     </div>
-    <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-brand-950/30"></div>
 
-    <div class="container-site relative py-24">
-      <div class="max-w-2xl" data-hero-title>
-        <EstadoAbierto />
-        <span class="eyebrow mt-6 block text-accent-400">Cocina santandereana · {NEGOCIO.ciudad}</span>
-        <h1 class="mt-3 text-4xl leading-tight font-bold text-white md:text-6xl">
-          El sabor de Santander, servido en la terraza
+    <!-- Velos: garantizan el contraste del texto sobre la foto -->
+    <div class="absolute inset-0 bg-brand-950/45"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/70 to-brand-950/10"></div>
+    <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-paper to-transparent"></div>
+
+    <div class="container-site relative pt-32 pb-28 md:pb-36">
+      <div class="max-w-3xl" data-hero-title>
+        <EstadoAbierto variante="linea" />
+
+        <span class="eyebrow mt-8 block text-accent-300">
+          Cocina santandereana · {NEGOCIO.ciudad}
+        </span>
+
+        <h1 class="titular-wonk mt-4 text-display font-semibold text-white text-balance">
+          El sabor de Santander,<br class="hidden sm:block" /> servido en la terraza
         </h1>
-        <p class="mt-5 max-w-xl text-lg leading-relaxed text-brand-200">
-          Cabrito al horno, carne oreada y parrilla al carbón con recetas de familia.
-          Pide a domicilio directo por WhatsApp — sin apps ni comisiones.
+
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-brand-100/90 text-pretty">
+          Cabrito al horno, carne oreada y parrilla al carbón con recetas de
+          familia. Pide a domicilio directo por WhatsApp — sin apps ni comisiones.
         </p>
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="/menu" class="btn btn-primary">Ver menú</a>
-          <a href="/menu" class="btn border-[1.5px] border-white/30 text-white hover:border-white hover:bg-white/10">
-            Pedir ahora
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="/menu" class="btn btn-primary !px-7 !py-3.5 text-base">
+            Ver el menú
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a
+            href="#reservas"
+            class="btn border-[1.5px] border-white/35 !px-7 !py-3.5 text-base text-white backdrop-blur-sm hover:border-white hover:bg-white/10"
+          >
+            Reservar mesa
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── BANNER PROMO / PLATO DEL DÍA (editable en /admin) ── -->
+  <!-- ══ FRANJA COMPACTA: promo / plato del día (editable en /admin) ══ -->
   {promo.activo && (
-    <aside class="bg-accent-500">
-      <div class="container-site flex flex-col items-start justify-between gap-4 py-6 sm:flex-row sm:items-center">
-        <div class="flex items-start gap-4">
-          <span class="mt-0.5 shrink-0 rounded-full bg-brand-950 px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
+    <aside class="superficie-noche relative overflow-hidden border-y border-white/10">
+      <div class="container-site flex flex-col items-start justify-between gap-5 py-7 sm:flex-row sm:items-center">
+        <div class="flex items-start gap-5">
+          <span class="mt-1 shrink-0 rounded-full bg-accent-500 px-3.5 py-1 text-[0.65rem] font-bold tracking-[0.14em] text-white uppercase">
             {promo.etiqueta}
           </span>
           <div>
-            <p class="font-display text-lg font-bold text-brand-950">
+            <p class="font-display text-xl font-semibold text-white">
               {promo.titulo}
-              {promo.precio > 0 && <span class="ml-2 text-brand-900/80">· {precioCOP(promo.precio)}</span>}
+              {promo.precio > 0 && (
+                <span class="precio-carta ml-2.5 text-accent-300">{precioCOP(promo.precio)}</span>
+              )}
             </p>
-            <p class="mt-0.5 text-sm text-brand-950/80">{promo.texto}</p>
+            <p class="mt-1 text-sm text-brand-200">{promo.texto}</p>
           </div>
         </div>
-        <a href={promo.enlace} class="btn shrink-0 bg-brand-950 !py-2.5 text-sm text-white hover:bg-brand-900">
+        <a href={promo.enlace} class="btn btn-primary shrink-0 !py-2.5 text-sm">
           {promo.boton}
         </a>
       </div>
     </aside>
   )}
 
-  <!-- ── PLATOS DESTACADOS ── -->
-  <section class="py-20" id="destacados">
+  <!-- ══ SELLOS ARTESANALES (franja corta, rompe el ritmo) ══ -->
+  <section class="superficie-crema textura-papel border-b border-hairline/60 py-14">
     <div class="container-site">
-      <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-8 sm:gap-x-16" data-reveal-group>
+        {sellos.map((s, i) => (
+          <div class={`sello ${i % 2 === 0 ? 'text-accent-600 -rotate-3' : 'text-brand-600 rotate-2'}`}>
+            <span class="opacity-70">{s.titulo}</span>
+            <span class="font-display text-base tracking-normal normal-case">{s.destacado}</span>
+            <span class="text-[0.5rem] opacity-60">{s.pie}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PLATOS DESTACADOS (sección amplia) ══ -->
+  <section class="superficie-papel py-24 md:py-36" id="destacados">
+    <div class="container-site">
+      <div class="flex flex-wrap items-end justify-between gap-6">
         <SectionHeading
           eyebrow="Del menú"
           titulo="Los favoritos de la casa"
           descripcion="Los platos que nuestros clientes piden una y otra vez."
         />
-        <a href="/menu" class="btn btn-outline shrink-0" data-reveal>Ver el menú completo →</a>
+        <a href="/menu" class="btn btn-outline shrink-0" data-reveal>
+          Ver el menú completo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
-      <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
-        {destacados.map((p) => (
+
+      <div class="mt-14 grid gap-7 md:grid-cols-3" data-reveal-group>
+        {destacados.map((p, i) => (
           <PlatoCard
             id={p.id}
             nombre={p.data.nombre}
@@ -160,68 +209,112 @@ const faqSchema = {
             foto={p.data.foto}
             etiquetas={p.data.etiquetas}
             disponible={p.data.disponible}
+            prioridad={i === 0}
+            variante="grid"
           />
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ── SOBRE NOSOTROS ── -->
-  <section class="bg-brand-50 py-20" id="nosotros">
-    <div class="container-site grid items-center gap-12 lg:grid-cols-2">
-      <div class="rounded-card overflow-hidden shadow-lg" data-reveal>
-        <img
-          src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&q=80"
-          alt="Nuestra cocina en plena acción"
-          class="aspect-[4/3] w-full object-cover"
-          loading="lazy"
-        />
+  <!-- ══ MOMENTO A SANGRE #1: la parrilla ══ -->
+  <section class="relative h-[62vh] min-h-[26rem] overflow-hidden bg-brand-950" aria-label="Nuestra parrilla al carbón">
+    <div class="absolute inset-0" data-parallax="0.14">
+      <img
+        src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1800&q=85"
+        alt="Carnes en la parrilla al carbón de La Terraza"
+        class="h-[125%] w-full object-cover"
+        loading="lazy"
+      />
+    </div>
+    <div class="absolute inset-0 bg-brand-950/55"></div>
+
+    <div class="relative flex h-full items-center">
+      <div class="container-carta text-center" data-reveal>
+        <div class="ornamento mx-auto mb-7 max-w-sm text-accent-300" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 7.6 4.4 12 6 7.6 7.6 6 12 4.4 7.6 0 6l4.4-1.6z"/></svg>
+        </div>
+        <p class="titular-wonk text-titulo font-semibold text-white text-balance">
+          Fuego lento, leña de verdad y la paciencia de siempre
+        </p>
+        <p class="mx-auto mt-6 max-w-xl leading-relaxed text-brand-100/85 text-pretty">
+          Nada sale rápido de esta cocina, y esa es justamente la idea.
+        </p>
       </div>
+    </div>
+  </section>
+
+  <!-- ══ SOBRE NOSOTROS ══ -->
+  <section class="superficie-crema textura-papel py-24 md:py-32" id="nosotros">
+    <div class="container-site grid items-center gap-14 lg:grid-cols-2">
+      <div class="relative" data-reveal>
+        <div class="marco-foto group overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1400&q=85"
+            alt="Nuestra cocina en plena acción"
+            class="zoom-apetito aspect-[4/5] w-full object-cover sm:aspect-[4/3]"
+            loading="lazy"
+          />
+        </div>
+        <!-- Sello superpuesto: detalle artesanal -->
+        <div class="sello absolute -right-3 -bottom-8 rotate-[-8deg] bg-paper text-accent-600 shadow-lg sm:-right-6">
+          <span class="opacity-70">Receta de</span>
+          <span class="font-display text-sm tracking-normal normal-case">La abuela</span>
+          <span class="text-[0.5rem] opacity-60">Cecilia</span>
+        </div>
+      </div>
+
       <div data-reveal>
         <span class="eyebrow">Nuestra historia</span>
-        <h2 class="mt-2 text-3xl font-bold text-brand-950 md:text-4xl">
+        <h2 class="titular-wonk mt-3 text-titulo font-semibold text-brand-950 text-balance">
           Recetas de familia, fuego lento y una terraza con alma
         </h2>
-        <p class="mt-4 leading-relaxed text-brand-600">
+        <p class="mt-6 leading-relaxed text-brand-600 text-pretty">
           Empezamos en 2014 con la receta de cabrito de la abuela Cecilia y una
           terraza prestada en Cabecera. Hoy seguimos cocinando igual: pepitoria
           hecha en casa, carne oreada al sol y maíz molido en piedra, con
           ingredientes de las plazas de mercado santandereanas.
         </p>
-        <div class="mt-8 grid grid-cols-3 gap-6 text-center sm:text-left">
+
+        <div class="mt-10 grid grid-cols-3 gap-6 border-t border-hairline pt-8">
           <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="12">0</span></p>
-            <p class="mt-1 text-sm text-brand-500">Años de tradición</p>
+            <p class="numeral-carta text-4xl text-accent-600 md:text-5xl"><span data-counter="12">0</span></p>
+            <p class="mt-2 text-xs font-semibold tracking-wider text-brand-500 uppercase">Años de tradición</p>
           </div>
           <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="15">0</span></p>
-            <p class="mt-1 text-sm text-brand-500">Recetas de familia</p>
+            <p class="numeral-carta text-4xl text-accent-600 md:text-5xl"><span data-counter="15">0</span></p>
+            <p class="mt-2 text-xs font-semibold tracking-wider text-brand-500 uppercase">Recetas de familia</p>
           </div>
           <div>
-            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="200">0</span>+</p>
-            <p class="mt-1 text-sm text-brand-500">Pedidos por semana</p>
+            <p class="numeral-carta text-4xl text-accent-600 md:text-5xl"><span data-counter="200">0</span>+</p>
+            <p class="mt-2 text-xs font-semibold tracking-wider text-brand-500 uppercase">Pedidos por semana</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── GALERÍA ── -->
-  <section class="py-20" id="galeria">
+  <!-- ══ GALERÍA EN MOSAICO ══ -->
+  <section class="superficie-papel py-24 md:py-32" id="galeria">
     <div class="container-site">
       <SectionHeading
         eyebrow="Galería"
         titulo="Platos y ambiente"
         descripcion="Un vistazo a lo que te espera: la cocina, la parrilla y la terraza."
         centrado
+        ornamento
       />
-      <div class="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3" data-reveal-group>
+
+      <div
+        class="mt-14 grid auto-rows-[10rem] grid-cols-2 gap-4 sm:auto-rows-[12rem] md:grid-cols-3 md:gap-5"
+        data-reveal-group
+      >
         {galeria.map((foto) => (
-          <div class="rounded-card group overflow-hidden">
+          <div class={`marco-foto group ${foto.clase}`}>
             <img
               src={foto.src}
               alt={foto.alt}
-              class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              class="zoom-apetito h-full w-full object-cover"
               loading="lazy"
             />
           </div>
@@ -256,11 +349,14 @@ const faqSchema = {
 
   <FAQ items={faqItems} />
 
+  <!-- ══ MOMENTO A SANGRE #2: cierre con foto de la terraza ══ -->
   <CTA
     titulo="¿Se te antojó? Tu pedido llega caliente"
     descripcion="Pide directo por WhatsApp: sin apps, sin comisiones y con el sabor de siempre."
     botonTexto="Pedir por WhatsApp"
     mensaje={`Hola ${NEGOCIO.nombre} 👋, quiero hacer un pedido.`}
+    foto="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1800&q=85"
+    fotoAlt="La terraza de noche, lista para recibir comensales"
   />
 
   <Footer links={navLinks.map((l) => (l.href.startsWith('#') ? { ...l, href: `/${l.href}` } : l))} />

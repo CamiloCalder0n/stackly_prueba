@@ -9,11 +9,11 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="bg-brand-950 text-brand-300">
-  <div class="container-site grid gap-10 py-14 md:grid-cols-3">
+  <div class="container-wide grid gap-12 py-20 md:grid-cols-3">
     <div>
-      <p class="font-display text-lg font-bold text-white">{NEGOCIO.nombre}</p>
-      <p class="mt-2 max-w-xs text-sm leading-relaxed">{NEGOCIO.eslogan}</p>
-      <div class="mt-4 flex gap-4">
+      <p class="font-display text-2xl font-normal tracking-[0.08em] text-white">{NEGOCIO.nombre}</p>
+      <p class="mt-4 max-w-xs text-[0.85rem] leading-relaxed font-light">{NEGOCIO.eslogan}</p>
+      <div class="mt-7 flex gap-5">
         {NEGOCIO.instagram && (
           <a href={NEGOCIO.instagram} target="_blank" rel="noopener" aria-label="Instagram" class="transition-colors hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -29,11 +29,11 @@ const year = new Date().getFullYear();
 
     {links.length > 0 && (
       <nav aria-label="Enlaces del pie de página">
-        <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">Enlaces</p>
-        <ul class="mt-3 space-y-2">
+        <p class="micro-sm text-brand-400">Enlaces</p>
+        <ul class="mt-6 space-y-3.5">
           {links.map((l) => (
             <li>
-              <a href={l.href} class="text-sm transition-colors hover:text-white">{l.label}</a>
+              <a href={l.href} class="text-[0.85rem] font-light transition-colors duration-500 hover:text-accent-200">{l.label}</a>
             </li>
           ))}
         </ul>
@@ -41,18 +41,18 @@ const year = new Date().getFullYear();
     )}
 
     <div>
-      <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">Contacto</p>
-      <ul class="mt-3 space-y-2 text-sm">
+      <p class="micro-sm text-brand-400">Contacto</p>
+      <ul class="mt-6 space-y-3.5 text-[0.85rem] font-light">
         <li>{NEGOCIO.direccion}, {NEGOCIO.ciudad}</li>
         <li>{NEGOCIO.horario}</li>
-        <li><a href={`tel:${NEGOCIO.telefono.replace(/\s/g, '')}`} class="transition-colors hover:text-white">{NEGOCIO.telefono}</a></li>
-        <li><a href={`mailto:${NEGOCIO.correo}`} class="transition-colors hover:text-white">{NEGOCIO.correo}</a></li>
+        <li><a href={`tel:${NEGOCIO.telefono.replace(/\s/g, '')}`} class="transition-colors duration-500 hover:text-accent-200">{NEGOCIO.telefono}</a></li>
+        <li><a href={`mailto:${NEGOCIO.correo}`} class="transition-colors duration-500 hover:text-accent-200">{NEGOCIO.correo}</a></li>
       </ul>
     </div>
   </div>
 
   <div class="border-t border-white/10">
-    <div class="container-site flex flex-col items-center justify-between gap-2 py-5 text-xs text-brand-400 sm:flex-row">
+    <div class="container-wide flex flex-col items-center justify-between gap-2 py-6 text-[0.75rem] font-light text-brand-400 sm:flex-row">
       <p>© {year} {NEGOCIO.nombre}. Todos los derechos reservados.</p>
       <p>Hecho por <a href="https://stackly.co" class="font-semibold transition-colors hover:text-white">Stackly</a></p>
     </div>

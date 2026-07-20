@@ -5,38 +5,61 @@ import { NEGOCIO, waLink } from '../scripts/site';
 interface Props {
   titulo?: string;
   descripcion?: string;
+  /** Numeración editorial de la sección. */
+  numero?: string;
 }
 const {
-  titulo = 'Visítanos o escríbenos',
+  titulo = 'Visítanos',
   descripcion = 'Estamos para atenderte. Encuéntranos o déjanos un mensaje.',
+  numero = '07',
 } = Astro.props;
+
+const datos = [
+  { label: 'Dirección', valor: `${NEGOCIO.direccion}, ${NEGOCIO.ciudad}`, href: NEGOCIO.mapsUrl },
+  { label: 'Horario', valor: NEGOCIO.horario },
+  { label: 'Teléfono', valor: NEGOCIO.telefono, href: `tel:${NEGOCIO.telefono.replace(/\s/g, '')}` },
+  { label: 'Correo', valor: NEGOCIO.correo, href: `mailto:${NEGOCIO.correo}` },
+];
+
+const campoClase =
+  'w-full border-0 border-b border-brand-300 bg-transparent px-0 py-3 text-sm font-light text-brand-900 outline-none transition-colors duration-500 placeholder:text-brand-400 focus:border-accent-500';
 ---
 
-<section class="bg-brand-50 py-20" id="contacto">
-  <div class="container-site">
-    <SectionHeading eyebrow="Contacto" titulo={titulo} descripcion={descripcion} centrado />
+<section class="py-24 md:py-32" id="contacto">
+  <div class="container-wide">
+    <SectionHeading numero={numero} eyebrow="Contacto" titulo={titulo} acento="o escríbenos" descripcion={descripcion} />
 
-    <div class="mt-12 grid gap-8 lg:grid-cols-2">
-      <!-- Datos del negocio -->
-      <div class="rounded-card space-y-5 bg-white p-8 ring-1 ring-brand-100" data-reveal>
-        {[
-          { label: 'Dirección', valor: `${NEGOCIO.direccion}, ${NEGOCIO.ciudad}`, href: NEGOCIO.mapsUrl },
-          { label: 'Horario', valor: NEGOCIO.horario },
-          { label: 'Teléfono', valor: NEGOCIO.telefono, href: `tel:${NEGOCIO.telefono.replace(/\s/g, '')}` },
-          { label: 'Correo', valor: NEGOCIO.correo, href: `mailto:${NEGOCIO.correo}` },
-        ].map((fila) => (
-          <div>
-            <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">{fila.label}</p>
-            {fila.href ? (
-              <a href={fila.href} target={fila.href.startsWith('http') ? '_blank' : undefined} class="mt-1 block text-sm font-medium text-brand-800 hover:text-accent-600">
-                {fila.valor}
-              </a>
-            ) : (
-              <p class="mt-1 text-sm font-medium text-brand-800">{fila.valor}</p>
-            )}
-          </div>
-        ))}
-        <a href={waLink(`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`)} target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
+    <div class="mt-16 grid gap-14 lg:grid-cols-12 lg:gap-20">
+      <!-- Datos del negocio: tabla de línea fina -->
+      <div class="lg:col-span-5" data-reveal>
+        <dl>
+          {datos.map((fila) => (
+            <div class="grid grid-cols-[5.5rem_1fr] items-baseline gap-5 border-t border-brand-200 py-5 last:border-b sm:grid-cols-[7rem_1fr] sm:gap-6">
+              <dt class="micro-sm text-brand-500">{fila.label}</dt>
+              <dd>
+                {fila.href ? (
+                  <a
+                    href={fila.href}
+                    target={fila.href.startsWith('http') ? '_blank' : undefined}
+                    rel={fila.href.startsWith('http') ? 'noopener' : undefined}
+                    class="text-[0.9rem] font-light text-brand-800 transition-colors duration-500 hover:text-accent-700"
+                  >
+                    {fila.valor}
+                  </a>
+                ) : (
+                  <span class="text-[0.9rem] font-light text-brand-800">{fila.valor}</span>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <a
+          href={waLink(`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`)}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-whatsapp mt-10 w-full sm:w-auto"
+        >
           Escribir por WhatsApp
         </a>
       </div>
@@ -47,26 +70,31 @@ const {
         method="POST"
         data-netlify="true"
         netlify-honeypot="bot-field"
-        class="rounded-card space-y-4 bg-white p-8 ring-1 ring-brand-100"
+        class="lg:col-span-6 lg:col-start-7"
         data-reveal
       >
         <input type="hidden" name="form-name" value="contacto" />
         <p class="hidden"><label>No llenar: <input name="bot-field" /></label></p>
 
-        <div>
-          <label for="nombre" class="mb-1.5 block text-sm font-semibold text-brand-800">Nombre</label>
-          <input id="nombre" name="nombre" type="text" required class="w-full rounded-md border border-brand-200 px-4 py-2.5 text-sm outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-100" placeholder="Tu nombre" />
+        <div class="space-y-9">
+          <div>
+            <label for="nombre" class="micro-sm mb-1 block text-brand-500">Nombre</label>
+            <input id="nombre" name="nombre" type="text" required class={campoClase} placeholder="Tu nombre" />
+          </div>
+          <div>
+            <label for="correo" class="micro-sm mb-1 block text-brand-500">Correo</label>
+            <input id="correo" name="correo" type="email" required class={campoClase} placeholder="tu@correo.com" />
+          </div>
+          <div>
+            <label for="mensaje" class="micro-sm mb-1 block text-brand-500">Mensaje</label>
+            <textarea id="mensaje" name="mensaje" rows="3" required class={`${campoClase} resize-none`} placeholder="Cuéntanos qué necesitas"></textarea>
+          </div>
         </div>
-        <div>
-          <label for="correo" class="mb-1.5 block text-sm font-semibold text-brand-800">Correo</label>
-          <input id="correo" name="correo" type="email" required class="w-full rounded-md border border-brand-200 px-4 py-2.5 text-sm outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-100" placeholder="tu@correo.com" />
-        </div>
-        <div>
-          <label for="mensaje" class="mb-1.5 block text-sm font-semibold text-brand-800">Mensaje</label>
-          <textarea id="mensaje" name="mensaje" rows="4" required class="w-full resize-none rounded-md border border-brand-200 px-4 py-2.5 text-sm outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-100" placeholder="Cuéntanos qué necesitas"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary w-full">Enviar mensaje</button>
-        <p class="text-center text-xs text-brand-400">El formulario funciona automáticamente al desplegar en Netlify.</p>
+
+        <button type="submit" class="btn btn-outline mt-10 w-full sm:w-auto">Enviar mensaje</button>
+        <p class="mt-5 text-xs font-light text-brand-500">
+          El formulario funciona automáticamente al desplegar en Netlify.
+        </p>
       </form>
     </div>
   </div>

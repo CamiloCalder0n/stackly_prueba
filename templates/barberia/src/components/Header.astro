@@ -1,4 +1,8 @@
 ---
+/**
+ * Header fijo con dos estados: transparente sobre el hero y sólido
+ * al hacer scroll. El logotipo lleva monograma en caja ámbar y sello EST.
+ */
 import { NEGOCIO } from '../scripts/site';
 
 interface Props {
@@ -7,56 +11,108 @@ interface Props {
   cta?: string;
   /** Destino del CTA: en la barbería todo empuja al wizard de reserva. */
   ctaHref?: string;
+  /** Año del sello EST. junto al logotipo. */
+  desde?: string;
 }
 
-const { links, cta = 'Reserva tu cita', ctaHref = '#reservar' } = Astro.props;
+const { links, cta = 'Reserva tu cita', ctaHref = '#reservar', desde = '2015' } = Astro.props;
+
+// Monograma a partir de las iniciales del negocio (ej. "Barbería El Patrón" → "BP")
+const monograma = NEGOCIO.nombre
+  .split(' ')
+  .filter((p) => p.length > 2)
+  .map((p) => p[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/85 backdrop-blur-md">
-  <div class="container-site flex h-16 items-center justify-between">
-    <a href="/" class="font-display text-lg font-bold tracking-tight text-white">
-      {NEGOCIO.nombre}
-    </a>
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+>
+  <!-- Franja de poste de barbero: firma gráfica del nicho -->
+  <div class="poste-barbero h-[3px] opacity-90" aria-hidden="true"></div>
 
-    <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
-      {links.map((l) => (
-        <a href={l.href} class="text-sm font-medium text-brand-200 transition-colors hover:text-white">
-          {l.label}
-        </a>
-      ))}
-      <a href={ctaHref} class="btn btn-primary !py-2 text-sm">
-        {cta}
+  <div
+    id="site-header-barra"
+    class="border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300"
+  >
+    <div class="container-ancho flex h-[4.5rem] items-center justify-between gap-6">
+      <a href="/" class="group flex items-center gap-3">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center bg-accent-500 font-display text-base font-bold tracking-tight text-noche transition-transform duration-200 group-hover:-rotate-3"
+          aria-hidden="true"
+        >
+          {monograma}
+        </span>
+        <span class="leading-none">
+          <span class="block font-display text-lg font-semibold tracking-[0.08em] text-white uppercase">
+            {NEGOCIO.nombre}
+          </span>
+          <span
+            class="mt-1 block text-[0.55rem] font-semibold tracking-[0.3em] text-accent-500/90 uppercase"
+          >
+            Est. {desde} · {NEGOCIO.ciudad}
+          </span>
+        </span>
       </a>
-    </nav>
 
-    <button
-      id="menu-toggle"
-      class="flex h-10 w-10 items-center justify-center rounded-md text-white md:hidden"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="menu-movil"
-    >
-      <svg id="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      <svg id="icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+      <!-- La nav completa no cabe a 768px (logo + 5 enlaces + CTA):
+           el menú compacto se mantiene hasta lg. -->
+      <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegación principal">
+        {links.map((l) => (
+          <a
+            href={l.href}
+            class="relative font-display text-[0.8rem] font-medium tracking-[0.14em] text-brand-300 uppercase transition-colors duration-200 hover:text-white after:absolute after:-bottom-1.5 after:left-0 after:h-[2px] after:w-0 after:bg-accent-500 after:transition-all after:duration-200 hover:after:w-full"
+          >
+            {l.label}
+          </a>
+        ))}
+        <a
+          href={ctaHref}
+          class="rounded-btn bg-accent-500 px-5 py-2.5 font-display text-[0.8rem] font-semibold tracking-[0.14em] text-noche uppercase transition-all duration-200 hover:bg-accent-400 hover:-translate-y-0.5"
+        >
+          {cta}
+        </a>
+      </nav>
+
+      <button
+        id="menu-toggle"
+        class="flex h-11 w-11 items-center justify-center rounded-sm border border-white/15 text-white transition-colors hover:border-accent-500 hover:text-accent-500 lg:hidden"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="menu-movil"
+      >
+        <svg id="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg id="icon-close" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
   </div>
 
-  <nav id="menu-movil" class="hidden border-t border-white/10 bg-brand-950 md:hidden" aria-label="Navegación móvil">
-    <div class="container-site flex flex-col gap-1 py-4">
+  <nav
+    id="menu-movil"
+    class="hidden border-t border-white/10 bg-noche/98 backdrop-blur-md lg:hidden"
+    aria-label="Navegación móvil"
+  >
+    <div class="container-ancho flex flex-col py-3">
       {links.map((l) => (
-        <a href={l.href} class="rounded-md px-3 py-2.5 text-sm font-medium text-brand-200 hover:bg-white/5 hover:text-white">
+        <a
+          href={l.href}
+          class="border-b border-white/8 py-3.5 font-display text-sm font-medium tracking-[0.14em] text-brand-200 uppercase transition-colors hover:text-accent-500"
+        >
           {l.label}
         </a>
       ))}
-      <a href={ctaHref} class="btn btn-primary mt-2">
+      <a
+        href={ctaHref}
+        class="rounded-btn mt-4 bg-accent-500 px-5 py-3.5 text-center font-display text-sm font-semibold tracking-[0.14em] text-noche uppercase transition-colors hover:bg-accent-400"
+      >
         {cta}
       </a>
     </div>
   </nav>
 </header>
-
-<!-- Separador para que el contenido no quede debajo del header fijo -->
-<div class="h-16" aria-hidden="true"></div>
 
 <script>
   const toggle = document.getElementById('menu-toggle');
@@ -80,4 +136,18 @@ const { links, cta = 'Reserva tu cita', ctaHref = '#reservar' } = Astro.props;
       iconClose?.classList.add('hidden');
     }),
   );
+
+  // Estado sólido del header al salir del hero (transparente arriba del todo)
+  const barra = document.getElementById('site-header-barra');
+  const solido = ['bg-noche/92', 'backdrop-blur-md', '!border-white/10'];
+
+  function actualizarHeader() {
+    if (!barra) return;
+    barra.classList.toggle(solido[0], window.scrollY > 40);
+    barra.classList.toggle(solido[1], window.scrollY > 40);
+    barra.classList.toggle(solido[2], window.scrollY > 40);
+  }
+
+  actualizarHeader();
+  window.addEventListener('scroll', actualizarHeader, { passive: true });
 </script>

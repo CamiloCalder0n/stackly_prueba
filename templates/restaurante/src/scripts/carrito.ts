@@ -15,6 +15,9 @@ export interface ItemCarrito {
   cantidad: number;
   /** Nota opcional del cliente ("sin cebolla", "término medio"...). */
   nota: string;
+  /** Miniatura del plato para el carrito (opcional: los pedidos guardados
+   *  por versiones anteriores no la traen y siguen funcionando). */
+  foto?: string;
 }
 
 const STORAGE_KEY = 'stackly-restaurante-carrito';
@@ -26,14 +29,23 @@ function cargarGuardado(): ItemCarrito[] {
     if (!crudo) return [];
     const datos = JSON.parse(crudo);
     if (!Array.isArray(datos)) return [];
-    return datos.filter(
-      (it) =>
-        it &&
-        typeof it.id === 'string' &&
-        typeof it.precio === 'number' &&
-        typeof it.cantidad === 'number' &&
-        it.cantidad > 0,
-    );
+    return datos
+      .filter(
+        (it) =>
+          it &&
+          typeof it.id === 'string' &&
+          typeof it.precio === 'number' &&
+          typeof it.cantidad === 'number' &&
+          it.cantidad > 0,
+      )
+      // Normaliza los campos de texto: un pedido guardado por una versión
+      // anterior puede no traer `nota` (o traerla nula) y el render la usa.
+      .map((it) => ({
+        ...it,
+        nombre: typeof it.nombre === 'string' ? it.nombre : '',
+        nota: typeof it.nota === 'string' ? it.nota : '',
+        foto: typeof it.foto === 'string' ? it.foto : undefined,
+      }));
   } catch {
     return [];
   }
@@ -63,7 +75,12 @@ export const $subtotal = computed($carrito, (items) =>
 );
 
 /** Agrega una unidad del plato (o incrementa si ya está en el pedido). */
-export function agregarItem(item: { id: string; nombre: string; precio: number }): void {
+export function agregarItem(item: {
+  id: string;
+  nombre: string;
+  precio: number;
+  foto?: string;
+}): void {
   const items = $carrito.get();
   const existente = items.find((it) => it.id === item.id);
   if (existente) {

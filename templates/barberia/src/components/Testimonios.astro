@@ -1,6 +1,9 @@
 ---
-import SectionHeading from './SectionHeading.astro';
-
+/**
+ * Sección #testimonios — full-bleed oscuro con fotografía de fondo
+ * desaturada y viñeteada. Rompe el ritmo de secciones claras y da
+ * profundidad: las citas van sobre hairlines, no dentro de cards.
+ */
 interface Testimonio {
   nombre: string;
   texto: string;
@@ -10,21 +13,65 @@ interface Props {
   titulo?: string;
   eyebrow?: string;
   items: Testimonio[];
+  /** Imagen de fondo de la sección (se desatura y oscurece). */
+  imagen?: string;
 }
-const { titulo = 'Lo que dicen nuestros clientes', eyebrow = 'Testimonios', items } = Astro.props;
+const {
+  titulo = 'Lo que dicen nuestros clientes',
+  eyebrow = 'Testimonios',
+  items,
+  imagen = 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1600&q=80',
+} = Astro.props;
 ---
 
-<section class="bg-brand-50 py-20" id="testimonios">
-  <div class="container-site">
-    <SectionHeading eyebrow={eyebrow} titulo={titulo} centrado />
-    <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
-      {items.map((t) => (
-        <figure class="rounded-card flex flex-col gap-4 bg-white p-7 shadow-sm ring-1 ring-brand-100">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="text-accent-500" aria-hidden="true"><path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179Zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179Z"/></svg>
-          <blockquote class="text-sm leading-relaxed text-brand-700">{t.texto}</blockquote>
-          <figcaption class="mt-auto">
-            <p class="text-sm font-bold text-brand-950">{t.nombre}</p>
-            {t.detalle && <p class="text-xs text-brand-500">{t.detalle}</p>}
+<section class="grano vineta relative overflow-hidden bg-noche py-28 md:py-36" id="testimonios">
+  <!-- Fondo fotográfico con parallax, en blanco y negro -->
+  <div class="absolute inset-0" data-parallax="0.12">
+    <img
+      src={imagen}
+      alt=""
+      class="h-[116%] w-full object-cover opacity-35 grayscale contrast-125"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <div class="absolute inset-0 bg-noche/62"></div>
+
+  <div class="container-site relative z-10">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <span class="micro-label justify-center text-accent-400">{eyebrow}</span>
+      <h2 class="titulo-seccion mt-5 text-white">{titulo}</h2>
+      <div class="regla-doble mx-auto mt-8 w-24 text-accent-500" aria-hidden="true"></div>
+    </div>
+
+    <!-- Tres citas separadas por hairlines verticales -->
+    <div
+      class="mt-16 grid gap-y-12 md:grid-cols-3 md:gap-x-0 md:divide-x md:divide-white/12"
+      data-reveal-group
+    >
+      {items.map((t, i) => (
+        <figure class="flex flex-col gap-5 md:px-8 md:first:pl-0 md:last:pr-0">
+          <span
+            class="font-display text-5xl leading-none font-bold text-accent-500/35 tabular-nums"
+            aria-hidden="true"
+          >
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <blockquote class="text-base leading-relaxed text-brand-200 md:text-lg">
+            <span class="text-accent-500" aria-hidden="true">«</span>{t.texto}<span
+              class="text-accent-500"
+              aria-hidden="true">»</span
+            >
+          </blockquote>
+          <figcaption class="mt-auto border-t border-white/12 pt-4">
+            <p class="font-display text-base font-semibold tracking-wide text-white uppercase">
+              {t.nombre}
+            </p>
+            {t.detalle && (
+              <p class="mt-1 text-[0.68rem] font-semibold tracking-[0.2em] text-accent-500/80 uppercase">
+                {t.detalle}
+              </p>
+            )}
           </figcaption>
         </figure>
       ))}

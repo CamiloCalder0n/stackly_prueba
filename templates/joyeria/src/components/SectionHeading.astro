@@ -2,15 +2,55 @@
 interface Props {
   eyebrow?: string;
   titulo: string;
+  /** Segunda línea del título, en cursiva (contraste editorial). */
+  acento?: string;
   descripcion?: string;
   /** Centra el encabezado (por defecto alineado a la izquierda). */
   centrado?: boolean;
+  /** Numeración de sección: "01", "02"… micro-detalle editorial. */
+  numero?: string;
+  /** Encabezado sobre fondo oscuro. */
+  oscuro?: boolean;
 }
-const { eyebrow, titulo, descripcion, centrado = false } = Astro.props;
+const {
+  eyebrow,
+  titulo,
+  acento,
+  descripcion,
+  centrado = false,
+  numero,
+  oscuro = false,
+} = Astro.props;
 ---
 
-<div class={`max-w-2xl ${centrado ? 'mx-auto text-center' : ''}`} data-reveal>
-  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-  <h2 class="mt-2 text-3xl font-bold text-brand-950 md:text-4xl">{titulo}</h2>
-  {descripcion && <p class="mt-4 text-base leading-relaxed text-brand-600">{descripcion}</p>}
+<div class={centrado ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'} data-reveal>
+  {(eyebrow || numero) && (
+    <div class={`flex items-center gap-4 ${centrado ? 'justify-center' : ''}`}>
+      {numero && <span class={`section-num ${oscuro ? '!text-accent-400' : ''}`}>{numero}</span>}
+      {numero && (
+        <span class={`h-px w-8 ${oscuro ? 'bg-accent-400/50' : 'bg-accent-500/50'}`} aria-hidden="true"></span>
+      )}
+      {eyebrow && <span class={`micro ${oscuro ? 'text-accent-300' : 'text-accent-700'}`}>{eyebrow}</span>}
+    </div>
+  )}
+
+  <h2 class={`type-section mt-6 ${oscuro ? 'text-white' : 'text-brand-950'}`}>
+    {titulo}
+    {acento && (
+      <>
+        {' '}
+        <em class={`font-normal italic ${oscuro ? 'text-accent-200' : 'text-accent-600'}`}>{acento}</em>
+      </>
+    )}
+  </h2>
+
+  {descripcion && (
+    <p
+      class={`mt-6 max-w-xl text-[0.95rem] leading-[1.9] font-light ${centrado ? 'mx-auto' : ''} ${
+        oscuro ? 'text-brand-300' : 'text-brand-600'
+      }`}
+    >
+      {descripcion}
+    </p>
+  )}
 </div>

@@ -7,6 +7,8 @@
  *   data-parallax="0.2"      → parallax sutil (factor de desplazamiento)
  *   data-counter="120"       → cuenta de 0 al número al entrar en viewport
  *   data-hero-title          → animación de entrada del hero (sin scroll)
+ *   data-rule                → hairline que se dibuja de izquierda a derecha
+ *   data-reveal-mask         → imagen que se revela con máscara + zoom-out lento
  *
  * Respeta prefers-reduced-motion: si está activo, no se anima nada.
  */
@@ -65,6 +67,32 @@ export function initAnimations(): void {
         scrollTrigger: { trigger: group, start: 'top 85%' },
       },
     );
+  });
+
+  // ── Hairlines que se dibujan (detalle de línea fina) ──
+  document.querySelectorAll<HTMLElement>('[data-rule]').forEach((el) => {
+    gsap.fromTo(
+      el,
+      { scaleX: 0 },
+      {
+        scaleX: 1,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 92%' },
+      },
+    );
+  });
+
+  // ── Imágenes con máscara editorial (revelado + zoom-out lento) ──
+  document.querySelectorAll<HTMLElement>('[data-reveal-mask]').forEach((el) => {
+    const img = el.querySelector('img');
+    const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } });
+    tl.fromTo(
+      el,
+      { clipPath: 'inset(0% 0% 100% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'power3.out' },
+    );
+    if (img) tl.fromTo(img, { scale: 1.16 }, { scale: 1, duration: 1.6, ease: 'power3.out' }, 0);
   });
 
   // ── Parallax sutil ──

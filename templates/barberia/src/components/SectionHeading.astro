@@ -1,16 +1,46 @@
 ---
+/**
+ * Encabezado de sección con escala monumental (Oswald condensado).
+ * El micro-label espaciado hace de contrapeso al titular grande.
+ */
 interface Props {
   eyebrow?: string;
   titulo: string;
   descripcion?: string;
   /** Centra el encabezado (por defecto alineado a la izquierda). */
   centrado?: boolean;
+  /** 'oscuro' = encabezado colocado sobre fondo oscuro. */
+  tono?: 'claro' | 'oscuro';
 }
-const { eyebrow, titulo, descripcion, centrado = false } = Astro.props;
+const { eyebrow, titulo, descripcion, centrado = false, tono = 'claro' } = Astro.props;
+
+const oscuro = tono === 'oscuro';
 ---
 
-<div class={`max-w-2xl ${centrado ? 'mx-auto text-center' : ''}`} data-reveal>
-  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-  <h2 class="mt-2 text-3xl font-bold text-brand-950 md:text-4xl">{titulo}</h2>
-  {descripcion && <p class="mt-4 text-base leading-relaxed text-brand-600">{descripcion}</p>}
+<div class:list={['max-w-2xl', centrado && 'mx-auto text-center']} data-reveal>
+  {eyebrow && (
+    <span
+      class:list={[
+        'micro-label',
+        !centrado && 'micro-label-linea',
+        oscuro ? 'text-accent-400' : 'text-accent-600',
+      ]}
+    >
+      {eyebrow}
+    </span>
+  )}
+  <h2 class:list={['titulo-seccion mt-5', oscuro ? 'text-white' : 'text-brand-950']}>
+    {titulo}
+  </h2>
+  {descripcion && (
+    <p
+      class:list={[
+        'mt-5 text-base leading-relaxed',
+        centrado && 'mx-auto max-w-xl',
+        oscuro ? 'text-brand-300' : 'text-brand-600',
+      ]}
+    >
+      {descripcion}
+    </p>
+  )}
 </div>

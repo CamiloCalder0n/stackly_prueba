@@ -3,6 +3,10 @@
  * Sección #equipo — un card por barbero (colección `barberos`, solo activos).
  * Reservar con un barbero específico baja el no-show: el cliente sabe con
  * quién queda y el barbero sabe quién le llega.
+ *
+ * Dirección de arte: full-bleed negro, retratos en blanco y negro que
+ * recuperan el color al pasar el cursor, nombres en Oswald grande y la
+ * especialidad como micro-label espaciado.
  */
 import { getCollection } from 'astro:content';
 
@@ -11,45 +15,88 @@ const barberos = (await getCollection('barberos'))
   .map((e) => ({ id: e.id, ...e.data }));
 ---
 
-<section class="bg-brand-950 py-20" id="equipo">
-  <div class="container-site">
-    <div class="max-w-2xl" data-reveal>
-      <span class="eyebrow">El equipo</span>
-      <h2 class="mt-2 text-3xl font-bold text-white md:text-4xl">Barberos con oficio</h2>
-      <p class="mt-4 text-base leading-relaxed text-brand-300">
+<section class="grano relative overflow-hidden bg-noche py-24 md:py-36" id="equipo">
+  <!-- Halo de luz dirigida en la esquina superior -->
+  <div
+    class="pointer-events-none absolute -top-40 -right-32 h-[32rem] w-[32rem] rounded-full bg-accent-600/12 blur-[120px]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="container-ancho relative">
+    <div class="flex flex-wrap items-end justify-between gap-8" data-reveal>
+      <div class="max-w-xl">
+        <span class="micro-label micro-label-linea text-accent-400">El equipo</span>
+        <h2 class="titulo-seccion mt-5 text-white">
+          Barberos<br /><span class="text-accent-500">con oficio</span>
+        </h2>
+      </div>
+      <p class="max-w-sm text-base leading-relaxed text-brand-400">
         Elige a tu barbero de confianza o déjate sorprender: todos dominan la silla.
       </p>
     </div>
 
-    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
-      {barberos.map((b) => (
-        <article class="rounded-card group overflow-hidden bg-brand-900 ring-1 ring-white/10">
-          <div class="aspect-[4/5] overflow-hidden">
+    <div class="mt-16 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+      {barberos.map((b, i) => (
+        <article class="foto-bn-hover group">
+          <div class="relative overflow-hidden bg-brand-900">
             <img
               src={b.foto}
               alt={`${b.nombre}, barbero de Barbería El Patrón`}
-              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              class="foto-bn aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               loading="lazy"
             />
+            <!-- Degradado inferior para asentar el número y el borde -->
+            <div
+              class="pointer-events-none absolute inset-0 bg-gradient-to-t from-noche via-noche/10 to-transparent"
+              aria-hidden="true"
+            >
+            </div>
+            <!-- Numeración del equipo -->
+            <span
+              class="absolute top-4 left-4 font-display text-xs font-semibold tracking-[0.28em] text-white/70 tabular-nums"
+              aria-hidden="true"
+            >
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <!-- Barra ámbar que crece en hover: acento de selección -->
+            <span
+              class="absolute bottom-0 left-0 h-[3px] w-0 bg-accent-500 transition-all duration-300 ease-out group-hover:w-full"
+              aria-hidden="true"
+            >
+            </span>
           </div>
-          <div class="p-5">
-            <h3 class="font-display text-lg font-semibold tracking-wide text-white uppercase">{b.nombre}</h3>
-            <p class="mt-1 text-sm text-brand-400">{b.especialidad}</p>
-            <div class="mt-4 flex items-center justify-between gap-3">
-              {b.instagram && (
+
+          <div class="mt-5">
+            <h3 class="font-display text-xl leading-tight font-semibold tracking-wide text-white uppercase md:text-2xl">
+              {b.nombre}
+            </h3>
+            <p class="mt-2 text-[0.68rem] font-semibold tracking-[0.2em] text-accent-500/90 uppercase">
+              {b.especialidad}
+            </p>
+
+            <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3.5">
+              {b.instagram ? (
                 <a
                   href={b.instagram}
                   target="_blank"
                   rel="noopener"
                   aria-label={`Instagram de ${b.nombre}`}
-                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-300 transition-colors hover:text-accent-400"
+                  class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-400 transition-colors duration-200 hover:text-white"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                   Instagram
                 </a>
+              ) : (
+                <span></span>
               )}
-              <a href="#reservar" class="text-xs font-bold text-accent-500 uppercase hover:text-accent-400">
-                Reservar →
+              <a
+                href="#reservar"
+                class="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-[0.16em] text-accent-500 uppercase transition-colors duration-200 hover:text-accent-300"
+              >
+                Reservar
+                <span class="sr-only">con {b.nombre}</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </a>
             </div>
           </div>

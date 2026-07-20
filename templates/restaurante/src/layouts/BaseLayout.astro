@@ -59,11 +59,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Tipografías (cámbialas junto con los tokens en global.css) -->
+    <!-- Tipografías (cámbialas junto con los tokens en global.css).
+         Fraunces se carga como variable con sus ejes SOFT y WONK: son los que
+         le dan el carácter editorial a los titulares y a los precios de la
+         carta (ver utilidades .titular-wonk y .precio-carta en global.css). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 

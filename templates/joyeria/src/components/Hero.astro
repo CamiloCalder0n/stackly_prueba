@@ -4,49 +4,113 @@ import { waLink, NEGOCIO } from '../scripts/site';
 interface Props {
   eyebrow?: string;
   titulo: string;
+  /** Segunda línea del título, en cursiva: el acento editorial. */
+  acento?: string;
   subtitulo?: string;
   /** Imagen de fondo (usa /public o URL de Unsplash con ?w=1600&q=80). */
   imagen?: string;
   ctaTexto?: string;
   ctaMensaje?: string;
   ctaSecundario?: { label: string; href: string };
+  /** Tarjeta de pieza superpuesta que rompe la simetría del hero. */
+  destacado?: { imagen: string; etiqueta: string; titulo: string; href: string };
 }
 
 const {
   eyebrow,
   titulo,
+  acento,
   subtitulo,
   imagen,
   ctaTexto = 'Contáctanos por WhatsApp',
   ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
   ctaSecundario,
+  destacado,
 } = Astro.props;
 ---
 
-<section class="relative flex min-h-[82vh] items-center overflow-hidden bg-brand-950">
+<section class="relative flex min-h-[92vh] items-center overflow-hidden bg-brand-950">
   {imagen && (
-    <div class="absolute inset-0" data-parallax="0.15">
-      <img src={imagen} alt="" class="h-[115%] w-full object-cover opacity-40" loading="eager" fetchpriority="high" />
+    <div class="absolute inset-0" data-parallax="0.14">
+      <img
+        src={imagen}
+        alt=""
+        class="h-[118%] w-full object-cover opacity-45"
+        loading="eager"
+        fetchpriority="high"
+      />
     </div>
   )}
-  <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-brand-950/30"></div>
+  <!-- Degradados sofisticados: base profunda + viñeta lateral para legibilidad -->
+  <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/55 to-brand-950/25"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-brand-950/85 via-brand-950/25 to-transparent"></div>
 
-  <div class="container-site relative py-24">
-    <div class="max-w-2xl" data-hero-title>
-      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-      <h1 class="mt-3 text-4xl leading-tight font-bold text-white md:text-6xl">{titulo}</h1>
-      {subtitulo && <p class="mt-5 max-w-xl text-lg leading-relaxed text-brand-200">{subtitulo}</p>}
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-whatsapp">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.668-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-          {ctaTexto}
-        </a>
-        {ctaSecundario && (
-          <a href={ctaSecundario.href} class="btn border-1.5 border-white/30 text-white hover:border-white hover:bg-white/10">
-            {ctaSecundario.label}
-          </a>
+  <div class="container-wide relative w-full py-28 md:py-36">
+    <div class="grid items-end gap-14 lg:grid-cols-12">
+      <!-- Bloque tipográfico: 7 de 12 columnas (asimetría editorial) -->
+      <div class="lg:col-span-7" data-hero-title>
+        {eyebrow && (
+          <div class="flex items-center gap-4">
+            <span class="h-px w-10 bg-accent-400/70" aria-hidden="true"></span>
+            <span class="micro text-accent-300">{eyebrow}</span>
+          </div>
         )}
+
+        <h1 class="type-hero mt-7 text-white">
+          {titulo}
+          {acento && (
+            <>
+              <br />
+              <em class="font-normal text-accent-200 italic">{acento}</em>
+            </>
+          )}
+        </h1>
+
+        {subtitulo && (
+          <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-200">
+            {subtitulo}
+          </p>
+        )}
+
+        <div class="mt-11 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-whatsapp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.668-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            {ctaTexto}
+          </a>
+          {ctaSecundario && (
+            <a href={ctaSecundario.href} class="micro link-rule text-white/85 transition-colors hover:text-accent-200">
+              {ctaSecundario.label}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          )}
+        </div>
       </div>
+
+      <!-- Pieza superpuesta: capa que da profundidad y rompe la simetría -->
+      {destacado && (
+        <a href={destacado.href} class="group relative hidden lg:col-span-4 lg:col-start-9 lg:block">
+          <div class="relative overflow-hidden border border-white/15">
+            <img
+              src={destacado.imagen}
+              alt={destacado.titulo}
+              class="aspect-[3/4] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
+              loading="eager"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/10 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <span class="micro-sm text-accent-300">{destacado.etiqueta}</span>
+              <p class="mt-2 font-display text-2xl font-light text-white">{destacado.titulo}</p>
+              <span class="micro-sm mt-3 inline-flex items-center gap-2 text-white/70 transition-colors duration-500 group-hover:text-accent-200">
+                Ver pieza
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </div>
+        </a>
+      )}
     </div>
   </div>
+
+  <!-- Hairline inferior: cierre de vitrina -->
+  <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/40 to-transparent" aria-hidden="true"></div>
 </section>

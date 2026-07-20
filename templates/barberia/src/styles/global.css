@@ -7,9 +7,13 @@
    brand  → color principal (fondos oscuros, header, footer)
    accent → color de acción (botones, links, precios, detalles)
    Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+
+   DIRECCIÓN DE ARTE — "barbería clásica-moderna":
+   contraste alto (negro profundo + papel hueso), fotografía
+   desaturada y el ámbar/cobre como ÚNICO color de acento.
    ═══════════════════════════════════════════════════════════════ */
 @theme {
-  /* Barbería El Patrón: display contundente + cuerpo neutro */
+  /* Barbería El Patrón: display condensado + cuerpo neutro */
   --font-display: 'Oswald', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
 
@@ -38,12 +42,22 @@
   --color-accent-800: #92400e;
   --color-accent-900: #78350f;
 
+  /* Negro de tinta: más profundo que brand-950 para full-bleeds */
+  --color-noche: #060505;
+  /* Papel hueso: las secciones claras no son blanco puro (calidez) */
+  --color-papel: #f6f3ee;
+  --color-papel-hondo: #ebe6dd;
+
   --color-surface: #ffffff;
   --color-ink: #1c1917;
 
   /* Esquinas más rectas: estética de barbería clásica */
   --radius-btn: 0.25rem;
   --radius-card: 0.5rem;
+
+  /* Escala monumental (Oswald condensado pide tamaños grandes) */
+  --text-monumento: clamp(2.75rem, 9vw, 7rem);
+  --text-monumento-sm: clamp(2.25rem, 6.5vw, 4.5rem);
 }
 
 /* ── Base ── */
@@ -68,6 +82,19 @@ h1, h2 {
   letter-spacing: 0.02em;
 }
 
+/* El header es fijo: los anclajes (#servicios, #reservar…) no deben
+   quedar tapados al navegar desde el menú. */
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+/* Foco visible y consistente en toda la página (accesibilidad) */
+:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* ── Estados iniciales de animación (GSAP los revela) ──
    Si JS no carga o el usuario prefiere menos movimiento,
    el contenido queda visible. */
@@ -90,6 +117,17 @@ h1, h2 {
   }
 }
 
+/* Contenedor ancho para secciones full-bleed con respiro editorial */
+@utility container-ancho {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 85rem;
+  padding-inline: 1.25rem;
+  @media (width >= 768px) {
+    padding-inline: 2.5rem;
+  }
+}
+
 @utility btn {
   display: inline-flex;
   align-items: center;
@@ -99,7 +137,8 @@ h1, h2 {
   border-radius: var(--radius-btn);
   font-weight: 600;
   font-size: 0.95rem;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
@@ -109,6 +148,41 @@ h1, h2 {
   &:hover {
     background: var(--color-accent-400);
     transform: translateY(-1px);
+  }
+}
+
+/* CTA principal: mayúsculas condensadas, imposible de ignorar */
+@utility btn-navaja {
+  background: var(--color-accent-500);
+  color: var(--color-noche);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1rem 2rem;
+  box-shadow: 0 10px 30px -12px rgb(245 158 11 / 0.7);
+  &:hover {
+    background: var(--color-accent-400);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px -12px rgb(245 158 11 / 0.85);
+  }
+}
+
+/* Botón fantasma sobre fondos oscuros */
+@utility btn-fantasma {
+  border: 1.5px solid rgb(255 255 255 / 0.28);
+  color: #fff;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1rem 2rem;
+  &:hover {
+    border-color: var(--color-accent-500);
+    color: var(--color-accent-400);
+    background: rgb(245 158 11 / 0.08);
   }
 }
 
@@ -138,4 +212,166 @@ h1, h2 {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent-600);
+}
+
+/* ── Micro-label: contrapeso tipográfico de los títulos monumentales ── */
+@utility micro-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-accent-600);
+}
+/* Guion corto que precede al micro-label */
+@utility micro-label-linea {
+  &::before {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+}
+
+/* ── Título monumental: Oswald a máxima escala ── */
+@utility titulo-monumento {
+  font-family: var(--font-display);
+  font-size: var(--text-monumento);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+@utility titulo-seccion {
+  font-family: var(--font-display);
+  font-size: var(--text-monumento-sm);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* ── Textura de grano: da materia a los fondos planos ── */
+@utility grano {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+}
+/* Grano más discreto para superficies claras */
+@utility grano-sutil {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.14;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g2)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ── Viñeteado: concentra la mirada en fondos fotográficos ── */
+@utility vineta {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 30%,
+      rgb(6 5 5 / 0.55) 78%,
+      rgb(6 5 5 / 0.9) 100%
+    );
+  }
+}
+
+/* ── Poste de barbero: franjas diagonales, motivo gráfico del nicho ── */
+@utility poste-barbero {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent-500) 0 10px,
+    var(--color-noche) 10px 20px,
+    var(--color-papel) 20px 30px,
+    var(--color-noche) 30px 40px
+  );
+}
+/* ── Reglas y separadores con motivo ── */
+@utility regla-doble {
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  height: 4px;
+  opacity: 0.28;
+}
+
+/* Guía punteada de carta de precios (servicio ····· precio) */
+@utility guia-puntos {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1.5rem;
+  align-self: flex-end;
+  margin-bottom: 0.45rem;
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+  background-size: 6px 2px;
+  background-repeat: repeat-x;
+  opacity: 0.35;
+}
+
+/* ── Sello / insignia tipo "EST. 2015" ── */
+@utility sello {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border: 1px solid currentColor;
+  box-shadow: 0 0 0 3px transparent, 0 0 0 4px currentColor;
+  padding: 0.6rem 0.9rem;
+  line-height: 1;
+}
+
+/* ── Tratamiento fotográfico: desaturado que revive en hover ── */
+@utility foto-bn {
+  filter: grayscale(1) contrast(1.08) brightness(0.94);
+  transition: filter 0.35s ease, transform 0.5s ease;
+}
+@utility foto-bn-hover {
+  &:hover .foto-bn,
+  &:focus-within .foto-bn {
+    filter: grayscale(0) contrast(1) brightness(1);
+  }
+}
+
+/* ── Marquesina: banda tipográfica en movimiento ── */
+@utility marquesina {
+  display: flex;
+  width: max-content;
+  animation: marquesina-scroll 38s linear infinite;
+}
+@keyframes marquesina-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquesina {
+    animation: none;
+  }
 }

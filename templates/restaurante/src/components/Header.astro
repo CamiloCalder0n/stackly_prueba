@@ -12,15 +12,21 @@ interface Props {
 const { links, cta = 'Escríbenos', ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.` } = Astro.props;
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/85 backdrop-blur-md">
+<header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/80 backdrop-blur-xl">
   <div class="container-site flex h-16 items-center justify-between">
-    <a href="/" class="font-display text-lg font-bold tracking-tight text-white">
-      {NEGOCIO.nombre}
+    <a href="/" class="group flex items-center gap-2.5">
+      <span class="text-accent-400 transition-transform duration-500 group-hover:rotate-12" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 7.6 4.4 12 6 7.6 7.6 6 12 4.4 7.6 0 6l4.4-1.6z"/></svg>
+      </span>
+      <span class="titular-wonk text-lg font-semibold text-white">{NEGOCIO.nombre}</span>
     </a>
 
     <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
       {links.map((l) => (
-        <a href={l.href} class="text-sm font-medium text-brand-200 transition-colors hover:text-white">
+        <a
+          href={l.href}
+          class="relative text-[0.7rem] font-bold tracking-[0.16em] text-brand-200 uppercase transition-colors hover:text-white after:absolute after:inset-x-0 after:-bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent-400 after:transition-transform after:duration-300 hover:after:scale-x-100"
+        >
           {l.label}
         </a>
       ))}

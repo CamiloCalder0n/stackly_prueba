@@ -1,4 +1,8 @@
 ---
+/**
+ * Sección #cta — cierre full-bleed con fotografía desaturada, viñeteado
+ * y titular monumental. Es el último golpe antes del pie de página.
+ */
 import { waLink, NEGOCIO } from '../scripts/site';
 
 interface Props {
@@ -6,21 +10,47 @@ interface Props {
   descripcion?: string;
   botonTexto?: string;
   mensaje?: string;
+  /** Imagen de fondo (se desatura y oscurece). */
+  imagen?: string;
 }
 const {
   titulo = '¿Listo para empezar?',
   descripcion = 'Escríbenos por WhatsApp y te respondemos en minutos.',
   botonTexto = 'Hablar por WhatsApp',
   mensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
+  imagen = 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1600&q=80',
 } = Astro.props;
 ---
 
-<section class="bg-brand-950 py-20" id="cta">
-  <div class="container-site text-center" data-reveal>
-    <h2 class="mx-auto max-w-2xl text-3xl font-bold text-white md:text-4xl">{titulo}</h2>
-    <p class="mx-auto mt-4 max-w-xl text-brand-300">{descripcion}</p>
-    <a href={waLink(mensaje)} target="_blank" rel="noopener" class="btn btn-whatsapp mt-8">
-      {botonTexto}
-    </a>
+<section class="grano vineta relative overflow-hidden bg-noche py-32 md:py-40" id="cta">
+  <div class="absolute inset-0" data-parallax="0.1">
+    <img
+      src={imagen}
+      alt=""
+      class="h-[112%] w-full object-cover opacity-40 grayscale contrast-125"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-b from-noche/80 via-noche/62 to-noche/95"></div>
+  <!-- Franjas de poste de barbero enmarcando la sección -->
+  <div class="poste-barbero absolute inset-x-0 top-0 h-1 opacity-60" aria-hidden="true"></div>
+  <div class="poste-barbero absolute inset-x-0 bottom-0 h-1 opacity-60" aria-hidden="true"></div>
+
+  <div class="container-site relative z-10 text-center" data-reveal>
+    <span class="micro-label justify-center text-accent-400">Última llamada</span>
+    <h2 class="titulo-monumento mx-auto mt-6 max-w-4xl text-white">{titulo}</h2>
+    <p class="mx-auto mt-7 max-w-xl text-base leading-relaxed text-brand-300 md:text-lg">
+      {descripcion}
+    </p>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a href="#reservar" class="btn btn-navaja">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Reservar mi cita
+      </a>
+      <a href={waLink(mensaje)} target="_blank" rel="noopener" class="btn btn-fantasma">
+        {botonTexto}
+      </a>
+    </div>
   </div>
 </section>

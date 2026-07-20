@@ -9,6 +9,7 @@ import Servicios from '../components/Servicios.astro';
 import Equipo from '../components/Equipo.astro';
 import Galeria from '../components/Galeria.astro';
 import Testimonios from '../components/Testimonios.astro';
+import Marquesina from '../components/Marquesina.astro';
 import ReservaWizard from '../components/ReservaWizard.astro';
 import Contacto from '../components/Contacto.astro';
 import FAQ from '../components/FAQ.astro';
@@ -92,6 +93,9 @@ const faqSchema = {
     ctaHref="#reservar"
     ctaSecundario={{ label: 'Ver servicios y precios', href: '#servicios' }}
   />
+
+  <!-- Franja en movimiento: corta el ritmo entre el hero y la carta -->
+  <Marquesina />
 
   <Servicios />
   <Equipo />

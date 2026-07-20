@@ -5,12 +5,39 @@ interface Props {
   descripcion?: string;
   /** Centra el encabezado (por defecto alineado a la izquierda). */
   centrado?: boolean;
+  /** Añade el separador ornamental ◆ bajo el eyebrow (solo si centrado). */
+  ornamento?: boolean;
+  /** Invierte los colores para fondos oscuros. */
+  claro?: boolean;
 }
-const { eyebrow, titulo, descripcion, centrado = false } = Astro.props;
+const {
+  eyebrow,
+  titulo,
+  descripcion,
+  centrado = false,
+  ornamento = false,
+  claro = false,
+} = Astro.props;
 ---
 
 <div class={`max-w-2xl ${centrado ? 'mx-auto text-center' : ''}`} data-reveal>
-  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-  <h2 class="mt-2 text-3xl font-bold text-brand-950 md:text-4xl">{titulo}</h2>
-  {descripcion && <p class="mt-4 text-base leading-relaxed text-brand-600">{descripcion}</p>}
+  {eyebrow && <span class={`eyebrow ${claro ? 'text-accent-400' : ''}`}>{eyebrow}</span>}
+
+  {ornamento && centrado && (
+    <div class="ornamento mx-auto mt-4 max-w-xs" aria-hidden="true">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 7.6 4.4 12 6 7.6 7.6 6 12 4.4 7.6 0 6l4.4-1.6z"/></svg>
+    </div>
+  )}
+
+  <h2
+    class={`titular-wonk mt-3 text-titulo font-semibold text-balance ${claro ? 'text-white' : 'text-brand-950'}`}
+  >
+    {titulo}
+  </h2>
+
+  {descripcion && (
+    <p class={`mt-5 text-base leading-relaxed text-pretty ${claro ? 'text-brand-200' : 'text-brand-600'}`}>
+      {descripcion}
+    </p>
+  )}
 </div>
