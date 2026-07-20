@@ -21,8 +21,9 @@ public_folder: '/images'
 locale: 'es'
 
 collections:
+  # ── Datos generales, horarios, domicilios y promo ──
   - name: 'configuracion'
-    label: 'Datos del negocio'
+    label: 'Configuración del restaurante'
     files:
       - name: 'negocio'
         label: 'Información general'
@@ -36,7 +37,137 @@ collections:
           - { label: 'Correo', name: 'correo', widget: 'string' }
           - { label: 'Dirección', name: 'direccion', widget: 'string' }
           - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
-          - { label: 'Horario', name: 'horario', widget: 'string' }
+          - { label: 'Horario (texto resumido para el pie de página)', name: 'horario', widget: 'string' }
           - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
           - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
           - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }
+
+      - name: 'horarios'
+        label: 'Horarios por día (badge Abierto/Cerrado)'
+        file: 'src/data/horarios.json'
+        fields:
+          - label: 'Lunes'
+            name: 'lunes'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 21:00)', name: 'cierre', widget: 'string' }
+          - label: 'Martes'
+            name: 'martes'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 21:00)', name: 'cierre', widget: 'string' }
+          - label: 'Miércoles'
+            name: 'miercoles'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 21:00)', name: 'cierre', widget: 'string' }
+          - label: 'Jueves'
+            name: 'jueves'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 21:00)', name: 'cierre', widget: 'string' }
+          - label: 'Viernes'
+            name: 'viernes'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 22:00)', name: 'cierre', widget: 'string' }
+          - label: 'Sábado'
+            name: 'sabado'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 22:00)', name: 'cierre', widget: 'string' }
+          - label: 'Domingo'
+            name: 'domingo'
+            widget: 'object'
+            fields:
+              - { label: '¿Abre este día?', name: 'abierto', widget: 'boolean' }
+              - { label: 'Hora de apertura (formato 24h, ej: 11:30)', name: 'apertura', widget: 'string' }
+              - { label: 'Hora de cierre (formato 24h, ej: 17:00)', name: 'cierre', widget: 'string' }
+
+      - name: 'domicilios'
+        label: 'Zonas de domicilio'
+        file: 'src/data/domicilios.json'
+        fields:
+          - label: 'Zonas'
+            name: 'zonas'
+            widget: 'list'
+            summary: '{{fields.nombre}} — {{fields.costo}}'
+            fields:
+              - { label: 'Barrio / zona', name: 'nombre', widget: 'string' }
+              - { label: 'Costo del domicilio (COP, sin puntos)', name: 'costo', widget: 'number', value_type: 'int', min: 0 }
+              - { label: 'Pedido mínimo (COP, sin puntos)', name: 'pedidoMinimo', widget: 'number', value_type: 'int', min: 0 }
+              - { label: '¿Zona activa?', name: 'activo', widget: 'boolean', default: true }
+
+      - name: 'promo'
+        label: 'Banner promo / plato del día'
+        file: 'src/data/promo.json'
+        fields:
+          - { label: '¿Mostrar el banner?', name: 'activo', widget: 'boolean' }
+          - { label: 'Etiqueta (ej: Plato del día)', name: 'etiqueta', widget: 'string' }
+          - { label: 'Título', name: 'titulo', widget: 'string' }
+          - { label: 'Texto corto', name: 'texto', widget: 'string' }
+          - { label: 'Precio (COP, sin puntos; 0 para ocultarlo)', name: 'precio', widget: 'number', value_type: 'int', min: 0 }
+          - { label: 'Texto del botón', name: 'boton', widget: 'string' }
+          - { label: 'Enlace del botón (ej: /menu#fuertes)', name: 'enlace', widget: 'string' }
+
+  # ── Categorías del menú ──
+  - name: 'categorias'
+    label: 'Categorías del menú'
+    label_singular: 'Categoría'
+    folder: 'src/content/categorias'
+    create: true
+    extension: 'json'
+    format: 'json'
+    identifier_field: 'nombre'
+    summary: '{{fields.nombre}} (orden {{fields.orden}})'
+    fields:
+      - { label: 'Nombre de la categoría', name: 'nombre', widget: 'string' }
+      - { label: 'Orden en el menú (menor = primero)', name: 'orden', widget: 'number', value_type: 'int', min: 1 }
+
+  # ── Platos ──
+  - name: 'platos'
+    label: 'Platos'
+    label_singular: 'Plato'
+    folder: 'src/content/platos'
+    create: true
+    extension: 'json'
+    format: 'json'
+    identifier_field: 'nombre'
+    summary: '{{fields.nombre}} — {{fields.precio}}'
+    sortable_fields: ['nombre', 'precio']
+    fields:
+      - { label: 'Nombre del plato', name: 'nombre', widget: 'string' }
+      - { label: 'Descripción (1-2 líneas apetitosas)', name: 'descripcion', widget: 'text' }
+      - { label: 'Precio (COP, sin puntos. Ej: 38000)', name: 'precio', widget: 'number', value_type: 'int', min: 0 }
+      - { label: 'Foto del plato (o URL de Unsplash)', name: 'foto', widget: 'image', allow_multiple: false }
+      - label: 'Categoría'
+        name: 'categoria'
+        widget: 'relation'
+        collection: 'categorias'
+        search_fields: ['nombre']
+        value_field: '{{slug}}'
+        display_fields: ['nombre']
+      - label: 'Etiquetas'
+        name: 'etiquetas'
+        widget: 'select'
+        multiple: true
+        required: false
+        default: []
+        options:
+          - { label: 'Vegetariano', value: 'vegetariano' }
+          - { label: 'Picante', value: 'picante' }
+          - { label: 'Nuevo', value: 'nuevo' }
+      - { label: '¿Disponible hoy? (si no, se muestra como "Agotado")', name: 'disponible', widget: 'boolean', default: true }
+      - { label: '¿Destacado en la portada?', name: 'destacado', widget: 'boolean', default: false }

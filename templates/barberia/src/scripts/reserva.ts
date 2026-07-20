@@ -212,10 +212,11 @@ if (root && dataEl) {
   function seleccionarServicio(id: string, avanzar = true) {
     const s = servicios.find((x) => x.id === id);
     if (!s) return;
-    if (state.servicio?.id !== id) {
-      // cambió el servicio → la duración cambia → fecha y hora dejan de valer
+    if (state.servicio && state.servicio.duracion !== s.duracion) {
+      // cambió la duración → las franjas ya no valen → se rehace el paso 3
       state.fecha = null;
       state.hora = null;
+      duracionRenderizada = null;
     }
     state.servicio = s;
     marcar(paneles[1], '[data-servicio-opcion]', (el) => el.dataset.servicioOpcion === id);

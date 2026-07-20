@@ -1,0 +1,169 @@
+---
+// Menú digital completo en HTML (indexable, nada de PDF).
+// Sirve también como carta QR en mesa: liviana, por categorías y con
+// botón "Agregar" en cada plato para pedir por WhatsApp.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import EstadoAbierto from '../components/EstadoAbierto.astro';
+import PlatoCard from '../components/PlatoCard.astro';
+import Footer from '../components/Footer.astro';
+import CarritoDrawer from '../components/CarritoDrawer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import { NEGOCIO } from '../scripts/site';
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Reservas', href: '/#reservas' },
+  { label: 'Ubicación', href: '/#ubicacion' },
+];
+
+const categorias = (await getCollection('categorias')).sort(
+  (a, b) => a.data.orden - b.data.orden,
+);
+const platos = await getCollection('platos');
+
+const secciones = categorias.map((cat) => ({
+  id: cat.id,
+  nombre: cat.data.nombre,
+  platos: platos.filter((p) => p.data.categoria.id === cat.id),
+}));
+
+// Datos estructurados: schema.org Menu → MenuSection → MenuItem
+const menuSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Menu',
+  name: `Menú de ${NEGOCIO.nombre}`,
+  inLanguage: 'es-CO',
+  hasMenuSection: secciones.map((s) => ({
+    '@type': 'MenuSection',
+    name: s.nombre,
+    hasMenuItem: s.platos.map((p) => ({
+      '@type': 'MenuItem',
+      name: p.data.nombre,
+      description: p.data.descripcion,
+      image: p.data.foto,
+      offers: {
+        '@type': 'Offer',
+        price: p.data.precio,
+        priceCurrency: 'COP',
+        availability: p.data.disponible
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+      },
+    })),
+  })),
+};
+---
+
+<BaseLayout
+  title="Menú"
+  description={`Menú de ${NEGOCIO.nombre}: entradas, platos fuertes, parrilla, bebidas y postres. Precios actualizados y pedidos a domicilio por WhatsApp en ${NEGOCIO.ciudad}.`}
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(menuSchema)} />
+
+  <Header
+    links={navLinks}
+    cta="Pedir ahora"
+    ctaMensaje={`Hola ${NEGOCIO.nombre} 👋, quiero hacer un pedido.`}
+  />
+
+  <!-- Encabezado del menú -->
+  <section class="border-b border-brand-100 bg-brand-50">
+    <div class="container-site py-10 md:py-14">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="eyebrow">Nuestra carta</span>
+          <h1 class="mt-2 text-3xl font-bold text-brand-950 md:text-5xl">El menú</h1>
+          <p class="mt-3 max-w-xl text-brand-600">
+            Todo lo que sale de nuestra cocina, con precios al día. Agrega tus
+            platos y envía el pedido por WhatsApp — a domicilio o para recoger.
+          </p>
+        </div>
+        <EstadoAbierto variante="claro" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Navegación de categorías (sticky, funciona como tabs por anclas) -->
+  <nav
+    aria-label="Categorías del menú"
+    class="sticky top-16 z-30 border-b border-brand-100 bg-surface/95 backdrop-blur-md"
+  >
+    <div class="container-site flex gap-2 overflow-x-auto py-3" data-chips>
+      {secciones.map((s, i) => (
+        <a
+          href={`#${s.id}`}
+          data-chip={s.id}
+          aria-current={i === 0 ? 'true' : undefined}
+          class="shrink-0 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap text-brand-600 ring-1 ring-brand-200 transition-colors hover:text-brand-950 aria-[current]:bg-brand-950 aria-[current]:text-white aria-[current]:ring-brand-950"
+        >
+          {s.nombre}
+        </a>
+      ))}
+    </div>
+  </nav>
+
+  <!-- Secciones por categoría -->
+  <div class="container-site space-y-16 py-12 pb-28 md:pb-16">
+    {secciones.map((s, i) => (
+      <section id={s.id} class="scroll-mt-36" data-seccion-menu>
+        <div class="flex items-baseline gap-4">
+          <h2 class="font-display text-2xl font-bold text-brand-950 md:text-3xl">{s.nombre}</h2>
+          <span class="text-sm font-semibold text-brand-400">
+            {s.platos.length} {s.platos.length === 1 ? 'plato' : 'platos'}
+          </span>
+        </div>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+          {s.platos.map((p, j) => (
+            <PlatoCard
+              id={p.id}
+              nombre={p.data.nombre}
+              descripcion={p.data.descripcion}
+              precio={p.data.precio}
+              foto={p.data.foto}
+              etiquetas={p.data.etiquetas}
+              disponible={p.data.disponible}
+              prioridad={i === 0 && j < 3}
+            />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <Footer links={navLinks} />
+  <WhatsAppFlotante mensaje={`Hola ${NEGOCIO.nombre} 👋, tengo una pregunta sobre el menú.`} />
+  <CarritoDrawer />
+</BaseLayout>
+
+<script>
+  // Scrollspy: resalta el chip de la categoría visible.
+  const chips = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-chip]').forEach((chip) => {
+    chips.set(chip.dataset.chip || '', chip);
+  });
+
+  function activar(id: string) {
+    chips.forEach((chip, clave) => {
+      if (clave === id) chip.setAttribute('aria-current', 'true');
+      else chip.removeAttribute('aria-current');
+    });
+  }
+
+  const secciones = Array.from(document.querySelectorAll<HTMLElement>('[data-seccion-menu]'));
+  const visibles = new Set<string>();
+  const observer = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((en) => {
+        if (en.isIntersecting) visibles.add(en.target.id);
+        else visibles.delete(en.target.id);
+      });
+      // Activa la primera sección (en orden del documento) que esté visible
+      const primera = secciones.find((s) => visibles.has(s.id));
+      if (primera) activar(primera.id);
+    },
+    { rootMargin: '-140px 0px -40% 0px' },
+  );
+  secciones.forEach((s) => observer.observe(s));
+</script>
