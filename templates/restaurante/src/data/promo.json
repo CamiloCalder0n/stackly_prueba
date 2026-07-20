@@ -1,0 +1,9 @@
+{
+  "activo": true,
+  "etiqueta": "Plato del día",
+  "titulo": "Cabrito al horno con pepitoria",
+  "texto": "Hoy nuestro clásico santandereano incluye sopa del día y limonada de panela.",
+  "precio": 30000,
+  "boton": "Verlo en el menú",
+  "enlace": "/menu#fuertes"
+}

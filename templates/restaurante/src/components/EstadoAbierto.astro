@@ -1,0 +1,47 @@
+---
+/**
+ * Badge "Abierto ahora / Cerrado" calculado client-side con la hora del
+ * visitante y los datos de src/data/horarios.json.
+ *
+ * variante:
+ *   - "oscuro" (default) → para usar sobre fondos oscuros (hero)
+ *   - "claro"            → para usar sobre fondos claros (página de menú)
+ */
+interface Props {
+  variante?: 'oscuro' | 'claro';
+}
+const { variante = 'oscuro' } = Astro.props;
+
+const clases =
+  variante === 'oscuro'
+    ? 'border-white/20 bg-white/10 text-white backdrop-blur-sm'
+    : 'border-brand-200 bg-white text-brand-800';
+---
+
+<span
+  data-estado-local
+  class={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${clases}`}
+>
+  <span data-punto class="h-2 w-2 rounded-full bg-brand-300"></span>
+  <span data-texto>Consultando horario…</span>
+</span>
+
+<script>
+  import { estadoLocal } from '../scripts/horario';
+
+  function actualizarBadges() {
+    const { abierto, mensaje } = estadoLocal();
+    document.querySelectorAll('[data-estado-local]').forEach((el) => {
+      const punto = el.querySelector('[data-punto]');
+      const texto = el.querySelector('[data-texto]');
+      if (texto) texto.textContent = mensaje;
+      punto?.classList.remove('bg-brand-300');
+      punto?.classList.toggle('bg-green-400', abierto);
+      punto?.classList.toggle('bg-red-400', !abierto);
+    });
+  }
+
+  actualizarBadges();
+  // Se refresca solo por si la página queda abierta al cambiar la hora.
+  setInterval(actualizarBadges, 60_000);
+</script>

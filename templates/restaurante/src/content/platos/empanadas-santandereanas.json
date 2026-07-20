@@ -1,0 +1,10 @@
+{
+  "nombre": "Empanadas santandereanas (x5)",
+  "descripcion": "Crujientes, rellenas de arroz, carne desmechada y guiso de la casa. Vienen con ají de piña.",
+  "precio": 12000,
+  "foto": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=1200&q=80",
+  "categoria": "entradas",
+  "etiquetas": [],
+  "disponible": true,
+  "destacado": false
+}

@@ -1,0 +1,10 @@
+{
+  "nombre": "Cazuela de fríjoles con chicharrón",
+  "descripcion": "Fríjoles cargamanto cremosos, chicharrón crocante, aguacate, arroz blanco y arepa.",
+  "precio": 28000,
+  "foto": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80",
+  "categoria": "fuertes",
+  "etiquetas": [],
+  "disponible": true,
+  "destacado": false
+}

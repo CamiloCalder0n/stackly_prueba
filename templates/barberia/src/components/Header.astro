@@ -1,0 +1,83 @@
+---
+import { NEGOCIO } from '../scripts/site';
+
+interface Props {
+  links: { label: string; href: string }[];
+  /** Texto del botón de acción del header. */
+  cta?: string;
+  /** Destino del CTA: en la barbería todo empuja al wizard de reserva. */
+  ctaHref?: string;
+}
+
+const { links, cta = 'Reserva tu cita', ctaHref = '#reservar' } = Astro.props;
+---
+
+<header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/85 backdrop-blur-md">
+  <div class="container-site flex h-16 items-center justify-between">
+    <a href="/" class="font-display text-lg font-bold tracking-tight text-white">
+      {NEGOCIO.nombre}
+    </a>
+
+    <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
+      {links.map((l) => (
+        <a href={l.href} class="text-sm font-medium text-brand-200 transition-colors hover:text-white">
+          {l.label}
+        </a>
+      ))}
+      <a href={ctaHref} class="btn btn-primary !py-2 text-sm">
+        {cta}
+      </a>
+    </nav>
+
+    <button
+      id="menu-toggle"
+      class="flex h-10 w-10 items-center justify-center rounded-md text-white md:hidden"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="menu-movil"
+    >
+      <svg id="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg id="icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <nav id="menu-movil" class="hidden border-t border-white/10 bg-brand-950 md:hidden" aria-label="Navegación móvil">
+    <div class="container-site flex flex-col gap-1 py-4">
+      {links.map((l) => (
+        <a href={l.href} class="rounded-md px-3 py-2.5 text-sm font-medium text-brand-200 hover:bg-white/5 hover:text-white">
+          {l.label}
+        </a>
+      ))}
+      <a href={ctaHref} class="btn btn-primary mt-2">
+        {cta}
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- Separador para que el contenido no quede debajo del header fijo -->
+<div class="h-16" aria-hidden="true"></div>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('menu-movil');
+  const iconOpen = document.getElementById('icon-open');
+  const iconClose = document.getElementById('icon-close');
+
+  toggle?.addEventListener('click', () => {
+    const abierto = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(abierto));
+    iconOpen?.classList.toggle('hidden', abierto);
+    iconClose?.classList.toggle('hidden', !abierto);
+  });
+
+  // Cierra el menú al navegar
+  menu?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      menu.classList.add('hidden');
+      toggle?.setAttribute('aria-expanded', 'false');
+      iconOpen?.classList.remove('hidden');
+      iconClose?.classList.add('hidden');
+    }),
+  );
+</script>

@@ -1,0 +1,42 @@
+# ═══════════════════════════════════════════════════════════════
+# DECAP CMS — Panel de contenido del cliente (/admin)
+#
+# EDICIÓN LOCAL (desarrollo):
+#   1. En una terminal:  npx decap-server
+#   2. En otra:          pnpm dev
+#   3. Abre http://localhost:4321/admin
+#
+# PRODUCCIÓN (Netlify): activa Identity + Git Gateway en el panel
+# de Netlify y elimina la línea local_backend.
+# ═══════════════════════════════════════════════════════════════
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: 'public/images'
+public_folder: '/images'
+
+locale: 'es'
+
+collections:
+  - name: 'configuracion'
+    label: 'Datos del negocio'
+    files:
+      - name: 'negocio'
+        label: 'Información general'
+        file: 'src/data/negocio.json'
+        fields:
+          - { label: 'Nombre del negocio', name: 'nombre', widget: 'string' }
+          - { label: 'Eslogan', name: 'eslogan', widget: 'string' }
+          - { label: 'Descripción (SEO)', name: 'descripcion', widget: 'text' }
+          - { label: 'WhatsApp (con indicativo, sin +. Ej: 573001112233)', name: 'whatsapp', widget: 'string' }
+          - { label: 'Teléfono visible', name: 'telefono', widget: 'string' }
+          - { label: 'Correo', name: 'correo', widget: 'string' }
+          - { label: 'Dirección', name: 'direccion', widget: 'string' }
+          - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
+          - { label: 'Horario', name: 'horario', widget: 'string' }
+          - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
+          - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
+          - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }

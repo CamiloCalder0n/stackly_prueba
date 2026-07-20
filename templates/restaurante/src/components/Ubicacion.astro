@@ -1,0 +1,81 @@
+---
+/**
+ * Ubicación + horarios + mapa. Los horarios salen de src/data/horarios.json
+ * (editables desde /admin) y la dirección de negocio.json.
+ */
+import SectionHeading from './SectionHeading.astro';
+import EstadoAbierto from './EstadoAbierto.astro';
+import { NEGOCIO } from '../scripts/site';
+import { HORARIOS, formatoHora, type DiaHorario } from '../scripts/horario';
+
+const ORDEN: { clave: keyof typeof HORARIOS; nombre: string }[] = [
+  { clave: 'lunes', nombre: 'Lunes' },
+  { clave: 'martes', nombre: 'Martes' },
+  { clave: 'miercoles', nombre: 'Miércoles' },
+  { clave: 'jueves', nombre: 'Jueves' },
+  { clave: 'viernes', nombre: 'Viernes' },
+  { clave: 'sabado', nombre: 'Sábado' },
+  { clave: 'domingo', nombre: 'Domingo' },
+];
+
+const rango = (h: DiaHorario) => `${formatoHora(h.apertura)} – ${formatoHora(h.cierre)}`;
+const mapaSrc = `https://maps.google.com/maps?q=${encodeURIComponent(`${NEGOCIO.direccion}, ${NEGOCIO.ciudad}`)}&z=16&output=embed`;
+---
+
+<section class="bg-brand-50 py-20" id="ubicacion">
+  <div class="container-site">
+    <SectionHeading
+      eyebrow="Visítanos"
+      titulo="Dónde estamos y cuándo abrimos"
+      descripcion="Estamos en el corazón de Cabecera. Ven por tu mesa o pide a domicilio."
+      centrado
+    />
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <div class="rounded-card overflow-hidden bg-white p-2 shadow-sm ring-1 ring-brand-100" data-reveal>
+        <iframe
+          src={mapaSrc}
+          title={`Mapa: cómo llegar a ${NEGOCIO.nombre}`}
+          class="h-full min-h-80 w-full rounded-xl border-0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="rounded-card space-y-6 bg-white p-8 shadow-sm ring-1 ring-brand-100" data-reveal>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="font-display text-xl font-bold text-brand-950">Horario de atención</h3>
+          <EstadoAbierto variante="claro" />
+        </div>
+
+        <table class="w-full text-sm">
+          <tbody>
+            {ORDEN.map(({ clave, nombre }) => {
+              const h = HORARIOS[clave];
+              return (
+                <tr class="border-b border-brand-100 last:border-0">
+                  <th scope="row" class="py-2.5 text-left font-semibold text-brand-800">{nombre}</th>
+                  <td class={`py-2.5 text-right ${h.abierto ? 'text-brand-600' : 'font-semibold text-red-600'}`}>
+                    {h.abierto ? rango(h) : 'Cerrado'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div class="space-y-1 border-t border-brand-100 pt-5 text-sm">
+          <p class="font-semibold text-brand-950">{NEGOCIO.direccion}, {NEGOCIO.ciudad}</p>
+          <p class="text-brand-600">
+            <a href={`tel:${NEGOCIO.telefono.replace(/\s/g, '')}`} class="hover:text-accent-600">{NEGOCIO.telefono}</a>
+            · <a href={`mailto:${NEGOCIO.correo}`} class="hover:text-accent-600">{NEGOCIO.correo}</a>
+          </p>
+        </div>
+        <a href={NEGOCIO.mapsUrl} target="_blank" rel="noopener" class="btn btn-outline w-full">
+          Cómo llegar (Google Maps)
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

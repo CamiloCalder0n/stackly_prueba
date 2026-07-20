@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════
+# DECAP CMS — Panel de contenido del cliente (/admin)
+#
+# EDICIÓN LOCAL (desarrollo):
+#   1. En una terminal:  npx decap-server
+#   2. En otra:          pnpm dev
+#   3. Abre http://localhost:4321/admin
+#
+# PRODUCCIÓN (Netlify): activa Identity + Git Gateway en el panel
+# de Netlify y elimina la línea local_backend.
+# ═══════════════════════════════════════════════════════════════
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: 'public/images'
+public_folder: '/images'
+
+locale: 'es'
+
+collections:
+  - name: 'configuracion'
+    label: 'Datos del negocio'
+    files:
+      - name: 'negocio'
+        label: 'Información general'
+        file: 'src/data/negocio.json'
+        fields:
+          - { label: 'Nombre del negocio', name: 'nombre', widget: 'string' }
+          - { label: 'Eslogan', name: 'eslogan', widget: 'string' }
+          - { label: 'Descripción (SEO)', name: 'descripcion', widget: 'text' }
+          - { label: 'WhatsApp (con indicativo, sin +. Ej: 573001112233)', name: 'whatsapp', widget: 'string' }
+          - { label: 'Teléfono visible', name: 'telefono', widget: 'string' }
+          - { label: 'Correo', name: 'correo', widget: 'string' }
+          - { label: 'Dirección', name: 'direccion', widget: 'string' }
+          - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
+          - { label: 'Horario', name: 'horario', widget: 'string' }
+          - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
+          - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
+          - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }
+
+  # ── Piezas del catálogo ──────────────────────────────────────
+  # Cada entrada es una joya en /catalogo y /piezas/<slug>.
+  # Los campos coinciden 1:1 con el schema de src/content.config.ts.
+  - name: 'piezas'
+    label: 'Piezas'
+    label_singular: 'Pieza'
+    folder: 'src/content/piezas'
+    create: true
+    slug: '{{fields.slug}}'
+    identifier_field: 'nombre'
+    summary: '{{nombre}} ({{referencia}})'
+    fields:
+      - { label: 'Nombre', name: 'nombre', widget: 'string' }
+      - { label: 'Referencia (ej: AUR-AN-004)', name: 'referencia', widget: 'string' }
+      - { label: 'Slug de la URL (minúsculas y guiones, ej: anillo-luna)', name: 'slug', widget: 'string', pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Solo minúsculas, números y guiones'] }
+      - label: 'Fotos (1 a 6, la primera es la portada)'
+        name: 'fotos'
+        widget: 'list'
+        min: 1
+        max: 6
+        field: { label: 'Foto', name: 'foto', widget: 'image' }
+      - { label: 'Categoría', name: 'categoria', widget: 'select', options: ['anillos', 'collares', 'aretes', 'pulseras'] }
+      - { label: 'Material', name: 'material', widget: 'select', options: ['oro', 'plata', 'oro rosa'] }
+      - { label: 'Piedras', name: 'piedras', widget: 'string', required: false }
+      - { label: 'Peso (ej: 3,4 g)', name: 'peso', widget: 'string', required: false }
+      - { label: 'Tallas (ej: 5 a 9)', name: 'tallas', widget: 'string', required: false }
+      - { label: 'Precio en COP (sin puntos, ej: 1250000)', name: 'precio', widget: 'number', value_type: 'int', required: false }
+      - { label: 'Ocultar precio (muestra "Consultar precio")', name: 'ocultarPrecio', widget: 'boolean', default: false, required: false }
+      - { label: 'Descripción', name: 'descripcion', widget: 'text' }
+      - { label: 'Disponibilidad', name: 'disponibilidad', widget: 'select', options: ['disponible', 'por encargo'] }
+      - { label: 'Destacada (aparece en la portada)', name: 'destacada', widget: 'boolean', default: false, required: false }
+
+  # ── Colecciones / líneas de la marca ─────────────────────────
+  - name: 'colecciones'
+    label: 'Colecciones'
+    label_singular: 'Colección'
+    folder: 'src/content/colecciones'
+    create: true
+    slug: '{{slug}}'
+    identifier_field: 'nombre'
+    fields:
+      - { label: 'Nombre', name: 'nombre', widget: 'string' }
+      - { label: 'Descripción corta', name: 'descripcion', widget: 'text' }
+      - { label: 'Imagen de portada', name: 'portada', widget: 'image' }
+      - { label: 'Orden en la portada (menor = primero)', name: 'orden', widget: 'number', value_type: 'int', default: 0, required: false }

@@ -1,0 +1,58 @@
+---
+/**
+ * Sección #galeria — grid tipo Instagram con lazy loading.
+ * Fotos demo de Unsplash: reemplázalas por trabajos reales del cliente
+ * (es la sección que más vende en una barbería).
+ */
+import SectionHeading from './SectionHeading.astro';
+import { NEGOCIO } from '../scripts/site';
+
+const fotos = [
+  { src: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80', alt: 'Interior de la barbería con sillas clásicas' },
+  { src: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=80', alt: 'Afeitado clásico con navaja' },
+  { src: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=1200&q=80', alt: 'Fade de precisión con máquina' },
+  { src: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1200&q=80', alt: 'Herramientas del oficio: tijeras y navajas' },
+  { src: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=80', alt: 'Corte en proceso, detalle de contorno' },
+  { src: 'https://images.unsplash.com/photo-1512690459411-b9245aed614b?w=1200&q=80', alt: 'Barbero perfilando la barba de un cliente' },
+  { src: 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1200&q=80', alt: 'Cliente en la silla durante su ritual' },
+  { src: 'https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=1200&q=80', alt: 'Resultado final: corte y barba alineados' },
+];
+---
+
+<section class="py-20" id="galeria">
+  <div class="container-site">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <SectionHeading
+        eyebrow="Galería"
+        titulo="Cortes que hablan solos"
+        descripcion="Trabajo real de la silla. Síguenos en Instagram para ver lo último."
+      />
+      {NEGOCIO.instagram && (
+        <a
+          href={NEGOCIO.instagram}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-outline !py-2 text-sm"
+          data-reveal
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          @barberiaelpatron
+        </a>
+      )}
+    </div>
+
+    <div class="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4" data-reveal-group>
+      {fotos.map((foto) => (
+        <figure class="group aspect-square overflow-hidden rounded-sm">
+          <img
+            src={foto.src}
+            alt={foto.alt}
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+{
+  "nombre": "Patacones con hogao",
+  "descripcion": "Patacones dorados con hogao casero, queso costeño rallado y guacamole fresco.",
+  "precio": 14000,
+  "foto": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80",
+  "categoria": "entradas",
+  "etiquetas": ["vegetariano"],
+  "disponible": true,
+  "destacado": false
+}

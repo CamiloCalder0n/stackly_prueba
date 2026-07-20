@@ -1,0 +1,235 @@
+---
+// Catálogo completo con filtros client-side (categoría, material y precio).
+// El filtrado es TS vanilla sobre data-attributes de las cards — sin frameworks.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import PiezaCard from '../components/PiezaCard.astro';
+import CTA from '../components/CTA.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import { NEGOCIO } from '../scripts/site';
+
+const piezas = (await getCollection('piezas')).sort((a, b) =>
+  a.data.nombre.localeCompare(b.data.nombre, 'es'),
+);
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Colecciones', href: '/#colecciones' },
+  { label: 'Nosotros', href: '/#historia' },
+  { label: 'FAQ', href: '/#faq' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+
+const categorias = [
+  { valor: 'todas', label: 'Todas' },
+  { valor: 'anillos', label: 'Anillos' },
+  { valor: 'collares', label: 'Collares' },
+  { valor: 'aretes', label: 'Aretes' },
+  { valor: 'pulseras', label: 'Pulseras' },
+];
+
+const materiales = [
+  { valor: 'todos', label: 'Todos' },
+  { valor: 'oro', label: 'Oro' },
+  { valor: 'plata', label: 'Plata' },
+  { valor: 'oro rosa', label: 'Oro rosa' },
+];
+
+const precios = [
+  { valor: 'todos', label: 'Todos' },
+  { valor: '0-800000', label: 'Menos de $800.000' },
+  { valor: '800000-2000000', label: '$800.000 a $2.000.000' },
+  { valor: '2000000-', label: 'Más de $2.000.000' },
+];
+---
+
+<BaseLayout
+  title="Catálogo"
+  description={`Catálogo de ${NEGOCIO.nombre}: anillos, collares, aretes y pulseras en oro, plata y oro rosa, con precios visibles. Filtra y consulta por WhatsApp.`}
+>
+  <Header links={navLinks} cta="Consultar" />
+
+  <!-- ── Encabezado ── -->
+  <section class="bg-brand-950 py-16">
+    <div class="container-site" data-hero-title>
+      <span class="eyebrow !text-accent-300">Catálogo</span>
+      <h1 class="mt-3 font-display text-4xl font-bold text-white md:text-5xl">Todas nuestras piezas</h1>
+      <p class="mt-4 max-w-2xl text-brand-200">
+        Filtra por tipo de pieza, material o rango de precio. Cada ficha tiene fotos, especificaciones
+        y un botón para consultar directo por WhatsApp con la referencia lista.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Filtros ── -->
+  <section class="border-b border-brand-100 bg-white py-6" id="filtros">
+    <div class="container-site flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-2" data-filtro="categoria" role="group" aria-label="Filtrar por categoría">
+        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Pieza</span>
+        {categorias.map((c, i) => (
+          <button type="button" class="filtro-btn" data-valor={c.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {c.label}
+          </button>
+        ))}
+      </div>
+      <div class="flex flex-wrap items-center gap-2" data-filtro="material" role="group" aria-label="Filtrar por material">
+        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Material</span>
+        {materiales.map((m, i) => (
+          <button type="button" class="filtro-btn" data-valor={m.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {m.label}
+          </button>
+        ))}
+      </div>
+      <div class="flex flex-wrap items-center gap-2" data-filtro="precio" role="group" aria-label="Filtrar por precio">
+        <span class="mr-1 w-20 shrink-0 text-[0.7rem] font-bold tracking-[0.14em] text-brand-400 uppercase">Precio</span>
+        {precios.map((p, i) => (
+          <button type="button" class="filtro-btn" data-valor={p.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Grid de piezas ── -->
+  <section class="bg-brand-50 py-14">
+    <div class="container-site">
+      <p class="mb-6 text-sm text-brand-500" id="contador-resultados" aria-live="polite">
+        Mostrando {piezas.length} piezas
+      </p>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="grid-piezas" data-reveal-group>
+        {piezas.map((pieza) => <PiezaCard pieza={pieza} />)}
+      </div>
+
+      <!-- Estado vacío -->
+      <div id="sin-resultados" class="rounded-card hidden bg-white p-12 text-center ring-1 ring-brand-100">
+        <p class="font-display text-2xl font-semibold text-brand-950">No encontramos piezas con esos filtros</p>
+        <p class="mx-auto mt-2 max-w-md text-sm text-brand-500">
+          Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras piezas se hacen por encargo.
+        </p>
+        <button type="button" id="limpiar-filtros" class="btn btn-outline mt-6">Limpiar filtros</button>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    titulo="¿No encuentras lo que buscas?"
+    descripcion="Muchas piezas se fabrican por encargo. Cuéntanos tu idea y te cotizamos sin compromiso."
+    botonTexto="Pedir una pieza a la medida"
+    mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre}. Quiero cotizar una pieza a la medida.`}
+  />
+
+  <Footer links={navLinks} />
+  <WhatsAppFlotante mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`} />
+</BaseLayout>
+
+<style>
+  .filtro-btn {
+    border: 1px solid var(--color-brand-200);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-brand-600);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .filtro-btn:hover {
+    border-color: var(--color-accent-500);
+    color: var(--color-accent-600);
+  }
+  .filtro-btn[aria-pressed='true'] {
+    background: var(--color-brand-950);
+    border-color: var(--color-brand-950);
+    color: #fff;
+  }
+</style>
+
+<script>
+  // ── Filtros del catálogo (vanilla TS sobre data-attributes) ──
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-pieza]'));
+  const sinResultados = document.getElementById('sin-resultados');
+  const contador = document.getElementById('contador-resultados');
+  const grupos = Array.from(document.querySelectorAll<HTMLElement>('[data-filtro]'));
+
+  const estado: Record<string, string> = {
+    categoria: 'todas',
+    material: 'todos',
+    precio: 'todos',
+  };
+
+  function enRango(precio: number, rango: string): boolean {
+    const [min, max] = rango.split('-');
+    return precio >= Number(min || 0) && (max === '' || precio < Number(max));
+  }
+
+  function aplicarFiltros(): void {
+    let visibles = 0;
+    for (const card of cards) {
+      const okCategoria = estado.categoria === 'todas' || card.dataset.categoria === estado.categoria;
+      const okMaterial = estado.material === 'todos' || card.dataset.material === estado.material;
+      let okPrecio = true;
+      if (estado.precio !== 'todos') {
+        // Las piezas sin precio publicado ("Consultar precio") solo aparecen con el filtro "Todos".
+        const precio = card.dataset.precio ? Number(card.dataset.precio) : NaN;
+        okPrecio = !Number.isNaN(precio) && enRango(precio, estado.precio);
+      }
+      const visible = okCategoria && okMaterial && okPrecio;
+      card.classList.toggle('hidden', !visible);
+      if (visible) visibles++;
+    }
+    sinResultados?.classList.toggle('hidden', visibles > 0);
+    if (contador) {
+      contador.textContent =
+        visibles === 1 ? 'Mostrando 1 pieza' : `Mostrando ${visibles} piezas`;
+    }
+  }
+
+  function seleccionar(grupo: HTMLElement, valor: string): void {
+    const nombre = grupo.dataset.filtro!;
+    const botones = grupo.querySelectorAll<HTMLButtonElement>('.filtro-btn');
+    let encontrado = false;
+    botones.forEach((b) => {
+      const activo = b.dataset.valor === valor;
+      b.setAttribute('aria-pressed', String(activo));
+      if (activo) encontrado = true;
+    });
+    if (!encontrado) return; // valor inválido: no cambia el estado
+    estado[nombre] = valor;
+  }
+
+  grupos.forEach((grupo) => {
+    grupo.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.filtro-btn');
+      if (!btn) return;
+      seleccionar(grupo, btn.dataset.valor!);
+      aplicarFiltros();
+    });
+  });
+
+  document.getElementById('limpiar-filtros')?.addEventListener('click', () => {
+    grupos.forEach((grupo) => {
+      const primero = grupo.querySelector<HTMLButtonElement>('.filtro-btn');
+      if (primero) seleccionar(grupo, primero.dataset.valor!);
+    });
+    aplicarFiltros();
+  });
+
+  // Preselección vía URL: /catalogo?categoria=anillos&material=oro
+  const params = new URLSearchParams(window.location.search);
+  let preseleccion = false;
+  for (const nombre of ['categoria', 'material', 'precio']) {
+    const valor = params.get(nombre);
+    if (!valor) continue;
+    const grupo = grupos.find((g) => g.dataset.filtro === nombre);
+    if (grupo) {
+      seleccionar(grupo, valor);
+      preseleccion = true;
+    }
+  }
+  if (preseleccion) aplicarFiltros();
+</script>

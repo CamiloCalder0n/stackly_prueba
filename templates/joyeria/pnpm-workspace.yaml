@@ -1,0 +1,4 @@
+# Aprobación de scripts de build de dependencias confiables de Astro.
+allowBuilds:
+  esbuild: true
+  sharp: true

@@ -1,0 +1,10 @@
+{
+  "nombre": "Pechuga a la brasa con chimichurri",
+  "descripcion": "Pechuga marinada 24 horas, asada a la brasa, con ensalada de la huerta y papas rústicas.",
+  "precio": 28000,
+  "foto": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=1200&q=80",
+  "categoria": "parrilla",
+  "etiquetas": [],
+  "disponible": true,
+  "destacado": false
+}

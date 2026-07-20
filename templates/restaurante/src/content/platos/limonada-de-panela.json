@@ -1,0 +1,10 @@
+{
+  "nombre": "Limonada de panela y hierbabuena",
+  "descripcion": "Refrescante, con panela de trapiche y hierbabuena fresca. Jarra disponible para la mesa.",
+  "precio": 8000,
+  "foto": "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=1200&q=80",
+  "categoria": "bebidas",
+  "etiquetas": ["vegetariano"],
+  "disponible": true,
+  "destacado": false
+}

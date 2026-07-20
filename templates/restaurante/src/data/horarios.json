@@ -1,0 +1,9 @@
+{
+  "lunes": { "abierto": false, "apertura": "11:30", "cierre": "21:00" },
+  "martes": { "abierto": true, "apertura": "11:30", "cierre": "21:00" },
+  "miercoles": { "abierto": true, "apertura": "11:30", "cierre": "21:00" },
+  "jueves": { "abierto": true, "apertura": "11:30", "cierre": "21:00" },
+  "viernes": { "abierto": true, "apertura": "11:30", "cierre": "22:00" },
+  "sabado": { "abierto": true, "apertura": "11:30", "cierre": "22:00" },
+  "domingo": { "abierto": true, "apertura": "11:30", "cierre": "17:00" }
+}

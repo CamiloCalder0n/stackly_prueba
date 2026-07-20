@@ -1,0 +1,269 @@
+---
+// Portada del restaurante: hero con estado abierto/cerrado, plato del día,
+// destacados del menú, historia, galería, testimonios, reservas y ubicación.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import EstadoAbierto from '../components/EstadoAbierto.astro';
+import PlatoCard from '../components/PlatoCard.astro';
+import Reservas from '../components/Reservas.astro';
+import Ubicacion from '../components/Ubicacion.astro';
+import Testimonios from '../components/Testimonios.astro';
+import FAQ from '../components/FAQ.astro';
+import CTA from '../components/CTA.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import CarritoDrawer from '../components/CarritoDrawer.astro';
+import { NEGOCIO, precioCOP } from '../scripts/site';
+import promo from '../data/promo.json';
+
+const navLinks = [
+  { label: 'Menú', href: '/menu' },
+  { label: 'Nosotros', href: '#nosotros' },
+  { label: 'Reservas', href: '#reservas' },
+  { label: 'Ubicación', href: '#ubicacion' },
+  { label: 'FAQ', href: '#faq' },
+];
+
+const destacados = (await getCollection('platos'))
+  .filter((p) => p.data.destacado)
+  .slice(0, 3);
+
+const galeria = [
+  { src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', alt: 'Plato servido en La Terraza' },
+  { src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', alt: 'Salón principal del restaurante' },
+  { src: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80', alt: 'Parrilla al carbón' },
+  { src: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80', alt: 'Ambiente de la terraza en la noche' },
+  { src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80', alt: 'Mesa compartida con varios platos' },
+  { src: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=80', alt: 'Cena entre amigos en el salón' },
+];
+
+const faqItems = [
+  {
+    pregunta: '¿Hacen domicilios? ¿A qué zonas?',
+    respuesta: 'Sí. Llevamos tu pedido a Cabecera, Centro, Sotomayor y Ciudadela Real de Minas. Pides directo por WhatsApp desde el menú — sin apps ni comisiones — y el costo del domicilio depende de la zona.',
+  },
+  {
+    pregunta: '¿Cómo reservo una mesa?',
+    respuesta: 'En la sección de reservas eliges personas, fecha y hora, y la solicitud se envía por WhatsApp. Te confirmamos disponibilidad en minutos. Para grupos de más de 8, escríbenos y armamos tu espacio.',
+  },
+  {
+    pregunta: '¿Tienen opciones vegetarianas?',
+    respuesta: 'Sí. En el menú marcamos cada plato vegetariano con su etiqueta 🌱. También podemos ajustar varios platos: déjanos la nota al hacer tu pedido.',
+  },
+  {
+    pregunta: '¿Cuáles son los métodos de pago?',
+    respuesta: 'Recibimos efectivo, tarjetas débito/crédito, Nequi y transferencias. Para domicilios, coordinas el pago por el mismo chat de WhatsApp.',
+  },
+  {
+    pregunta: '¿Tienen parqueadero?',
+    respuesta: 'Contamos con convenio de parqueadero a media cuadra del restaurante (Cra 33 con 45). Presenta tu factura y obtienes la primera hora gratis.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((f) => ({
+    '@type': 'Question',
+    name: f.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+  })),
+};
+---
+
+<BaseLayout image="https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <Header
+    links={navLinks}
+    cta="Pedir ahora"
+    ctaMensaje={`Hola ${NEGOCIO.nombre} 👋, quiero hacer un pedido.`}
+  />
+
+  <!-- ── HERO: plato estrella + estado abierto/cerrado + CTAs ── -->
+  <section class="relative flex min-h-[86vh] items-center overflow-hidden bg-brand-950">
+    <div class="absolute inset-0" data-parallax="0.15">
+      <img
+        src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80"
+        alt="Cabrito al horno, el plato estrella de La Terraza"
+        class="h-[115%] w-full object-cover opacity-45"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-brand-950/30"></div>
+
+    <div class="container-site relative py-24">
+      <div class="max-w-2xl" data-hero-title>
+        <EstadoAbierto />
+        <span class="eyebrow mt-6 block text-accent-400">Cocina santandereana · {NEGOCIO.ciudad}</span>
+        <h1 class="mt-3 text-4xl leading-tight font-bold text-white md:text-6xl">
+          El sabor de Santander, servido en la terraza
+        </h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-brand-200">
+          Cabrito al horno, carne oreada y parrilla al carbón con recetas de familia.
+          Pide a domicilio directo por WhatsApp — sin apps ni comisiones.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="/menu" class="btn btn-primary">Ver menú</a>
+          <a href="/menu" class="btn border-1.5 border-white/30 text-white hover:border-white hover:bg-white/10">
+            Pedir ahora
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BANNER PROMO / PLATO DEL DÍA (editable en /admin) ── -->
+  {promo.activo && (
+    <aside class="bg-accent-500">
+      <div class="container-site flex flex-col items-start justify-between gap-4 py-6 sm:flex-row sm:items-center">
+        <div class="flex items-start gap-4">
+          <span class="mt-0.5 shrink-0 rounded-full bg-brand-950 px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
+            {promo.etiqueta}
+          </span>
+          <div>
+            <p class="font-display text-lg font-bold text-brand-950">
+              {promo.titulo}
+              {promo.precio > 0 && <span class="ml-2 text-brand-900/80">· {precioCOP(promo.precio)}</span>}
+            </p>
+            <p class="mt-0.5 text-sm text-brand-950/80">{promo.texto}</p>
+          </div>
+        </div>
+        <a href={promo.enlace} class="btn shrink-0 bg-brand-950 !py-2.5 text-sm text-white hover:bg-brand-900">
+          {promo.boton}
+        </a>
+      </div>
+    </aside>
+  )}
+
+  <!-- ── PLATOS DESTACADOS ── -->
+  <section class="py-20" id="destacados">
+    <div class="container-site">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading
+          eyebrow="Del menú"
+          titulo="Los favoritos de la casa"
+          descripcion="Los platos que nuestros clientes piden una y otra vez."
+        />
+        <a href="/menu" class="btn btn-outline shrink-0" data-reveal>Ver el menú completo →</a>
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
+        {destacados.map((p) => (
+          <PlatoCard
+            id={p.id}
+            nombre={p.data.nombre}
+            descripcion={p.data.descripcion}
+            precio={p.data.precio}
+            foto={p.data.foto}
+            etiquetas={p.data.etiquetas}
+            disponible={p.data.disponible}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SOBRE NOSOTROS ── -->
+  <section class="bg-brand-50 py-20" id="nosotros">
+    <div class="container-site grid items-center gap-12 lg:grid-cols-2">
+      <div class="rounded-card overflow-hidden shadow-lg" data-reveal>
+        <img
+          src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&q=80"
+          alt="Nuestra cocina en plena acción"
+          class="aspect-[4/3] w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div data-reveal>
+        <span class="eyebrow">Nuestra historia</span>
+        <h2 class="mt-2 text-3xl font-bold text-brand-950 md:text-4xl">
+          Recetas de familia, fuego lento y una terraza con alma
+        </h2>
+        <p class="mt-4 leading-relaxed text-brand-600">
+          Empezamos en 2014 con la receta de cabrito de la abuela Cecilia y una
+          terraza prestada en Cabecera. Hoy seguimos cocinando igual: pepitoria
+          hecha en casa, carne oreada al sol y maíz molido en piedra, con
+          ingredientes de las plazas de mercado santandereanas.
+        </p>
+        <div class="mt-8 grid grid-cols-3 gap-6 text-center sm:text-left">
+          <div>
+            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="12">0</span></p>
+            <p class="mt-1 text-sm text-brand-500">Años de tradición</p>
+          </div>
+          <div>
+            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="15">0</span></p>
+            <p class="mt-1 text-sm text-brand-500">Recetas de familia</p>
+          </div>
+          <div>
+            <p class="font-display text-4xl font-bold text-accent-600"><span data-counter="200">0</span>+</p>
+            <p class="mt-1 text-sm text-brand-500">Pedidos por semana</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GALERÍA ── -->
+  <section class="py-20" id="galeria">
+    <div class="container-site">
+      <SectionHeading
+        eyebrow="Galería"
+        titulo="Platos y ambiente"
+        descripcion="Un vistazo a lo que te espera: la cocina, la parrilla y la terraza."
+        centrado
+      />
+      <div class="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3" data-reveal-group>
+        {galeria.map((foto) => (
+          <div class="rounded-card group overflow-hidden">
+            <img
+              src={foto.src}
+              alt={foto.alt}
+              class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Testimonios
+    items={[
+      {
+        nombre: 'Mariana Rueda',
+        texto: 'El cabrito es igualito al de mi abuela, y pedir por WhatsApp fue facilísimo: en 35 minutos estaba almorzando en la casa.',
+        detalle: 'Pide a domicilio en Cabecera',
+      },
+      {
+        nombre: 'Andrés Serrano',
+        texto: 'Reservé la terraza para el cumpleaños de mi mamá. Nos armaron la mesa para 10 y la carne oreada dejó a todos hablando.',
+        detalle: 'Celebración familiar',
+      },
+      {
+        nombre: 'Laura Jaimes',
+        texto: 'Escaneas el QR en la mesa, ves fotos y precios de todo y pides sin esperar al mesero. Ojalá todos los restaurantes fueran así.',
+        detalle: 'Cliente frecuente',
+      },
+    ]}
+  />
+
+  <Reservas />
+
+  <Ubicacion />
+
+  <FAQ items={faqItems} />
+
+  <CTA
+    titulo="¿Se te antojó? Tu pedido llega caliente"
+    descripcion="Pide directo por WhatsApp: sin apps, sin comisiones y con el sabor de siempre."
+    botonTexto="Pedir por WhatsApp"
+    mensaje={`Hola ${NEGOCIO.nombre} 👋, quiero hacer un pedido.`}
+  />
+
+  <Footer links={navLinks.map((l) => (l.href.startsWith('#') ? { ...l, href: `/${l.href}` } : l))} />
+  <WhatsAppFlotante mensaje={`Hola ${NEGOCIO.nombre} 👋, tengo una pregunta.`} />
+  <CarritoDrawer />
+</BaseLayout>

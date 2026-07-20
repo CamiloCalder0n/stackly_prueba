@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import { NEGOCIO } from '../scripts/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** URL absoluta de imagen para compartir en redes (og:image). */
+  image?: string;
+}
+
+const {
+  title = NEGOCIO.nombre,
+  description = NEGOCIO.descripcion,
+  image,
+} = Astro.props;
+
+const fullTitle = title === NEGOCIO.nombre ? `${NEGOCIO.nombre} — ${NEGOCIO.eslogan}` : `${title} | ${NEGOCIO.nombre}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / redes sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_CO" />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Tipografías (cámbialas junto con los tokens en global.css) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Datos estructurados: negocio local -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: NEGOCIO.nombre,
+        description: NEGOCIO.descripcion,
+        telephone: NEGOCIO.telefono,
+        email: NEGOCIO.correo,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: NEGOCIO.direccion,
+          addressLocality: NEGOCIO.ciudad,
+          addressCountry: 'CO',
+        },
+      })}
+    />
+  </head>
+  <body>
+    <slot />
+    <script src="../scripts/animations.ts"></script>
+  </body>
+</html>

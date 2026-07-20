@@ -1,0 +1,9 @@
+{
+  "zonas": [
+    { "nombre": "Cabecera", "costo": 4000, "pedidoMinimo": 25000, "activo": true },
+    { "nombre": "Centro", "costo": 6000, "pedidoMinimo": 30000, "activo": true },
+    { "nombre": "Sotomayor / Mejoras Públicas", "costo": 5000, "pedidoMinimo": 25000, "activo": true },
+    { "nombre": "Ciudadela Real de Minas", "costo": 8000, "pedidoMinimo": 40000, "activo": true },
+    { "nombre": "Floridablanca", "costo": 10000, "pedidoMinimo": 50000, "activo": false }
+  ]
+}

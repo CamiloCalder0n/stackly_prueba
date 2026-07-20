@@ -1,0 +1,117 @@
+---
+// Barbería El Patrón — one-page de reservas.
+// Posicionamiento: TODO empuja al wizard (#reservar) con servicio + barbero
+// + hora definidos. Precios siempre visibles.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Servicios from '../components/Servicios.astro';
+import Equipo from '../components/Equipo.astro';
+import Galeria from '../components/Galeria.astro';
+import Testimonios from '../components/Testimonios.astro';
+import ReservaWizard from '../components/ReservaWizard.astro';
+import Contacto from '../components/Contacto.astro';
+import FAQ from '../components/FAQ.astro';
+import CTA from '../components/CTA.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import StickyReserva from '../components/StickyReserva.astro';
+
+const navLinks = [
+  { label: 'Servicios', href: '#servicios' },
+  { label: 'Equipo', href: '#equipo' },
+  { label: 'Galería', href: '#galeria' },
+  { label: 'Reservar', href: '#reservar' },
+  { label: 'Contacto', href: '#contacto' },
+];
+
+const testimonios = [
+  {
+    nombre: 'Daniel Cáceres',
+    texto: 'Reservé por WhatsApp en un minuto: llegué, mi barbero ya sabía qué quería y salí en 45 minutos exactos. Cero filas.',
+    detalle: 'Cliente desde 2023',
+  },
+  {
+    nombre: 'Óscar Villamizar',
+    texto: 'El Ritual El Patrón es otra cosa: toalla caliente, navaja y masaje. Vale cada peso y el precio está publicado, sin sorpresas.',
+    detalle: 'Fan del ritual completo',
+  },
+  {
+    nombre: 'Julián Pinto',
+    texto: 'Llevo a mi hijo cada mes. Poder elegir barbero y hora desde el celular me soluciona la agenda.',
+    detalle: 'Papá de un patroncito',
+  },
+];
+
+const faqItems = [
+  {
+    pregunta: '¿Cómo funciona la reserva?',
+    respuesta: 'Eliges servicio, barbero y hora en la sección "Reservar" y se abre WhatsApp con el mensaje listo. Nosotros te confirmamos por el mismo chat. Sin apps ni registros.',
+  },
+  {
+    pregunta: '¿Tengo que pagar por adelantado?',
+    respuesta: 'No. Pagas en la barbería al terminar tu servicio. Aceptamos efectivo, tarjeta y transferencias (Nequi y Daviplata).',
+  },
+  {
+    pregunta: '¿Qué pasa si llego tarde?',
+    respuesta: 'Te guardamos la silla 10 minutos. Pasado ese tiempo, el turno pasa al siguiente cliente y te reubicamos en la próxima franja disponible.',
+  },
+  {
+    pregunta: '¿Atienden sin cita?',
+    respuesta: 'Sí, por orden de llegada. Pero quien reserva tiene prioridad: con cita tu barbero te espera a la hora exacta.',
+  },
+  {
+    pregunta: '¿Puedo cambiar o cancelar mi cita?',
+    respuesta: 'Claro: escríbenos por el mismo chat de WhatsApp con mínimo 2 horas de anticipación y la movemos sin costo.',
+  },
+];
+
+// SEO: FAQPage con las mismas preguntas visibles en la página
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: item.respuesta },
+  })),
+};
+---
+
+<BaseLayout image="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+
+  <Header links={navLinks} />
+
+  <Hero
+    eyebrow="Barbería en Bucaramanga · Cabecera"
+    titulo="Tu corte, tu barbero, tu hora"
+    subtitulo="Reserva en menos de un minuto por WhatsApp: eliges el servicio, el barbero y la hora, y llegas directo a la silla. Sin filas y sin esperas."
+    imagen="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80"
+    ctaTexto="Reserva tu cita"
+    ctaHref="#reservar"
+    ctaSecundario={{ label: 'Ver servicios y precios', href: '#servicios' }}
+  />
+
+  <Servicios />
+  <Equipo />
+  <Galeria />
+
+  <Testimonios items={testimonios} />
+
+  <ReservaWizard />
+
+  <Contacto />
+  <FAQ items={faqItems} />
+
+  <CTA
+    titulo="La silla te espera"
+    descripcion="¿Dudas antes de reservar? Escríbenos por WhatsApp y te respondemos en minutos."
+    botonTexto="Hablar por WhatsApp"
+    mensaje="Hola, quiero reservar una cita en Barbería El Patrón."
+  />
+
+  <Footer links={navLinks} />
+  <WhatsAppFlotante mensaje="Hola, quiero reservar una cita en Barbería El Patrón." />
+  <StickyReserva />
+</BaseLayout>

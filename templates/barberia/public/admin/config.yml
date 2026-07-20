@@ -1,0 +1,170 @@
+# ═══════════════════════════════════════════════════════════════
+# DECAP CMS — Panel de contenido del cliente (/admin)
+# Plantilla BARBERÍA: servicios, barberos y horarios editables.
+#
+# EDICIÓN LOCAL (desarrollo):
+#   1. En una terminal:  npx decap-server
+#   2. En otra:          pnpm dev
+#   3. Abre http://localhost:4321/admin
+#
+# PRODUCCIÓN (Netlify): activa Identity + Git Gateway en el panel
+# de Netlify y elimina la línea local_backend.
+# ═══════════════════════════════════════════════════════════════
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: 'public/images'
+public_folder: '/images'
+
+locale: 'es'
+
+collections:
+  # ── Servicios: alimentan la sección de precios Y el paso 1 del wizard ──
+  - name: 'servicios'
+    label: 'Servicios y precios'
+    label_singular: 'Servicio'
+    folder: 'src/content/servicios'
+    create: true
+    delete: true
+    extension: 'json'
+    format: 'json'
+    identifier_field: 'nombre'
+    summary: '{{nombre}} · {{duracion}} min · ${{precio}}'
+    sortable_fields: ['orden', 'nombre', 'precio']
+    fields:
+      - { label: 'Nombre', name: 'nombre', widget: 'string' }
+      - { label: 'Descripción (1-2 frases)', name: 'descripcion', widget: 'text' }
+      - {
+          label: 'Duración (minutos)',
+          name: 'duracion',
+          widget: 'number',
+          value_type: 'int',
+          min: 5,
+          max: 240,
+          hint: 'Define las franjas horarias que ofrece el wizard de reserva.',
+        }
+      - {
+          label: 'Precio (COP, sin puntos)',
+          name: 'precio',
+          widget: 'number',
+          value_type: 'int',
+          min: 0,
+          hint: 'Ej: 35000. Se muestra formateado como $35.000.',
+        }
+      - {
+          label: 'Orden',
+          name: 'orden',
+          widget: 'number',
+          value_type: 'int',
+          default: 99,
+          hint: 'Menor número aparece primero en la lista.',
+        }
+
+  # ── Barberos: alimentan la sección Equipo Y el paso 2 del wizard ──
+  - name: 'barberos'
+    label: 'Barberos'
+    label_singular: 'Barbero'
+    folder: 'src/content/barberos'
+    create: true
+    delete: true
+    extension: 'json'
+    format: 'json'
+    identifier_field: 'nombre'
+    summary: '{{nombre}} — {{especialidad}}'
+    fields:
+      - { label: 'Nombre', name: 'nombre', widget: 'string' }
+      - {
+          label: 'Foto',
+          name: 'foto',
+          widget: 'image',
+          hint: 'Vertical (4:5) funciona mejor. Puedes subir una imagen o pegar una URL.',
+        }
+      - { label: 'Especialidad', name: 'especialidad', widget: 'string' }
+      - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
+      - {
+          label: 'Activo',
+          name: 'activo',
+          widget: 'boolean',
+          default: true,
+          hint: 'Si lo desactivas, deja de aparecer en la página y en el wizard de reserva.',
+        }
+
+  # ── Configuración: datos del negocio + horarios de apertura ──
+  - name: 'configuracion'
+    label: 'Configuración'
+    files:
+      - name: 'negocio'
+        label: 'Datos del negocio'
+        file: 'src/data/negocio.json'
+        fields:
+          - { label: 'Nombre del negocio', name: 'nombre', widget: 'string' }
+          - { label: 'Eslogan', name: 'eslogan', widget: 'string' }
+          - { label: 'Descripción (SEO)', name: 'descripcion', widget: 'text' }
+          - { label: 'WhatsApp (con indicativo, sin +. Ej: 573001112233)', name: 'whatsapp', widget: 'string' }
+          - { label: 'Teléfono visible', name: 'telefono', widget: 'string' }
+          - { label: 'Correo', name: 'correo', widget: 'string' }
+          - { label: 'Dirección', name: 'direccion', widget: 'string' }
+          - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
+          - { label: 'Horario (texto corto para el pie de página)', name: 'horario', widget: 'string' }
+          - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
+          - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
+          - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }
+
+      # El wizard de reserva usa estos horarios para excluir días cerrados
+      # y generar las franjas entre apertura y cierre.
+      - name: 'horarios'
+        label: 'Horarios de apertura'
+        file: 'src/data/horarios.json'
+        fields:
+          - label: 'Lunes'
+            name: 'lunes'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Martes'
+            name: 'martes'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Miércoles'
+            name: 'miercoles'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Jueves'
+            name: 'jueves'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Viernes'
+            name: 'viernes'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Sábado'
+            name: 'sabado'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: true }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '08:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '20:00' }
+          - label: 'Domingo'
+            name: 'domingo'
+            widget: 'object'
+            fields:
+              - { label: 'Abierto', name: 'abierto', widget: 'boolean', default: false }
+              - { label: 'Apertura (24h, HH:MM)', name: 'apertura', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 09:00'], default: '09:00' }
+              - { label: 'Cierre (24h, HH:MM)', name: 'cierre', widget: 'string', pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Usa formato HH:MM, ej: 20:00'], default: '14:00' }

@@ -1,0 +1,111 @@
+---
+/**
+ * Sección #contacto especializada para barbería:
+ * datos + horarios por día (src/data/horarios.json, el mismo JSON que usa
+ * el wizard) + mapa embebido. El formulario del base se reemplaza por el
+ * mapa: aquí la conversión es la reserva, no el correo.
+ */
+import SectionHeading from './SectionHeading.astro';
+import { NEGOCIO, waLink } from '../scripts/site';
+import horarios from '../data/horarios.json';
+
+const DIAS_LABEL: Record<string, string> = {
+  lunes: 'Lunes',
+  martes: 'Martes',
+  miercoles: 'Miércoles',
+  jueves: 'Jueves',
+  viernes: 'Viernes',
+  sabado: 'Sábado',
+  domingo: 'Domingo',
+};
+
+function hora12(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map(Number);
+  const sufijo = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${sufijo}`;
+}
+
+const filasHorario = Object.entries(horarios).map(([dia, h]) => ({
+  dia: DIAS_LABEL[dia],
+  texto: h.abierto ? `${hora12(h.apertura)} – ${hora12(h.cierre)}` : 'Cerrado',
+  abierto: h.abierto,
+}));
+
+const mapaEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${NEGOCIO.direccion}, ${NEGOCIO.ciudad}`)}&output=embed`;
+---
+
+<section class="bg-brand-50 py-20" id="contacto">
+  <div class="container-site">
+    <SectionHeading
+      eyebrow="Ubicación y horarios"
+      titulo="Pasa por la silla"
+      descripcion={`Estamos en ${NEGOCIO.direccion}, ${NEGOCIO.ciudad}. Con cita tienes prioridad; sin cita te atendemos según disponibilidad.`}
+      centrado
+    />
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <!-- Datos + horarios por día -->
+      <div class="rounded-card space-y-6 bg-white p-8 ring-1 ring-brand-100" data-reveal>
+        <div class="grid gap-5 sm:grid-cols-2">
+          {[
+            { label: 'Dirección', valor: `${NEGOCIO.direccion}, ${NEGOCIO.ciudad}`, href: NEGOCIO.mapsUrl },
+            { label: 'Teléfono', valor: NEGOCIO.telefono, href: `tel:${NEGOCIO.telefono.replace(/\s/g, '')}` },
+            { label: 'Correo', valor: NEGOCIO.correo, href: `mailto:${NEGOCIO.correo}` },
+            { label: 'Instagram', valor: '@barberiaelpatron', href: NEGOCIO.instagram },
+          ].map((fila) => (
+            <div>
+              <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">{fila.label}</p>
+              {fila.href ? (
+                <a href={fila.href} target={fila.href.startsWith('http') ? '_blank' : undefined} class="mt-1 block text-sm font-medium text-brand-800 hover:text-accent-600">
+                  {fila.valor}
+                </a>
+              ) : (
+                <p class="mt-1 text-sm font-medium text-brand-800">{fila.valor}</p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">Horario</p>
+          <ul class="mt-2 divide-y divide-brand-100" id="tabla-horarios">
+            {filasHorario.map((f, i) => (
+              <li class="flex items-center justify-between py-2 text-sm" data-dia={(i + 1) % 7}>
+                <span class="font-medium text-brand-800">{f.dia}</span>
+                <span class={f.abierto ? 'text-brand-600' : 'font-semibold text-accent-700'}>{f.texto}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <a href={waLink(`Hola, tengo una pregunta sobre ${NEGOCIO.nombre}.`)} target="_blank" rel="noopener" class="btn btn-whatsapp w-full">
+          Escribir por WhatsApp
+        </a>
+      </div>
+
+      <!-- Mapa -->
+      <div class="rounded-card min-h-[320px] overflow-hidden ring-1 ring-brand-100" data-reveal>
+        <iframe
+          src={mapaEmbed}
+          title={`Mapa: cómo llegar a ${NEGOCIO.nombre}`}
+          class="h-full min-h-[320px] w-full border-0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Resalta el día de hoy en la tabla de horarios (getDay(): 0 = domingo).
+  // El orden del JSON arranca en lunes, por eso cada <li> lleva data-dia.
+  document
+    .querySelectorAll<HTMLElement>(`#tabla-horarios [data-dia="${new Date().getDay()}"]`)
+    .forEach((fila) => {
+      fila.classList.add('font-bold');
+      fila.querySelectorAll('span').forEach((s) => s.classList.add('!text-accent-600'));
+    });
+</script>

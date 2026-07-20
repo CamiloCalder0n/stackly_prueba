@@ -1,0 +1,141 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
+   PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
+
+   brand  → color principal (fondos oscuros, header, footer)
+   accent → color de acción (botones, links, precios, detalles)
+   Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+   ═══════════════════════════════════════════════════════════════ */
+@theme {
+  /* Barbería El Patrón: display contundente + cuerpo neutro */
+  --font-display: 'Oswald', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* brand → carbón/negro cálido (base masculina oscura) */
+  --color-brand-50: #fafaf9;
+  --color-brand-100: #f5f5f4;
+  --color-brand-200: #e7e5e4;
+  --color-brand-300: #d6d3d1;
+  --color-brand-400: #a8a29e;
+  --color-brand-500: #78716c;
+  --color-brand-600: #57534e;
+  --color-brand-700: #44403c;
+  --color-brand-800: #292524;
+  --color-brand-900: #1c1917;
+  --color-brand-950: #0c0a09;
+
+  /* accent → ámbar/cobre (navaja, madera, whisky) */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+
+  --color-surface: #ffffff;
+  --color-ink: #1c1917;
+
+  /* Esquinas más rectas: estética de barbería clásica */
+  --radius-btn: 0.25rem;
+  --radius-card: 0.5rem;
+}
+
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* Oswald rinde mejor en mayúsculas: titulares de sección contundentes */
+h1, h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ── Estados iniciales de animación (GSAP los revela) ──
+   Si JS no carga o el usuario prefiere menos movimiento,
+   el contenido queda visible. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal],
+  html.js [data-reveal-group] > * {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+/* ── Utilidades del sistema ── */
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1.25rem;
+  @media (width >= 768px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+@utility btn-primary {
+  background: var(--color-accent-500);
+  color: var(--color-brand-950);
+  &:hover {
+    background: var(--color-accent-400);
+    transform: translateY(-1px);
+  }
+}
+
+@utility btn-outline {
+  border: 1.5px solid var(--color-brand-300);
+  color: var(--color-brand-800);
+  background: transparent;
+  &:hover {
+    border-color: var(--color-accent-500);
+    color: var(--color-accent-600);
+  }
+}
+
+@utility btn-whatsapp {
+  background: #25d366;
+  color: #fff;
+  &:hover {
+    background: #1fb457;
+    transform: translateY(-1px);
+  }
+}
+
+@utility eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-600);
+}

@@ -1,0 +1,429 @@
+---
+/**
+ * Carrito de pedidos + checkout por WhatsApp (sin backend).
+ *
+ * - Estado global en src/scripts/carrito.ts (nanostores + localStorage).
+ * - Escucha los clics de cualquier botón [data-agregar] de la página
+ *   (los renderiza PlatoCard), así que basta con incluir este componente
+ *   una vez por página.
+ * - Selector Domicilio/Recoger; las zonas y costos salen de
+ *   src/data/domicilios.json (editable desde /admin).
+ * - El botón final abre WhatsApp con el pedido numerado línea por línea.
+ */
+import { precioCOP } from '../scripts/site';
+import domicilios from '../data/domicilios.json';
+
+const zonas = domicilios.zonas.filter((z) => z.activo);
+const hayDomicilio = zonas.length > 0;
+---
+
+<!-- Botón flotante (pantallas medianas y grandes) -->
+<button
+  type="button"
+  data-abrir-carrito
+  aria-label="Ver mi pedido"
+  class="btn-carrito-flotante fixed right-5 bottom-24 z-40 h-14 w-14 items-center justify-center rounded-full bg-brand-950 text-white shadow-lg transition-transform hover:scale-110"
+>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+  <span
+    data-contador
+    class="absolute -top-1 -right-1 min-w-6 rounded-full bg-accent-500 px-1.5 py-0.5 text-center text-xs font-bold text-white"
+  >0</span>
+</button>
+
+<!-- Barra "Pedir" fija en móvil -->
+<button
+  type="button"
+  data-abrir-carrito
+  class="barra-movil fixed inset-x-4 bottom-4 z-40 items-center justify-between rounded-full bg-brand-950 px-6 py-3.5 text-white shadow-xl"
+>
+  <span class="flex items-center gap-2.5 text-sm font-bold">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Pedir · <span data-contador-movil>0 ítems</span>
+  </span>
+  <span data-total-movil class="text-sm font-bold text-accent-300">$0</span>
+</button>
+
+<!-- Overlay -->
+<div data-carrito-overlay class="fixed inset-0 z-50 hidden bg-brand-950/50 backdrop-blur-[2px]"></div>
+
+<!-- Panel lateral -->
+<aside
+  data-carrito-panel
+  aria-label="Tu pedido"
+  class="fixed top-0 right-0 z-50 flex h-full w-full max-w-md translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300"
+>
+  <header class="flex items-center justify-between border-b border-brand-100 px-5 py-4">
+    <h2 class="font-display text-xl font-bold text-brand-950">
+      Tu pedido <span data-contador-panel class="text-sm font-semibold text-brand-500"></span>
+    </h2>
+    <button
+      type="button"
+      data-cerrar-carrito
+      aria-label="Cerrar carrito"
+      class="flex h-9 w-9 items-center justify-center rounded-full text-brand-600 transition-colors hover:bg-brand-50 hover:text-brand-950"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+
+  <div class="flex-1 overflow-y-auto px-5 py-5">
+    <!-- Estado vacío -->
+    <div data-carrito-vacio class="py-10 text-center">
+      <p class="text-4xl" aria-hidden="true">🍽️</p>
+      <p class="mt-3 font-semibold text-brand-950">Tu pedido está vacío</p>
+      <p class="mx-auto mt-1 max-w-60 text-sm text-brand-500">
+        Explora el menú y agrega tus platos favoritos.
+      </p>
+      <a href="/menu" class="btn btn-primary mt-5 !py-2.5 text-sm">Ver el menú</a>
+    </div>
+
+    <ul data-carrito-items class="space-y-4"></ul>
+
+    <!-- Checkout -->
+    <form data-checkout novalidate="false" class="mt-6 hidden space-y-5">
+      <fieldset>
+        <legend class="mb-2 text-xs font-bold tracking-widest text-brand-400 uppercase">
+          ¿Cómo recibes tu pedido?
+        </legend>
+        <div class={`grid gap-2 ${hayDomicilio ? 'grid-cols-2' : ''}`}>
+          {hayDomicilio && (
+            <label class="cursor-pointer">
+              <input type="radio" name="modo-entrega" value="domicilio" checked class="peer sr-only" />
+              <span class="flex items-center justify-center gap-1.5 rounded-lg border border-brand-200 px-3 py-2.5 text-sm font-semibold text-brand-600 transition-colors peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:text-accent-700">
+                🛵 Domicilio
+              </span>
+            </label>
+          )}
+          <label class="cursor-pointer">
+            <input type="radio" name="modo-entrega" value="recoger" checked={!hayDomicilio} class="peer sr-only" />
+            <span class="flex items-center justify-center gap-1.5 rounded-lg border border-brand-200 px-3 py-2.5 text-sm font-semibold text-brand-600 transition-colors peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:text-accent-700">
+              🏠 Recoger en el local
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      {hayDomicilio && (
+        <div data-campos-domicilio class="space-y-3">
+          <div>
+            <label for="pedido-zona" class="mb-1.5 block text-sm font-semibold text-brand-800">Barrio / zona</label>
+            <select
+              id="pedido-zona"
+              class="w-full rounded-md border border-brand-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-accent-500"
+            >
+              {zonas.map((z) => (
+                <option value={z.nombre} data-costo={z.costo} data-minimo={z.pedidoMinimo}>
+                  {z.nombre} — domicilio {precioCOP(z.costo)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label for="pedido-direccion" class="mb-1.5 block text-sm font-semibold text-brand-800">Dirección de entrega</label>
+            <input
+              id="pedido-direccion"
+              type="text"
+              required
+              placeholder="Cra 00 # 00-00, apto/torre"
+              class="w-full rounded-md border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-accent-500"
+            />
+          </div>
+        </div>
+      )}
+
+      <div>
+        <label for="pedido-nombre" class="mb-1.5 block text-sm font-semibold text-brand-800">Tu nombre</label>
+        <input
+          id="pedido-nombre"
+          type="text"
+          required
+          placeholder="Para confirmar tu pedido"
+          class="w-full rounded-md border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-accent-500"
+        />
+      </div>
+
+      <p data-aviso-minimo class="hidden rounded-lg bg-red-50 px-3.5 py-2.5 text-xs font-semibold text-red-700"></p>
+
+      <div class="space-y-1.5 border-t border-brand-100 pt-4 text-sm">
+        <p class="flex justify-between text-brand-600">
+          <span>Subtotal</span><span data-resumen-subtotal>$0</span>
+        </p>
+        <p data-fila-domicilio class="flex justify-between text-brand-600">
+          <span>Domicilio</span><span data-resumen-domicilio>$0</span>
+        </p>
+        <p class="flex justify-between text-base font-bold text-brand-950">
+          <span>Total</span><span data-resumen-total>$0</span>
+        </p>
+      </div>
+
+      <button type="submit" data-enviar-pedido class="btn btn-whatsapp w-full">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.668-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Enviar pedido por WhatsApp
+      </button>
+      <button
+        type="button"
+        data-vaciar
+        class="w-full text-center text-xs font-semibold text-brand-400 underline-offset-2 transition-colors hover:text-red-600 hover:underline"
+      >
+        Vaciar carrito
+      </button>
+    </form>
+  </div>
+</aside>
+
+<style is:global>
+  /* La barra "Pedir" y el botón flotante solo existen cuando hay ítems
+     (el script agrega .pedido-activo al <body>). */
+  .barra-movil,
+  .btn-carrito-flotante {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    body.pedido-activo .barra-movil {
+      display: flex;
+    }
+    /* Sube el botón de WhatsApp para que no quede debajo de la barra. */
+    body.pedido-activo .wa-flotante {
+      transform: translateY(-4.25rem);
+    }
+  }
+  @media (min-width: 768px) {
+    body.pedido-activo .btn-carrito-flotante {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  import {
+    $carrito,
+    $numItems,
+    $subtotal,
+    agregarItem,
+    cambiarCantidad,
+    quitarItem,
+    setNota,
+    vaciarCarrito,
+    type ItemCarrito,
+  } from '../scripts/carrito';
+  import { NEGOCIO, waLink, precioCOP } from '../scripts/site';
+
+  const panel = document.querySelector<HTMLElement>('[data-carrito-panel]');
+  const overlay = document.querySelector<HTMLElement>('[data-carrito-overlay]');
+  const lista = document.querySelector<HTMLElement>('[data-carrito-items]');
+  const vacio = document.querySelector<HTMLElement>('[data-carrito-vacio]');
+  const checkout = document.querySelector<HTMLFormElement>('form[data-checkout]');
+  const camposDomicilio = document.querySelector<HTMLElement>('[data-campos-domicilio]');
+  const selectZona = document.getElementById('pedido-zona') as HTMLSelectElement | null;
+  const inputDireccion = document.getElementById('pedido-direccion') as HTMLInputElement | null;
+  const inputNombre = document.getElementById('pedido-nombre') as HTMLInputElement | null;
+  const avisoMinimo = document.querySelector<HTMLElement>('[data-aviso-minimo]');
+  const filaDomicilio = document.querySelector<HTMLElement>('[data-fila-domicilio]');
+  const btnEnviar = document.querySelector<HTMLButtonElement>('[data-enviar-pedido]');
+
+  const esc = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  /* ── Abrir / cerrar ── */
+  function abrirCarrito() {
+    panel?.classList.remove('translate-x-full');
+    overlay?.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+  function cerrarCarrito() {
+    panel?.classList.add('translate-x-full');
+    overlay?.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  }
+  document.querySelectorAll('[data-abrir-carrito]').forEach((b) => b.addEventListener('click', abrirCarrito));
+  document.querySelectorAll('[data-cerrar-carrito]').forEach((b) => b.addEventListener('click', cerrarCarrito));
+  overlay?.addEventListener('click', cerrarCarrito);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarCarrito();
+  });
+
+  /* ── Botones "Agregar al pedido" (delegación, sirve en cualquier página) ── */
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-agregar]');
+    if (!btn) return;
+    agregarItem({
+      id: btn.dataset.id || '',
+      nombre: btn.dataset.nombre || '',
+      precio: Number(btn.dataset.precio) || 0,
+    });
+    // Feedback breve en el botón
+    if (!btn.dataset.original) btn.dataset.original = btn.innerHTML;
+    btn.innerHTML = '✓ ¡Agregado!';
+    window.setTimeout(() => {
+      if (btn.dataset.original) btn.innerHTML = btn.dataset.original;
+    }, 900);
+  });
+
+  /* ── Modo de entrega ── */
+  function modoActual(): 'domicilio' | 'recoger' {
+    const marcado = checkout?.querySelector<HTMLInputElement>('input[name="modo-entrega"]:checked');
+    return marcado?.value === 'recoger' ? 'recoger' : selectZona ? 'domicilio' : 'recoger';
+  }
+  checkout?.querySelectorAll('input[name="modo-entrega"]').forEach((r) =>
+    r.addEventListener('change', actualizarResumen),
+  );
+  selectZona?.addEventListener('change', actualizarResumen);
+
+  function zonaSeleccionada() {
+    const opt = selectZona?.selectedOptions[0];
+    if (!opt) return null;
+    return {
+      nombre: opt.value,
+      costo: Number(opt.dataset.costo) || 0,
+      minimo: Number(opt.dataset.minimo) || 0,
+    };
+  }
+
+  /* ── Resumen (subtotal / domicilio / total) ── */
+  function actualizarResumen() {
+    const subtotal = $subtotal.get();
+    const esDomicilio = modoActual() === 'domicilio';
+    const zona = esDomicilio ? zonaSeleccionada() : null;
+    const costo = zona?.costo ?? 0;
+    const total = subtotal + (esDomicilio ? costo : 0);
+
+    camposDomicilio?.classList.toggle('hidden', !esDomicilio);
+    if (inputDireccion) inputDireccion.required = esDomicilio;
+    filaDomicilio?.classList.toggle('hidden', !esDomicilio);
+
+    setTexto('[data-resumen-subtotal]', precioCOP(subtotal));
+    setTexto('[data-resumen-domicilio]', precioCOP(costo));
+    setTexto('[data-resumen-total]', precioCOP(total));
+
+    // Pedido mínimo por zona
+    const bajoMinimo = Boolean(esDomicilio && zona && subtotal > 0 && subtotal < zona.minimo);
+    if (avisoMinimo && zona) {
+      avisoMinimo.textContent = `El pedido mínimo a domicilio para ${zona.nombre} es ${precioCOP(zona.minimo)}. Te faltan ${precioCOP(zona.minimo - subtotal)}.`;
+    }
+    avisoMinimo?.classList.toggle('hidden', !bajoMinimo);
+    if (btnEnviar) {
+      btnEnviar.disabled = bajoMinimo;
+      btnEnviar.classList.toggle('opacity-50', bajoMinimo);
+      btnEnviar.classList.toggle('cursor-not-allowed', bajoMinimo);
+    }
+  }
+
+  function setTexto(selector: string, texto: string) {
+    document.querySelectorAll(selector).forEach((el) => (el.textContent = texto));
+  }
+
+  /* ── Render de líneas del pedido ──
+     Solo se reconstruye el HTML cuando cambia la estructura (ids/cantidades);
+     escribir una nota no re-renderiza y el input no pierde el foco. */
+  let claveRender = '';
+  function render(items: ItemCarrito[]) {
+    const n = items.reduce((acc, it) => acc + it.cantidad, 0);
+    const clave = items.map((it) => `${it.id}:${it.cantidad}`).join('|');
+
+    document.body.classList.toggle('pedido-activo', n > 0);
+    setTexto('[data-contador]', String(n));
+    setTexto('[data-contador-movil]', n === 1 ? '1 ítem' : `${n} ítems`);
+    setTexto('[data-contador-panel]', n > 0 ? `(${n} ${n === 1 ? 'ítem' : 'ítems'})` : '');
+    setTexto('[data-total-movil]', precioCOP($subtotal.get()));
+
+    vacio?.classList.toggle('hidden', items.length > 0);
+    checkout?.classList.toggle('hidden', items.length === 0);
+
+    if (clave !== claveRender && lista) {
+      claveRender = clave;
+      lista.innerHTML = items
+        .map(
+          (it) => `
+        <li class="rounded-xl p-4 ring-1 ring-brand-100" data-linea data-id="${esc(it.id)}">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-bold text-brand-950">${esc(it.nombre)}</p>
+              <p class="mt-0.5 text-xs text-brand-500">${precioCOP(it.precio)} c/u</p>
+            </div>
+            <button type="button" data-quitar aria-label="Quitar ${esc(it.nombre)}" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-brand-400 transition-colors hover:bg-red-50 hover:text-red-600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="mt-3 flex items-center justify-between gap-3">
+            <div class="flex items-center rounded-full ring-1 ring-brand-200">
+              <button type="button" data-menos aria-label="Quitar una unidad" class="flex h-8 w-8 items-center justify-center rounded-full text-brand-600 transition-colors hover:bg-brand-50">−</button>
+              <span class="w-7 text-center text-sm font-bold text-brand-950">${it.cantidad}</span>
+              <button type="button" data-mas aria-label="Agregar una unidad" class="flex h-8 w-8 items-center justify-center rounded-full text-brand-600 transition-colors hover:bg-brand-50">+</button>
+            </div>
+            <p class="text-sm font-bold text-brand-950">${precioCOP(it.precio * it.cantidad)}</p>
+          </div>
+          <input data-nota type="text" value="${esc(it.nota)}" placeholder="Nota: sin cebolla, término medio…" class="mt-3 w-full rounded-md border border-brand-100 bg-brand-50/50 px-3 py-2 text-xs outline-none focus:border-accent-500 focus:bg-white" />
+        </li>`,
+        )
+        .join('');
+    }
+
+    actualizarResumen();
+  }
+
+  // Delegación dentro de la lista (sobrevive a los re-render)
+  lista?.addEventListener('click', (e) => {
+    const linea = (e.target as HTMLElement).closest<HTMLElement>('[data-linea]');
+    if (!linea) return;
+    const id = linea.dataset.id || '';
+    if ((e.target as HTMLElement).closest('[data-mas]')) cambiarCantidad(id, 1);
+    else if ((e.target as HTMLElement).closest('[data-menos]')) cambiarCantidad(id, -1);
+    else if ((e.target as HTMLElement).closest('[data-quitar]')) quitarItem(id);
+  });
+  lista?.addEventListener('input', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (!input.matches('[data-nota]')) return;
+    const linea = input.closest<HTMLElement>('[data-linea]');
+    if (linea) setNota(linea.dataset.id || '', input.value);
+  });
+
+  document.querySelector('[data-vaciar]')?.addEventListener('click', () => {
+    if (window.confirm('¿Vaciar todo el pedido?')) vaciarCarrito();
+  });
+
+  /* ── Enviar pedido por WhatsApp ── */
+  checkout?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const items = $carrito.get();
+    if (items.length === 0) return;
+    if (!checkout.reportValidity()) return;
+
+    const esDomicilio = modoActual() === 'domicilio';
+    const zona = esDomicilio ? zonaSeleccionada() : null;
+    const subtotal = $subtotal.get();
+    const costo = zona?.costo ?? 0;
+    const total = subtotal + (esDomicilio ? costo : 0);
+    if (esDomicilio && zona && subtotal < zona.minimo) return;
+
+    const lineas = items.map((it, i) => {
+      let l = `${i + 1}. ${it.cantidad} x ${it.nombre} — ${precioCOP(it.precio * it.cantidad)}`;
+      if (it.nota.trim()) l += `\n   Nota: ${it.nota.trim()}`;
+      return l;
+    });
+
+    const partes = [
+      `Hola ${NEGOCIO.nombre} 👋, quiero hacer este pedido:`,
+      '',
+      ...lineas,
+      '',
+      `Subtotal: ${precioCOP(subtotal)}`,
+    ];
+    if (esDomicilio && zona) partes.push(`Domicilio (${zona.nombre}): ${precioCOP(costo)}`);
+    partes.push(`*Total: ${precioCOP(total)}*`, '');
+    if (esDomicilio && zona) {
+      partes.push('Entrega: Domicilio 🛵');
+      partes.push(`Dirección: ${inputDireccion?.value.trim() || ''}`);
+      partes.push(`Barrio / zona: ${zona.nombre}`);
+    } else {
+      partes.push('Entrega: Paso a recoger al local 🏠');
+    }
+    partes.push(`Nombre: ${inputNombre?.value.trim() || ''}`);
+
+    window.open(waLink(partes.join('\n')), '_blank', 'noopener');
+  });
+
+  // Primer render + suscripción a cambios del carrito
+  render($carrito.get());
+  $carrito.listen(render);
+</script>

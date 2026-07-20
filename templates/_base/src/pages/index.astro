@@ -1,0 +1,90 @@
+---
+// Página demo del sistema base: muestra todos los componentes compartidos.
+// Las plantillas de nicho (joyeria, barberia, restaurante) parten de aquí.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Testimonios from '../components/Testimonios.astro';
+import FAQ from '../components/FAQ.astro';
+import CTA from '../components/CTA.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+
+const navLinks = [
+  { label: 'Servicios', href: '#servicios' },
+  { label: 'Testimonios', href: '#testimonios' },
+  { label: 'FAQ', href: '#faq' },
+  { label: 'Contacto', href: '#contacto' },
+];
+---
+
+<BaseLayout>
+  <Header links={navLinks} />
+
+  <Hero
+    eyebrow="Sistema base Stackly"
+    titulo="Tu negocio, con una página que sí vende"
+    subtitulo="Este es el sistema base de las plantillas Stackly: componentes, animaciones y CMS listos para especializar por nicho."
+    imagen="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80"
+    ctaSecundario={{ label: 'Ver componentes', href: '#servicios' }}
+  />
+
+  <section class="py-20" id="servicios">
+    <div class="container-site">
+      <SectionHeading
+        eyebrow="Demo"
+        titulo="Tarjetas con reveal escalonado"
+        descripcion="Cualquier grid con data-reveal-group anima sus hijos en cascada al hacer scroll."
+      />
+      <div class="mt-12 grid gap-6 md:grid-cols-3" data-reveal-group>
+        {['Componentes reutilizables', 'Animaciones GSAP + Lenis', 'Contenido editable (Decap)'].map((titulo, i) => (
+          <div class="rounded-card bg-brand-50 p-7 ring-1 ring-brand-100">
+            <span class="font-display text-3xl font-bold text-accent-500">0{i + 1}</span>
+            <h3 class="mt-3 text-lg font-bold text-brand-950">{titulo}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-brand-600">
+              Sección de ejemplo del sistema base. Reemplázala con el contenido del nicho.
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-16 grid gap-6 text-center sm:grid-cols-3" data-reveal>
+        <div>
+          <p class="font-display text-4xl font-bold text-brand-950"><span data-counter="120">0</span>+</p>
+          <p class="mt-1 text-sm text-brand-500">Proyectos entregados</p>
+        </div>
+        <div>
+          <p class="font-display text-4xl font-bold text-brand-950"><span data-counter="98">0</span>%</p>
+          <p class="mt-1 text-sm text-brand-500">Clientes satisfechos</p>
+        </div>
+        <div>
+          <p class="font-display text-4xl font-bold text-brand-950"><span data-counter="15">0</span></p>
+          <p class="mt-1 text-sm text-brand-500">Años de experiencia</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Testimonios
+    items={[
+      { nombre: 'Cliente Uno', texto: 'Excelente servicio, la página quedó increíble y me llegan clientes por WhatsApp todos los días.', detalle: 'Negocio local' },
+      { nombre: 'Cliente Dos', texto: 'El panel de contenido es facilísimo: yo mismo actualizo precios y fotos sin depender de nadie.', detalle: 'Negocio local' },
+      { nombre: 'Cliente Tres', texto: 'Rápida, moderna y aparece en Google. Justo lo que necesitaba mi negocio.', detalle: 'Negocio local' },
+    ]}
+  />
+
+  <FAQ
+    items={[
+      { pregunta: '¿Puedo editar el contenido yo mismo?', respuesta: 'Sí. La plantilla incluye un panel en /admin (Decap CMS) donde cambias textos, precios e imágenes sin tocar código.' },
+      { pregunta: '¿Tiene costos mensuales?', respuesta: 'No. Todo el stack es gratuito y el hosting puede ser Netlify o Cloudflare Pages en su plan gratis.' },
+      { pregunta: '¿Funciona en celular?', respuesta: 'Sí, todo el sistema es mobile-first: más del 70% de las visitas de negocios locales llegan desde el celular.' },
+    ]}
+  />
+
+  <Contacto />
+  <CTA />
+  <Footer links={navLinks} />
+  <WhatsAppFlotante />
+</BaseLayout>

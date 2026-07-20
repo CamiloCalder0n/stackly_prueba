@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
+   PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
+
+   brand  → color principal (fondos oscuros, header, footer)
+   accent → color de acción (botones, links, precios, detalles)
+   Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+   ═══════════════════════════════════════════════════════════════ */
+@theme {
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --color-brand-50: #f6f7f9;
+  --color-brand-100: #eceef2;
+  --color-brand-200: #d5dae2;
+  --color-brand-300: #b0bac9;
+  --color-brand-400: #8595ab;
+  --color-brand-500: #667891;
+  --color-brand-600: #516078;
+  --color-brand-700: #434e61;
+  --color-brand-800: #3a4352;
+  --color-brand-900: #1d222b;
+  --color-brand-950: #14181f;
+
+  --color-accent-50: #fdf9ed;
+  --color-accent-100: #f9eecc;
+  --color-accent-200: #f2dc95;
+  --color-accent-300: #ecc75e;
+  --color-accent-400: #e7b53a;
+  --color-accent-500: #df9b23;
+  --color-accent-600: #c5781c;
+  --color-accent-700: #a4581b;
+  --color-accent-800: #86451c;
+  --color-accent-900: #6e3a1b;
+
+  --color-surface: #ffffff;
+  --color-ink: #1d222b;
+
+  --radius-btn: 0.5rem;
+  --radius-card: 1rem;
+}
+
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* ── Estados iniciales de animación (GSAP los revela) ──
+   Si JS no carga o el usuario prefiere menos movimiento,
+   el contenido queda visible. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal],
+  html.js [data-reveal-group] > * {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+/* ── Utilidades del sistema ── */
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1.25rem;
+  @media (width >= 768px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+@utility btn-primary {
+  background: var(--color-accent-500);
+  color: var(--color-brand-950);
+  &:hover {
+    background: var(--color-accent-400);
+    transform: translateY(-1px);
+  }
+}
+
+@utility btn-outline {
+  border: 1.5px solid var(--color-brand-300);
+  color: var(--color-brand-800);
+  background: transparent;
+  &:hover {
+    border-color: var(--color-accent-500);
+    color: var(--color-accent-600);
+  }
+}
+
+@utility btn-whatsapp {
+  background: #25d366;
+  color: #fff;
+  &:hover {
+    background: #1fb457;
+    transform: translateY(-1px);
+  }
+}
+
+@utility eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-600);
+}

@@ -1,0 +1,26 @@
+---
+import { waLink, NEGOCIO } from '../scripts/site';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  botonTexto?: string;
+  mensaje?: string;
+}
+const {
+  titulo = '¿Listo para empezar?',
+  descripcion = 'Escríbenos por WhatsApp y te respondemos en minutos.',
+  botonTexto = 'Hablar por WhatsApp',
+  mensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
+} = Astro.props;
+---
+
+<section class="bg-brand-950 py-20" id="cta">
+  <div class="container-site text-center" data-reveal>
+    <h2 class="mx-auto max-w-2xl text-3xl font-bold text-white md:text-4xl">{titulo}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-brand-300">{descripcion}</p>
+    <a href={waLink(mensaje)} target="_blank" rel="noopener" class="btn btn-whatsapp mt-8">
+      {botonTexto}
+    </a>
+  </div>
+</section>

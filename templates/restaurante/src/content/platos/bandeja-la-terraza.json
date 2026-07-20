@@ -1,0 +1,10 @@
+{
+  "nombre": "Bandeja La Terraza",
+  "descripcion": "Carne asada, chorizo, chicharrón, huevo campesino, arroz, fríjoles, tajadas y aguacate.",
+  "precio": 32000,
+  "foto": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80",
+  "categoria": "fuertes",
+  "etiquetas": [],
+  "disponible": true,
+  "destacado": false
+}
