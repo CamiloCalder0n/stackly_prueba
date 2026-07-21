@@ -14,6 +14,9 @@ import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import { NEGOCIO } from '../scripts/site';
+import Foto from '../components/Foto.astro';
+import fotoHero from '../assets/fotos/anillos-piedra-crema.jpg';
+import fotoTaller from '../assets/fotos/lifestyle-pulsera-oscuro.jpg';
 
 const colecciones = (await getCollection('colecciones')).sort(
   (a, b) => a.data.orden - b.data.orden,
@@ -87,7 +90,7 @@ const guia = [
     titulo="Piezas hechas a mano"
     acento="que guardan tu historia"
     subtitulo="Anillos, collares, aretes y pulseras en oro de 18k, plata 950 y oro rosa. Explora el catálogo con precios visibles y resuelve todas tus dudas por WhatsApp antes de visitarnos."
-    imagen="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600&q=80"
+    imagen={fotoHero}
     ctaTexto="Consultar por WhatsApp"
     ctaMensaje={`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`}
     ctaSecundario={{ label: 'Ver colección', href: '/catalogo' }}
@@ -147,13 +150,14 @@ const guia = [
               i === 0 ? 'lg:col-span-7 lg:row-span-2' : 'lg:col-span-5'
             }`}
           >
-            <img
+            <Foto
               src={c.data.portada}
               alt={c.data.nombre}
-              class={`w-full object-cover opacity-85 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-70 ${
-                i === 0 ? 'aspect-[4/5] lg:h-full' : 'aspect-[16/10]'
+              ratio={i === 0 ? '4/5' : '16/10'}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              class={`opacity-85 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-70 ${
+                i === 0 ? 'lg:h-full' : ''
               }`}
-              loading="lazy"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/20 to-transparent"></div>
             <div class={`absolute inset-x-0 bottom-0 ${i === 0 ? 'p-8 md:p-10' : 'p-7'}`}>
@@ -211,11 +215,11 @@ const guia = [
       <!-- Fotografía que sangra hasta el borde de la pantalla -->
       <div class="relative min-h-[58vh] overflow-hidden lg:min-h-[88vh]" data-reveal-mask>
         <div class="absolute inset-0" data-parallax="0.1">
-          <img
-            src="https://images.unsplash.com/photo-1601821765780-754fa98637c1?w=1400&q=80"
+          <Foto
+            src={fotoTaller}
             alt={`El taller de ${NEGOCIO.nombre}`}
-            class="h-[118%] w-full object-cover"
-            loading="lazy"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            class="h-[118%] object-cover"
           />
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-brand-950/60"></div>

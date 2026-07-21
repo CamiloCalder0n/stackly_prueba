@@ -9,6 +9,8 @@ import CTA from '../components/CTA.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import { NEGOCIO } from '../scripts/site';
+import Foto from '../components/Foto.astro';
+import fotoPortada from '../assets/fotos/pulsera-oro-revista.jpg';
 
 const piezas = (await getCollection('piezas')).sort((a, b) =>
   a.data.nombre.localeCompare(b.data.nombre, 'es'),
@@ -61,11 +63,13 @@ const precios = [
   <!-- ── Encabezado editorial ── -->
   <section class="relative overflow-hidden bg-brand-950 py-24 md:py-32">
     <div class="absolute inset-0" data-parallax="0.08">
-      <img
-        src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&q=80"
+      <Foto
+        src={fotoPortada}
         alt=""
-        class="h-[118%] w-full object-cover opacity-20"
-        loading="eager"
+        sizes="100vw"
+        widths={[900, 1400, 2000]}
+        prioridad
+        class="h-[118%] object-cover opacity-20"
       />
     </div>
     <div class="absolute inset-0 bg-gradient-to-b from-brand-950/80 to-brand-950"></div>

@@ -3,15 +3,25 @@ nombre: Pulsera Hilo de Plata
 referencia: AUR-PU-002
 slug: pulsera-hilo-de-plata
 fotos:
-  - https://images.unsplash.com/photo-1598560917505-59a3ad559071?w=1200&q=80
-  - https://images.unsplash.com/photo-1611955167811-4711904bb9f8?w=1200&q=80
-  - https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1200&q=80
+  - ../../assets/fotos/pulsera-diamantes-oscuro.jpg
 categoria: pulseras
 material: plata
-peso: 2,4 g (largo ajustable 16-19 cm)
-precio: 380000
+ley: '950'
+piedras: 42 circones de talla brillante
+peso: 8,1 g
+medidas: 17,5 cm · ancho de 5 mm
+acabado: Rodinado antimanchas
+tallas: 16,5 y 17,5 cm
+precio: 420000
 ocultarPrecio: false
-descripcion: Pulsera fina tipo hilo en plata 950 con esfera central pulida. Discreta y elegante, perfecta para regalar o para usar en capas con relojes y otras pulseras. Largo ajustable con cadena extensora.
+descripcion: >-
+  Plata 950 con circones engastados uno a uno y baño de rodio para que no se opaque. Es nuestra pieza de entrada: la que se regala para un primer aniversario o para estrenar sin gastar en oro.
 disponibilidad: disponible
+unidades: 6
+ocasion:
+  - cumpleaños
+  - uso diario
+grabable: false
+nuevo: false
 destacada: false
 ---

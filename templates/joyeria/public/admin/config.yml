@@ -8,6 +8,12 @@
 #
 # PRODUCCIÓN (Netlify): activa Identity + Git Gateway en el panel
 # de Netlify y elimina la línea local_backend.
+#
+# IMPORTANTE — dónde caen las fotos:
+# Las imágenes van a `src/assets/fotos` (no a `public/`) para que Astro
+# las optimice en el build y las sirva en AVIF/WebP con srcset. Por eso
+# `public_folder` es una ruta RELATIVA: es la que el archivo .md necesita
+# para encontrar la foto desde `src/content/<coleccion>/`.
 # ═══════════════════════════════════════════════════════════════
 backend:
   name: git-gateway
@@ -15,8 +21,8 @@ backend:
 
 local_backend: true
 
-media_folder: 'public/images'
-public_folder: '/images'
+media_folder: 'src/assets/fotos'
+public_folder: '../../assets/fotos'
 
 locale: 'es'
 
@@ -37,9 +43,22 @@ collections:
           - { label: 'Dirección', name: 'direccion', widget: 'string' }
           - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
           - { label: 'Horario', name: 'horario', widget: 'string' }
+          - label: 'Horarios disponibles para citas en tienda'
+            name: 'horarioCitas'
+            widget: 'list'
+            field: { label: 'Hora (ej: 10:00 AM)', name: 'hora', widget: 'string' }
+          - { label: 'Año de fundación', name: 'anoFundacion', widget: 'number', value_type: 'int' }
+          - { label: 'Piezas entregadas (para el contador)', name: 'piezasEntregadas', widget: 'number', value_type: 'int' }
+          - { label: 'Encargos a la medida (para el contador)', name: 'encargosAMedida', widget: 'number', value_type: 'int' }
           - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
           - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
           - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }
+          - { label: 'Reseñas de Google (URL)', name: 'googleReviewsUrl', widget: 'string', required: false }
+          - label: 'Medios de pago que aceptas'
+            name: 'pagos'
+            widget: 'list'
+            hint: 'Se muestran junto al precio. Addi y Sistecrédito pesan mucho en piezas de más de $1.000.000.'
+            field: { label: 'Medio de pago', name: 'medio', widget: 'string' }
 
   # ── Piezas del catálogo ──────────────────────────────────────
   # Cada entrada es una joya en /catalogo y /piezas/<slug>.
@@ -61,16 +80,35 @@ collections:
         widget: 'list'
         min: 1
         max: 6
+        hint: 'Súbelas a 1600px de ancho como mínimo. La página se encarga de comprimirlas.'
         field: { label: 'Foto', name: 'foto', widget: 'image' }
       - { label: 'Categoría', name: 'categoria', widget: 'select', options: ['anillos', 'collares', 'aretes', 'pulseras'] }
       - { label: 'Material', name: 'material', widget: 'select', options: ['oro', 'plata', 'oro rosa'] }
-      - { label: 'Piedras', name: 'piedras', widget: 'string', required: false }
+      - label: 'Ley del metal'
+        name: 'ley'
+        widget: 'select'
+        options: ['18k', '14k', '950', '925']
+        hint: 'Obligatorio. Es el primer dato de confianza que busca el comprador y en Colombia el contraste es requisito legal.'
+      - { label: 'Piedras', name: 'piedras', widget: 'text', required: false }
+      - { label: 'Certificación de la piedra (GIA, IGI…)', name: 'certificacion', widget: 'string', required: false }
       - { label: 'Peso (ej: 3,4 g)', name: 'peso', widget: 'string', required: false }
-      - { label: 'Tallas (ej: 5 a 9)', name: 'tallas', widget: 'string', required: false }
+      - { label: 'Medidas (ej: banda de 1,9 mm · cadena de 45 cm)', name: 'medidas', widget: 'string', required: false }
+      - { label: 'Acabado (ej: pulido espejo)', name: 'acabado', widget: 'string', required: false }
+      - { label: 'Tallas disponibles (ej: 5 a 9)', name: 'tallas', widget: 'string', required: false }
       - { label: 'Precio en COP (sin puntos, ej: 1250000)', name: 'precio', widget: 'number', value_type: 'int', required: false }
       - { label: 'Ocultar precio (muestra "Consultar precio")', name: 'ocultarPrecio', widget: 'boolean', default: false, required: false }
       - { label: 'Descripción', name: 'descripcion', widget: 'text' }
       - { label: 'Disponibilidad', name: 'disponibilidad', widget: 'select', options: ['disponible', 'por encargo'] }
+      - { label: 'Unidades en vitrina (con 1 se muestra "Pieza única")', name: 'unidades', widget: 'number', value_type: 'int', required: false }
+      - { label: 'Días hábiles de fabricación (solo si es por encargo)', name: 'diasEncargo', widget: 'number', value_type: 'int', required: false }
+      - label: 'Ocasión'
+        name: 'ocasion'
+        widget: 'select'
+        multiple: true
+        required: false
+        options: ['compromiso', 'matrimonio', 'aniversario', 'cumpleaños', 'uso diario']
+      - { label: 'Admite grabado personalizado', name: 'grabable', widget: 'boolean', default: false, required: false }
+      - { label: 'Novedad (se marca en el catálogo)', name: 'nuevo', widget: 'boolean', default: false, required: false }
       - { label: 'Destacada (aparece en la portada)', name: 'destacada', widget: 'boolean', default: false, required: false }
 
   # ── Colecciones / líneas de la marca ─────────────────────────

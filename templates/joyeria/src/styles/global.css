@@ -1,58 +1,77 @@
 @import 'tailwindcss';
 
+/* Tipografías variables self-hosted (sin petición bloqueante a Google Fonts).
+   Bodoni Moda se importa con el eje de tamaño óptico (opsz): a tamaños de
+   titular los remates y los trazos finos se afinan, que es exactamente el
+   gesto de una didona de alta joyería. */
+@import '@fontsource-variable/bodoni-moda/opsz.css';
+@import '@fontsource-variable/bodoni-moda/opsz-italic.css';
+@import '@fontsource-variable/jost';
+
 /* ═══════════════════════════════════════════════════════════════
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
    PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
 
-   brand  → color principal (fondos oscuros, header, footer)
-   accent → color de acción (botones, links, precios, detalles)
-   Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+   Dirección: maison editorial clara.
+   El hueso manda, la tinta estructura y el oro solo subraya.
+
+   brand  → neutros cálidos, del hueso (50) a la tinta (950)
+   accent → oro; se usa en filetes, precios y micro-etiquetas.
+            NO se usa para rellenar áreas grandes: el lujo aquí es
+            el contraste de escala, no la cantidad de dorado.
+   Las clases resultantes son: bg-brand-50, text-accent-600, etc.
    ═══════════════════════════════════════════════════════════════ */
 @theme {
-  /* Joyería: serif elegante para títulos + sans geométrica ligera para texto */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Jost', system-ui, sans-serif;
+  --font-display: 'Bodoni Moda Variable', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost Variable', system-ui, sans-serif;
 
-  /* brand → grafito cálido casi negro (fondos, header, footer) */
-  --color-brand-50: #f7f6f4;
-  --color-brand-100: #eae8e4;
-  --color-brand-200: #d4cfc8;
-  --color-brand-300: #b4ada2;
-  --color-brand-400: #8f877b;
-  --color-brand-500: #736a5f;
-  --color-brand-600: #5c544b;
-  --color-brand-700: #4a453e;
-  --color-brand-800: #383430;
-  --color-brand-900: #23211e;
-  --color-brand-950: #161412;
+  /* brand → neutros cálidos sobre base hueso */
+  --color-brand-50: #faf8f4;
+  --color-brand-100: #f2eee7;
+  --color-brand-200: #e4ded3;
+  --color-brand-300: #cfc7b8;
+  --color-brand-400: #a89e8d;
+  --color-brand-500: #857b6c;
+  --color-brand-600: #665e52;
+  --color-brand-700: #4c463c;
+  --color-brand-800: #332f28;
+  --color-brand-900: #201d18;
+  --color-brand-950: #14120f;
 
-  /* accent → dorado champán refinado (botones, precios, detalles) */
-  --color-accent-50: #faf7ef;
-  --color-accent-100: #f4ecd7;
-  --color-accent-200: #e9d9ae;
-  --color-accent-300: #dcc17d;
-  --color-accent-400: #d1ab56;
-  --color-accent-500: #c3963c;
-  --color-accent-600: #a67930;
-  --color-accent-700: #855c2a;
-  --color-accent-800: #6e4a28;
-  --color-accent-900: #5e3e25;
+  /* accent → oro sobrio, sin viraje mostaza */
+  --color-accent-50: #fbf7ed;
+  --color-accent-100: #f5ecd6;
+  --color-accent-200: #ead7a9;
+  --color-accent-300: #dcbe76;
+  --color-accent-400: #cea74f;
+  --color-accent-500: #bd9138;
+  --color-accent-600: #a1762c;
+  --color-accent-700: #825c27;
+  --color-accent-800: #6b4b26;
+  --color-accent-900: #5a4024;
 
-  --color-surface: #fdfcfa;
-  --color-ink: #23211e;
-  /* papel cálido: fondo de las secciones editoriales claras */
-  --color-paper: #f4f1ea;
+  /* Superficies: el hueso es el fondo por defecto de todo el sitio */
+  --color-surface: #faf8f4;
+  --color-paper: #f2eee7;
+  --color-ink: #14120f;
 
-  /* Bordes más sobrios: lenguaje visual de vitrina fina */
-  --radius-btn: 0.25rem;
-  --radius-card: 0.625rem;
+  /* Verde WhatsApp oficial: se conserva sin retocar porque su
+     reconocibilidad es lo que convierte. Ver nota en `btn-whatsapp`. */
+  --color-whatsapp: #25d366;
+
+  /* Bordes casi rectos: lenguaje de vitrina, no de aplicación */
+  --radius-btn: 0.125rem;
+  --radius-card: 0.25rem;
 
   /* Curva de movimiento lenta y elegante (nada de rebotes) */
   --ease-silk: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ── Base ── */
-html {
+
+/* Lenis toma el control del scroll cuando está activo; sin él (o con
+   movimiento reducido) dejamos el scroll suave nativo. */
+html:not(.lenis) {
   scroll-behavior: smooth;
 }
 
@@ -67,32 +86,42 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
+  font-weight: 400;
 }
 
 /* Foco visible y consistente en toda la plantilla (accesibilidad) */
 :focus-visible {
-  outline: 2px solid var(--color-accent-500);
+  outline: 2px solid var(--color-accent-600);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* ── Estados iniciales de animación (GSAP los revela) ──
-   Si JS no carga o el usuario prefiere menos movimiento,
-   el contenido queda visible. */
+::selection {
+  background: var(--color-accent-200);
+  color: var(--color-brand-950);
+}
+
+/* ── Estados iniciales de animación ──
+   La clase `motion` la pone el propio motor de animaciones DESPUÉS de
+   cargar GSAP con éxito. Si el script falla, nunca se añade y el
+   contenido queda visible: nada de páginas en blanco por un error de JS. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal],
-  html.js [data-reveal-group] > * {
+  html.motion [data-reveal],
+  html.motion [data-reveal-group] > * {
     opacity: 0;
-    transform: translateY(28px);
   }
-  /* Hairlines que se dibujan de izquierda a derecha */
-  html.js [data-rule] {
+  /* Filetes que se dibujan de izquierda a derecha */
+  html.motion [data-rule] {
     transform: scaleX(0);
     transform-origin: left center;
   }
   /* Imágenes que se revelan con máscara editorial */
-  html.js [data-reveal-mask] {
+  html.motion [data-reveal-mask] {
     clip-path: inset(0% 0% 100% 0%);
+  }
+  /* Titulares partidos por líneas: cada línea sube desde su propia máscara */
+  html.motion [data-split] {
+    opacity: 0;
   }
 }
 
@@ -125,23 +154,26 @@ h1, h2, h3, h4 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.75rem;
+  gap: 0.6rem;
+  padding: 0.95rem 1.9rem;
   border-radius: var(--radius-btn);
-  font-weight: 500;
-  font-size: 0.8rem;
-  letter-spacing: 0.16em;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: background-color 0.45s var(--ease-silk), color 0.45s var(--ease-silk),
     border-color 0.45s var(--ease-silk);
   cursor: pointer;
 }
 
+/* Primario en tinta, no en oro: en una maison el botón manda por
+   contraste, y el oro se reserva para los detalles finos. */
 @utility btn-primary {
-  background: var(--color-accent-500);
-  color: var(--color-brand-950);
+  background: var(--color-brand-950);
+  color: #fff;
   &:hover {
-    background: var(--color-accent-300);
+    background: var(--color-brand-800);
   }
 }
 
@@ -156,8 +188,24 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Variante clara para usar sobre el único bloque oscuro del sitio */
+@utility btn-outline-claro {
+  border: 1px solid rgb(255 255 255 / 0.35);
+  color: #fff;
+  background: transparent;
+  &:hover {
+    border-color: #fff;
+    background: #fff;
+    color: var(--color-brand-950);
+  }
+}
+
+/* El verde oficial de WhatsApp se mantiene intacto a propósito: es el
+   canal de cierre real del negocio y su reconocibilidad vale más que la
+   pureza cromática. Se reserva para el botón flotante y el CTA final;
+   dentro de las páginas el CTA principal usa `btn-primary` con el ícono. */
 @utility btn-whatsapp {
-  background: #25d366;
+  background: var(--color-whatsapp);
   color: #0b3d1e;
   &:hover {
     background: #1fb457;
@@ -165,36 +213,38 @@ h1, h2, h3, h4 {
   }
 }
 
-/* ── Escala tipográfica dramática (fluida: degrada bien en móvil) ── */
+/* ── Escala tipográfica (fluida: degrada bien en móvil) ── */
 
-/* Título de portada: el golpe visual de la página */
+/* Título de portada: el golpe visual de la página.
+   `opsz` alto afina los trazos finos de la didona a gran tamaño. */
 @utility type-hero {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(2.9rem, 8.2vw, 6.75rem);
-  line-height: 0.95;
+  font-weight: 400;
+  font-variation-settings: 'opsz' 96;
+  font-size: clamp(3rem, 8.6vw, 8rem);
+  line-height: 0.94;
+  letter-spacing: -0.025em;
+}
+
+@utility type-section {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: 'opsz' 72;
+  font-size: clamp(2.4rem, 5.6vw, 4.75rem);
+  line-height: 1;
   letter-spacing: -0.02em;
 }
 
-/* Título de sección: enorme y contrastado con los micro-labels */
-@utility type-section {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(2.35rem, 5.6vw, 4.5rem);
-  line-height: 1;
-  letter-spacing: -0.015em;
-}
-
-/* Subtítulo editorial / citas */
 @utility type-sub {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  font-weight: 400;
+  font-variation-settings: 'opsz' 32;
+  font-size: clamp(1.5rem, 3vw, 2.35rem);
   line-height: 1.15;
   letter-spacing: -0.01em;
 }
 
-/* Micro-label en mayúsculas: el contraste de escala ES el lujo */
+/* Micro-etiqueta en mayúsculas: el contraste de escala ES el lujo */
 @utility micro {
   font-family: var(--font-body);
   font-size: 0.6875rem;
@@ -241,12 +291,95 @@ h1, h2, h3, h4 {
   letter-spacing: 0.04em;
 }
 
+/* ── Confianza: los sellos que el comprador colombiano exige ── */
+
+/* Ley del metal (18k / 750 / Plata 950). Va visible en portada,
+   catálogo y ficha: es el elemento de confianza más reclamado. */
+@utility badge-ley {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--color-accent-500);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  line-height: 1;
+}
+
+/* Fila de ficha técnica: etiqueta a la izquierda, dato a la derecha,
+   separadas por un filete. Sustituye al "poder tocar la joya". */
+@utility dato-tecnico {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-items: baseline;
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-brand-200);
+  padding-block: 0.9rem;
+  @media (width >= 640px) {
+    grid-template-columns: 8rem 1fr;
+  }
+}
+
+/* Paso numerado de un proceso (cómo compras, el taller, el cotizador) */
+@utility paso-num {
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 48;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-brand-200);
+}
+
+/* ── Controles de catálogo ── */
+
+/* Chip de filtro: texto con filete, lenguaje de vitrina y no de app */
+@utility chip-filtro {
+  position: relative;
+  border: 0;
+  padding: 0.35rem 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--color-brand-500);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.5s var(--ease-silk);
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-accent-500);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s var(--ease-silk);
+  }
+  &:hover {
+    color: var(--color-brand-900);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+  &[aria-pressed='true'] {
+    color: var(--color-brand-950);
+  }
+  &[aria-pressed='true']::after {
+    transform: scaleX(1);
+  }
+}
+
 /* ── Detalle de línea fina ── */
 @utility rule-gold {
   display: block;
   height: 1px;
   width: 100%;
-  background: color-mix(in srgb, var(--color-accent-500) 60%, transparent);
+  background: color-mix(in srgb, var(--color-accent-500) 55%, transparent);
 }
 
 @utility rule-hair {
@@ -256,7 +389,7 @@ h1, h2, h3, h4 {
   background: var(--color-brand-200);
 }
 
-/* Link con subrayado hairline que se dibuja al hover */
+/* Enlace con subrayado fino que se redibuja al hover */
 @utility link-rule {
   position: relative;
   display: inline-flex;
@@ -285,4 +418,42 @@ h1, h2, h3, h4 {
 /* Marco sutil de vitrina: 1px, sin sombras pesadas */
 @utility frame-fine {
   border: 1px solid var(--color-brand-200);
+}
+
+/* Barrido de luz sobre metal: el brillo "premium" sin WebGL.
+   Se dispara al hover del contenedor con `group`. */
+@utility shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 0.28) 50%,
+      transparent 65%
+    );
+    background-size: 300% 100%;
+    background-position: 180% 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shine::after {
+    transition: background-position 1.1s var(--ease-silk);
+  }
+  .group:hover .shine::after,
+  .shine:hover::after {
+    background-position: -80% 0;
+  }
+}
+
+/* Titulares partidos por líneas: cada línea necesita su propia máscara
+   para que el texto suba "desde debajo del papel". */
+.linea-mascara {
+  overflow: hidden;
+  padding-bottom: 0.08em;
 }

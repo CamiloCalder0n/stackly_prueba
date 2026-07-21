@@ -1,5 +1,6 @@
 ---
 import { NEGOCIO, waLink } from '../scripts/site';
+import Icono from './Icono.astro';
 
 interface Props {
   links: { label: string; href: string }[];
@@ -9,75 +10,136 @@ interface Props {
   ctaMensaje?: string;
 }
 
-const { links, cta = 'Escríbenos', ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.` } = Astro.props;
+const {
+  links,
+  cta = 'Escríbenos',
+  ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
+} = Astro.props;
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-brand-950/85 backdrop-blur-md">
-  <div class="container-wide flex h-16 items-center justify-between">
-    <a href="/" class="font-display text-xl font-normal tracking-[0.08em] text-white">
+<header
+  class="sticky top-0 z-50 border-b border-brand-200 bg-surface/85 backdrop-blur-md"
+  id="cabecera"
+>
+  <div class="container-wide flex h-[4.5rem] items-center justify-between gap-6">
+    <a
+      href="/"
+      class="font-display text-[1.35rem] tracking-[0.14em] text-brand-950 uppercase"
+      style="font-variation-settings: 'opsz' 20;"
+    >
       {NEGOCIO.nombre}
     </a>
 
-    <nav class="hidden items-center gap-9 md:flex" aria-label="Navegación principal">
+    <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegación principal">
       {links.map((l) => (
-        <a href={l.href} class="micro-sm text-brand-200 transition-colors duration-500 hover:text-accent-200">
+        <a
+          href={l.href}
+          class="micro-sm text-brand-600 transition-colors duration-500 hover:text-accent-700"
+        >
           {l.label}
         </a>
       ))}
-      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary !px-6 !py-2.5">
+      <a
+        href={waLink(ctaMensaje)}
+        target="_blank"
+        rel="noopener"
+        class="btn btn-primary !px-5 !py-2.5"
+      >
+        <Icono nombre="whatsapp" tamano={14} />
         {cta}
       </a>
     </nav>
 
     <button
       id="menu-toggle"
-      class="flex h-10 w-10 items-center justify-center rounded-md text-white md:hidden"
+      class="-mr-2 flex h-11 w-11 items-center justify-center text-brand-950 lg:hidden"
       aria-label="Abrir menú"
       aria-expanded="false"
       aria-controls="menu-movil"
     >
-      <svg id="icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      <svg id="icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <Icono nombre="menu" tamano={22} />
+    </button>
+  </div>
+</header>
+
+<!-- Menú móvil a pantalla completa: los enlaces en tipografía de titular,
+     que es el gesto de navegación de una maison y además se toca mejor. -->
+<div
+  id="menu-movil"
+  class="fixed inset-0 z-[60] hidden bg-surface lg:hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú de navegación"
+>
+  <div class="container-wide flex h-[4.5rem] items-center justify-between border-b border-brand-200">
+    <span class="font-display text-[1.35rem] tracking-[0.14em] text-brand-950 uppercase">
+      {NEGOCIO.nombre}
+    </span>
+    <button
+      id="menu-cerrar"
+      class="-mr-2 flex h-11 w-11 items-center justify-center text-brand-950"
+      aria-label="Cerrar menú"
+    >
+      <Icono nombre="cerrar" tamano={22} />
     </button>
   </div>
 
-  <nav id="menu-movil" class="hidden border-t border-white/10 bg-brand-950 md:hidden" aria-label="Navegación móvil">
-    <div class="container-wide flex flex-col py-3">
-      {links.map((l) => (
-        <a href={l.href} class="micro-sm border-b border-white/10 py-4 text-brand-200 transition-colors duration-500 hover:text-accent-200">
-          {l.label}
-        </a>
-      ))}
-      <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary mt-5 mb-2">
-        {cta}
+  <nav class="container-wide flex flex-col py-6" aria-label="Navegación móvil">
+    {links.map((l, i) => (
+      <a
+        href={l.href}
+        class="type-sub border-b border-brand-200 py-5 text-brand-950 transition-colors duration-500 hover:text-accent-700"
+      >
+        <span class="section-num mr-4 align-middle">{String(i + 1).padStart(2, '0')}</span>
+        {l.label}
       </a>
-    </div>
+    ))}
+    <a
+      href={waLink(ctaMensaje)}
+      target="_blank"
+      rel="noopener"
+      class="btn btn-whatsapp mt-8"
+    >
+      <Icono nombre="whatsapp" tamano={17} />
+      {cta}
+    </a>
+    <p class="mt-8 text-[0.82rem] leading-relaxed font-light text-brand-500">
+      {NEGOCIO.direccion}, {NEGOCIO.ciudad}<br />
+      {NEGOCIO.horario}
+    </p>
   </nav>
-</header>
-
-<!-- Separador para que el contenido no quede debajo del header fijo -->
-<div class="h-16" aria-hidden="true"></div>
+</div>
 
 <script>
-  const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('menu-movil');
-  const iconOpen = document.getElementById('icon-open');
-  const iconClose = document.getElementById('icon-close');
+  /* Los scripts de componente NO se vuelven a ejecutar tras una navegación
+     del ClientRouter, así que el montaje se cuelga de `astro:page-load`,
+     que sí dispara en la carga inicial y en cada navegación. */
+  function montarMenu(): void {
+    const abrir = document.getElementById('menu-toggle');
+    const cerrar = document.getElementById('menu-cerrar');
+    const menu = document.getElementById('menu-movil');
+    if (!abrir || !menu) return;
 
-  toggle?.addEventListener('click', () => {
-    const abierto = menu?.classList.toggle('hidden') === false;
-    toggle.setAttribute('aria-expanded', String(abierto));
-    iconOpen?.classList.toggle('hidden', abierto);
-    iconClose?.classList.toggle('hidden', !abierto);
-  });
+    const mostrar = (visible: boolean) => {
+      menu.classList.toggle('hidden', !visible);
+      abrir.setAttribute('aria-expanded', String(visible));
+      document.body.style.overflow = visible ? 'hidden' : '';
+      if (visible) menu.querySelector<HTMLElement>('a')?.focus();
+      else abrir.focus();
+    };
 
-  // Cierra el menú al navegar
-  menu?.querySelectorAll('a').forEach((a) =>
-    a.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      toggle?.setAttribute('aria-expanded', 'false');
-      iconOpen?.classList.remove('hidden');
-      iconClose?.classList.add('hidden');
-    }),
-  );
+    abrir.addEventListener('click', () => mostrar(true));
+    cerrar?.addEventListener('click', () => mostrar(false));
+
+    // Al navegar dentro del menú, se cierra solo.
+    menu.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => mostrar(false)),
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.classList.contains('hidden')) mostrar(false);
+    });
+  }
+
+  document.addEventListener('astro:page-load', montarMenu);
 </script>

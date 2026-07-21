@@ -8,6 +8,7 @@ import PiezaCard from '../../components/PiezaCard.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppFlotante from '../../components/WhatsAppFlotante.astro';
 import { NEGOCIO, waLink, precioCOP } from '../../scripts/site';
+import Foto from '../../components/Foto.astro';
 
 export async function getStaticPaths() {
   const piezas = await getCollection('piezas');
@@ -51,7 +52,7 @@ const jsonLd = {
   '@type': 'Product',
   name: d.nombre,
   sku: d.referencia,
-  image: d.fotos,
+  image: d.fotos.map((f) => new URL(f.src, Astro.site).href),
   description: d.descripcion,
   material: d.material,
   url: urlPieza,
@@ -68,7 +69,7 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={d.nombre} description={d.descripcion} image={d.fotos[0]}>
+<BaseLayout title={d.nombre} description={d.descripcion} image={d.fotos[0].src}>
   <!-- JSON-LD del producto (válido dentro de <body>) -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
   <Header links={navLinks} cta="Consultar" />
@@ -82,20 +83,20 @@ const jsonLd = {
 
       <div class="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-16">
         <!-- ── Galería: protagonista, ratio vertical editorial ── -->
-        <div class="lg:col-span-7" id="galeria" data-fotos={JSON.stringify(d.fotos)}>
+        <div class="lg:col-span-7" id="galeria" data-fotos={JSON.stringify(d.fotos.map((f) => f.src))}>
           <button
             type="button"
             id="galeria-abrir"
             class="group relative block w-full cursor-zoom-in overflow-hidden bg-brand-100"
             aria-label={`Ampliar foto de ${d.nombre}`}
           >
-            <img
-              id="galeria-principal"
+            <Foto
               src={d.fotos[0]}
               alt={d.nombre}
-              class="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
-              loading="eager"
-              fetchpriority="high"
+              ratio="4/5"
+              sizes="(max-width: 1024px) 100vw, 58vw"
+              prioridad
+              class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
             />
             <span class="micro-sm absolute right-5 bottom-5 inline-flex items-center gap-2 bg-brand-950/70 px-3 py-2 text-white opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:opacity-100">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
@@ -113,7 +114,7 @@ const jsonLd = {
                   data-activa={i === 0 ? 'true' : 'false'}
                   aria-label={`Ver foto ${i + 1} de ${d.nombre}`}
                 >
-                  <img src={foto} alt="" class="aspect-[4/5] w-full object-cover" loading="lazy" />
+                  <Foto src={foto} alt="" ratio="4/5" widths={[120, 240]} sizes="120px" />
                 </button>
               ))}
             </div>
@@ -205,7 +206,7 @@ const jsonLd = {
     <button type="button" id="lightbox-prev" class="absolute left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:left-6" aria-label="Foto anterior">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <img id="lightbox-img" src={d.fotos[0]} alt={d.nombre} class="max-h-[85vh] max-w-full object-contain" />
+    <img id="lightbox-img" src={d.fotos[0].src} alt={d.nombre} class="max-h-[85vh] max-w-full object-contain" />
     <button type="button" id="lightbox-next" class="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-500 hover:bg-white/20 md:right-6" aria-label="Foto siguiente">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
     </button>

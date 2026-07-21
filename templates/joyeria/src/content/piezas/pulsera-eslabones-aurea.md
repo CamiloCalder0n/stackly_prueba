@@ -3,14 +3,24 @@ nombre: Pulsera Eslabones Áurea
 referencia: AUR-PU-001
 slug: pulsera-eslabones-aurea
 fotos:
-  - https://images.unsplash.com/photo-1611955167811-4711904bb9f8?w=1200&q=80
-  - https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?w=1200&q=80
+  - ../../assets/fotos/pulsera-oro-revista.jpg
+  - ../../assets/fotos/colgantes-suspendidos.jpg
 categoria: pulseras
 material: oro
-peso: 9,8 g (largo 18 cm)
+ley: 18k
+piedras: Sin piedras
+peso: 12,4 g
+medidas: 18 cm de largo · eslabón de 7 mm
+acabado: Pulido espejo
+tallas: 17, 18 y 19 cm
 precio: 2980000
 ocultarPrecio: false
-descripcion: Pulsera de eslabones ovalados en oro amarillo de 18k, la pieza insignia de la casa. Cada eslabón se arma y solda a mano en nuestro taller. Broche oculta-cierre con doble seguro. Se fabrica al largo exacto de tu muñeca.
-disponibilidad: por encargo
+descripcion: Pulsera de eslabón grueso hecha eslabón por eslabón en el taller, con broche de mosquetón reforzado y cadena de seguridad. Es de las piezas que más peso llevan, y por eso la vendemos con la factura del gramaje discriminado.
+disponibilidad: disponible
+unidades: 1
+ocasion:
+  - aniversario
+grabable: true
+nuevo: false
 destacada: false
 ---

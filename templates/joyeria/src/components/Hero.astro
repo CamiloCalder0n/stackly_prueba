@@ -1,5 +1,6 @@
 ---
 import { waLink, NEGOCIO } from '../scripts/site';
+import Foto from './Foto.astro';
 
 interface Props {
   eyebrow?: string;
@@ -7,13 +8,13 @@ interface Props {
   /** Segunda línea del título, en cursiva: el acento editorial. */
   acento?: string;
   subtitulo?: string;
-  /** Imagen de fondo (usa /public o URL de Unsplash con ?w=1600&q=80). */
-  imagen?: string;
+  /** Imagen de fondo (asset de src/assets/fotos). */
+  imagen?: ImageMetadata;
   ctaTexto?: string;
   ctaMensaje?: string;
   ctaSecundario?: { label: string; href: string };
   /** Tarjeta de pieza superpuesta que rompe la simetría del hero. */
-  destacado?: { imagen: string; etiqueta: string; titulo: string; href: string };
+  destacado?: { imagen: ImageMetadata; etiqueta: string; titulo: string; href: string };
 }
 
 const {
@@ -32,12 +33,13 @@ const {
 <section class="relative flex min-h-[92vh] items-center overflow-hidden bg-brand-950">
   {imagen && (
     <div class="absolute inset-0" data-parallax="0.14">
-      <img
+      <Foto
         src={imagen}
         alt=""
-        class="h-[118%] w-full object-cover opacity-45"
-        loading="eager"
-        fetchpriority="high"
+        sizes="100vw"
+        widths={[900, 1400, 2000]}
+        prioridad
+        class="h-[118%] object-cover opacity-45"
       />
     </div>
   )}
@@ -90,11 +92,12 @@ const {
       {destacado && (
         <a href={destacado.href} class="group relative hidden lg:col-span-4 lg:col-start-9 lg:block">
           <div class="relative overflow-hidden border border-white/15">
-            <img
+            <Foto
               src={destacado.imagen}
               alt={destacado.titulo}
-              class="aspect-[3/4] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
-              loading="eager"
+              ratio="3/4"
+              sizes="(max-width: 1024px) 0px, 33vw"
+              class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/10 to-transparent"></div>
             <div class="absolute inset-x-0 bottom-0 p-6">

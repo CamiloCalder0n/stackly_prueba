@@ -3,17 +3,27 @@ nombre: Anillo Solitario Aurora
 referencia: AUR-AN-001
 slug: anillo-solitario-aurora
 fotos:
-  - https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&q=80
-  - https://images.unsplash.com/photo-1610694955371-d4a3e0ce4b52?w=1200&q=80
-  - https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1200&q=80
+  - ../../assets/fotos/anillo-halo-oscuro.jpg
+  - ../../assets/fotos/anillos-piedra-crema.jpg
+  - ../../assets/fotos/anillo-topacios-lino.jpg
 categoria: anillos
 material: oro
-piedras: Diamante central de 0,30 ct (certificado)
+ley: 18k
+piedras: Diamante central de 0,30 ct, color G, claridad VS2. Halo de 18 diamantes de 0,01 ct
+certificacion: Certificado GIA del diamante central
 peso: 3,4 g
-tallas: 5 a 9 (ajuste sin costo)
+medidas: Banda de 1,9 mm de ancho · halo de 7,2 mm de diámetro
+acabado: Pulido espejo
+tallas: 5 a 9
 precio: 3850000
 ocultarPrecio: false
-descripcion: Un clásico que nunca falla. Solitario en oro amarillo de 18k con diamante central certificado, engaste de cuatro garras y banda pulida a espejo. Ideal para propuestas y aniversarios; incluye estuche de regalo y certificado de autenticidad.
+descripcion: El clásico que nunca falla. Solitario en oro blanco de 18k con diamante central certificado, halo de diamantes y engaste de cuatro garras. La banda se afina hacia atrás para que el diamante se vea más grande y el anillo se sienta liviano. Sale del taller con estuche, certificado GIA y garantía escrita.
 disponibilidad: disponible
+unidades: 1
+ocasion:
+  - compromiso
+  - aniversario
+grabable: true
+nuevo: false
 destacada: true
 ---

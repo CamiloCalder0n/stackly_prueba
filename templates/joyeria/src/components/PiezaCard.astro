@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { precioCOP } from '../scripts/site';
+import Foto from './Foto.astro';
 
 interface Props {
   pieza: CollectionEntry<'piezas'>;
@@ -32,11 +33,12 @@ const precioTexto = precioVisible ? precioCOP(d.precio!) : 'Consultar precio';
     data-material={d.material}
     data-precio={precioVisible ? String(d.precio) : ''}
   >
-    <img
+    <Foto
       src={d.fotos[0]}
       alt={d.nombre}
-      class="h-full w-full object-cover opacity-90 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-100"
-      loading="lazy"
+      ratio="4/5"
+      sizes="(max-width: 640px) 100vw, 66vw"
+      class="h-full opacity-90 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-100"
     />
     <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/15 to-transparent"></div>
 
@@ -70,11 +72,11 @@ const precioTexto = precioVisible ? precioCOP(d.precio!) : 'Consultar precio';
     data-precio={precioVisible ? String(d.precio) : ''}
   >
     <div class="relative overflow-hidden bg-brand-100">
-      <img
+      <Foto
         src={d.fotos[0]}
         alt={d.nombre}
-        class="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
-        loading="lazy"
+        ratio="4/5"
+        class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
       />
       <!-- Velo que aparece lento y revela el CTA -->
       <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent opacity-0 transition-opacity duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:opacity-100"></div>
