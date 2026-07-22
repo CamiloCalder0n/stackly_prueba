@@ -1,12 +1,43 @@
 @import 'tailwindcss';
 
-/* Tipografías variables self-hosted (sin petición bloqueante a Google Fonts).
-   Bodoni Moda se importa con el eje de tamaño óptico (opsz): a tamaños de
-   titular los remates y los trazos finos se afinan, que es exactamente el
-   gesto de una didona de alta joyería. */
-@import '@fontsource-variable/bodoni-moda/opsz.css';
-@import '@fontsource-variable/bodoni-moda/opsz-italic.css';
-@import '@fontsource-variable/jost';
+/* ── Tipografías variables self-hosted ──
+   Se declaran a mano en vez de importar los CSS del paquete porque esos
+   traen los seis subconjuntos (cirílico, matemáticas, símbolos, vietnamita…)
+   que este sitio no usa jamás: solo sus reglas ya pesaban 7 kB de CSS
+   bloqueante y dejaban ocho .woff2 muertos en el build.
+
+   El subconjunto `latin` cubre todo el español —tildes, ñ, ¿, ¡, — y ·—,
+   así que con estas tres caras basta.
+
+   Bodoni Moda va con el eje de tamaño óptico (opsz): a tamaño de titular
+   los remates y los trazos finos se afinan, que es el gesto propio de una
+   didona de alta joyería. */
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Bodoni Moda Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-italic.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Jost Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/jost/files/jost-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
 
 /* ═══════════════════════════════════════════════════════════════
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
@@ -25,16 +56,21 @@
   --font-display: 'Bodoni Moda Variable', 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Jost Variable', system-ui, sans-serif;
 
-  /* brand → neutros cálidos sobre base hueso */
+  /* brand → neutros cálidos sobre base hueso.
+     A partir del 500 la rampa está calibrada para texto: cualquiera de esos
+     tonos sobre `surface` o `paper` supera el 4.5:1 que pide la WCAG AA,
+     incluso en los tamaños de 10-11px de las micro-etiquetas. Del 400 hacia
+     arriba son tonos decorativos (bordes, marcas de agua, placeholders):
+     no los uses para texto que haya que leer. */
   --color-brand-50: #faf8f4;
   --color-brand-100: #f2eee7;
   --color-brand-200: #e4ded3;
   --color-brand-300: #cfc7b8;
-  --color-brand-400: #a89e8d;
-  --color-brand-500: #857b6c;
-  --color-brand-600: #665e52;
-  --color-brand-700: #4c463c;
-  --color-brand-800: #332f28;
+  --color-brand-400: #9d9384;
+  --color-brand-500: #6f6659; /* 4.88:1 sobre paper — el mínimo para texto */
+  --color-brand-600: #564f45;
+  --color-brand-700: #413c35;
+  --color-brand-800: #302c27;
   --color-brand-900: #201d18;
   --color-brand-950: #14120f;
 
@@ -324,14 +360,16 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Paso numerado de un proceso (cómo compras, el taller, el cotizador) */
+/* Paso numerado de un proceso (cómo compras, el taller, el cotizador).
+   El tono es deliberadamente tenue, pero no tanto como para desaparecer:
+   a este tamaño la WCAG pide 3:1 y este color da 3,2:1 sobre el papel. */
 @utility paso-num {
   font-family: var(--font-display);
   font-variation-settings: 'opsz' 48;
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
   line-height: 1;
-  color: var(--color-brand-200);
+  color: #8d8474;
 }
 
 /* ── Controles de catálogo ── */

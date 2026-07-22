@@ -1,0 +1,28 @@
+---
+/**
+ * Panel de contenido (Decap CMS).
+ *
+ * Es una página de Astro y no un archivo suelto en `public/` porque el
+ * servidor de desarrollo de Astro 7 no resuelve el índice de un directorio
+ * dentro de `public/`: `/admin/` daba 404 y solo funcionaba escribiendo
+ * `/admin/index.html`. Como página, `/admin` responde igual en desarrollo
+ * y en producción.
+ *
+ * La configuración sigue viviendo en `public/admin/config.yml` porque Decap
+ * la pide en tiempo de ejecución y debe servirse tal cual, sin procesar.
+ */
+export const prerender = true;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Panel de contenido</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/decap-cms@^3.8.4/dist/decap-cms.js" is:inline></script>
+  </body>
+</html>

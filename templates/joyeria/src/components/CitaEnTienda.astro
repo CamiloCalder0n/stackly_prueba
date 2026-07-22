@@ -1,0 +1,206 @@
+---
+// Agendador de citas en tienda: elige día, franja horaria y motivo, y
+// termina abriendo WhatsApp con los tres datos listos. No hay backend ni
+// calendario real detrás — la cita se confirma por WhatsApp, no aquí, y
+// el copy lo deja explícito para no simular un sistema que no existe.
+import { NEGOCIO } from '../scripts/site';
+import Icono from './Icono.astro';
+
+/**
+ * Días hábiles del negocio: `NEGOCIO.horario` dice "Lun - Sáb", así que se
+ * asume domingo cerrado (getDay() === 0). Si el horario del negocio
+ * cambiara a otros días, este supuesto habría que actualizarlo aquí.
+ */
+const DIA_CERRADO = 0; // domingo
+
+const MOTIVOS = [
+  'Ver una pieza',
+  'Asesoría de talla',
+  'Encargo a la medida',
+  'Avalúo',
+  'Arreglo o ajuste',
+];
+---
+
+<div class="cita-en-tienda" data-cerrado={DIA_CERRADO}>
+  <div class="flex items-center gap-3">
+    <Icono nombre="calendario" tamano={17} class="shrink-0 text-accent-600" />
+    <p class="micro-sm text-brand-500">Agenda una visita</p>
+  </div>
+  <p class="type-sub mt-4 text-brand-950">Ven a probártela</p>
+  <p class="mt-4 max-w-md text-[0.88rem] leading-[1.8] font-light text-brand-600">
+    Elige día, hora y motivo: te escribimos por WhatsApp para confirmar. No es una reserva
+    automática — la cita queda en firme cuando te contestamos.
+  </p>
+
+  <form id="form-cita" novalidate class="mt-8">
+    <fieldset>
+      <legend class="micro-sm text-brand-500">Día</legend>
+      <div id="dias-cita" class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Elegir día de la visita"></div>
+    </fieldset>
+
+    <fieldset class="mt-7">
+      <legend class="micro-sm text-brand-500">Hora</legend>
+      <div id="horas-cita" class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Elegir hora de la visita">
+        {NEGOCIO.horarioCitas.map((hora) => (
+          <button type="button" class="chip-filtro chip-cita" data-valor={hora} aria-pressed="false">
+            {hora}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="mt-7">
+      <legend class="micro-sm text-brand-500">Motivo</legend>
+      <div id="motivos-cita" class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Elegir motivo de la visita">
+        {MOTIVOS.map((motivo) => (
+          <button type="button" class="chip-filtro chip-cita" data-valor={motivo} aria-pressed="false">
+            {motivo}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+
+    <p id="error-cita" class="campo-error-cita mt-5" role="alert" hidden></p>
+
+    <button type="submit" class="btn btn-whatsapp mt-7 w-full sm:w-auto">
+      <Icono nombre="whatsapp" tamano={16} />
+      Confirmar por WhatsApp
+    </button>
+  </form>
+</div>
+
+<style>
+  .chip-cita {
+    border: 1px solid var(--color-brand-300);
+    padding: 0.55rem 0.95rem;
+  }
+  .chip-cita::after {
+    display: none;
+  }
+  .chip-cita:hover {
+    border-color: var(--color-brand-500);
+  }
+  .chip-cita[aria-pressed='true'] {
+    border-color: var(--color-accent-500);
+    background: var(--color-accent-50);
+    color: var(--color-brand-950);
+  }
+  .campo-error-cita {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #b3431f;
+  }
+</style>
+
+<script>
+  /* Los scripts de componente no se re-ejecutan tras una navegación del
+     ClientRouter: el montaje va colgado de `astro:page-load`. */
+  import { NEGOCIO, waLink } from '../scripts/site';
+
+  function montarCita(): void {
+    const raiz = document.querySelector<HTMLElement>('.cita-en-tienda');
+    const form = document.getElementById('form-cita') as HTMLFormElement | null;
+    const contenedorDias = document.getElementById('dias-cita');
+    const error = document.getElementById('error-cita');
+    if (!raiz || !form || !contenedorDias || !error) return;
+
+    const diaCerrado = Number(raiz.dataset.cerrado ?? '0');
+
+    /** Próximos 6 días hábiles a partir de hoy (incluye hoy si es hábil). */
+    function proximosDiasHabiles(cantidad: number): Date[] {
+      const dias: Date[] = [];
+      const cursor = new Date();
+      cursor.setHours(0, 0, 0, 0);
+      while (dias.length < cantidad) {
+        if (cursor.getDay() !== diaCerrado) dias.push(new Date(cursor));
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      return dias;
+    }
+
+    function formatearDia(fecha: Date): string {
+      const texto = fecha.toLocaleDateString('es-CO', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      });
+      return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    function formatearDiaLargo(fecha: Date): string {
+      const texto = fecha.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      });
+      return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    let diaSeleccionado: string | null = null; // fecha larga en español
+    let horaSeleccionada: string | null = null;
+    let motivoSeleccionado: string | null = null;
+
+    // ── Días: se generan en cliente porque "hoy" depende de cuándo se abre la página ──
+    proximosDiasHabiles(6).forEach((fecha) => {
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.className = 'chip-filtro chip-cita';
+      boton.setAttribute('aria-pressed', 'false');
+      boton.dataset.valor = formatearDiaLargo(fecha);
+      boton.textContent = formatearDia(fecha);
+      boton.addEventListener('click', () => {
+        contenedorDias.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        boton.setAttribute('aria-pressed', 'true');
+        diaSeleccionado = boton.dataset.valor ?? null;
+        ocultarError();
+      });
+      contenedorDias.appendChild(boton);
+    });
+
+    function seleccionarChip(contenedorId: string, onSeleccionar: (valor: string) => void): void {
+      const contenedor = document.getElementById(contenedorId);
+      contenedor?.querySelectorAll<HTMLButtonElement>('button[data-valor]').forEach((boton) => {
+        boton.addEventListener('click', () => {
+          contenedor.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+          boton.setAttribute('aria-pressed', 'true');
+          onSeleccionar(boton.dataset.valor || '');
+          ocultarError();
+        });
+      });
+    }
+
+    seleccionarChip('horas-cita', (valor) => (horaSeleccionada = valor));
+    seleccionarChip('motivos-cita', (valor) => (motivoSeleccionado = valor));
+
+    function ocultarError(): void {
+      error!.hidden = true;
+      error!.textContent = '';
+    }
+
+    function mostrarError(mensaje: string): void {
+      error!.textContent = mensaje;
+      error!.hidden = false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!diaSeleccionado) return mostrarError('Elige un día para la visita.');
+      if (!horaSeleccionada) return mostrarError('Elige una hora para la visita.');
+      if (!motivoSeleccionado) return mostrarError('Cuéntanos el motivo de la visita.');
+
+      const mensaje = [
+        `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero agendar una visita.`,
+        `Día: ${diaSeleccionado}`,
+        `Hora: ${horaSeleccionada}`,
+        `Motivo: ${motivoSeleccionado}`,
+        'Quedo atento a la confirmación.',
+      ].join('\n');
+
+      window.open(waLink(mensaje), '_blank', 'noopener');
+    });
+  }
+
+  document.addEventListener('astro:page-load', montarCita);
+</script>

@@ -18,7 +18,24 @@ const {
   items,
   numero = '06',
 } = Astro.props;
+
+/* Datos estructurados FAQPage: mismas preguntas que se ven en pantalla,
+   para que puedan salir como resultado enriquecido en el buscador. */
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.pregunta,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.respuesta,
+    },
+  })),
+};
 ---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(faqJsonLd)} />
 
 <!-- FAQ: acordeón de línea fina, encabezado desplazado a la izquierda -->
 <section class="bg-paper py-24 md:py-32" id="faq">

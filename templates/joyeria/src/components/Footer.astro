@@ -95,9 +95,11 @@ const telLimpio = NEGOCIO.telefono.replace(/\s/g, '');
       <p>© {year} {NEGOCIO.nombre}. Todos los derechos reservados.</p>
       <p>
         Hecho por
+        <!-- Subrayado permanente: dentro de un párrafo, distinguir el enlace
+             solo por color deja fuera a quien no percibe ese contraste. -->
         <a
           href="https://stackly.co"
-          class="text-brand-800 transition-colors duration-500 hover:text-accent-700"
+          class="text-brand-800 underline underline-offset-2 transition-colors duration-500 hover:text-accent-700"
         >
           Stackly
         </a>

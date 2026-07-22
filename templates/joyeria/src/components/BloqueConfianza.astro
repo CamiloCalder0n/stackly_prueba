@@ -1,0 +1,58 @@
+---
+import Icono from './Icono.astro';
+
+/**
+ * Los tres sellos de confianza que la investigación de mercado marca como el
+ * argumento de venta más decisivo en las joyerías colombianas que sí
+ * convierten (Diamanti, Bracarli...): van explícitos junto al precio, no
+ * enterrados en el FAQ. Componentizado con props para que otro nicho o
+ * cliente pueda ajustar los textos sin tocar la estructura.
+ */
+interface Sello {
+  icono: 'escudo' | 'anillo' | 'certificado' | 'martillo' | 'camion' | 'tienda';
+  titulo: string;
+  texto?: string;
+}
+
+interface Props {
+  sellos?: Sello[];
+  /** Clases extra sobre el contenedor. */
+  class?: string;
+}
+
+const {
+  sellos = [
+    {
+      icono: 'escudo',
+      titulo: 'Garantía escrita de un año',
+      texto: 'Cubre defectos de fabricación y engaste desde el día de la compra.',
+    },
+    {
+      icono: 'anillo',
+      titulo: 'Primer ajuste de talla sin costo',
+      texto: 'Si la talla no queda perfecta, la ajustamos una vez sin cobrar.',
+    },
+    {
+      icono: 'certificado',
+      titulo: 'Certificado de materiales',
+      texto: 'Ley del metal y piedras verificadas, con soporte por escrito.',
+    },
+  ],
+  class: clase = '',
+} = Astro.props;
+---
+
+<div
+  class={`grid grid-cols-1 gap-5 border-y border-brand-200 py-7 sm:grid-cols-3 sm:gap-4 ${clase}`}
+  data-reveal-group
+>
+  {sellos.map((s) => (
+    <div class="flex items-start gap-3">
+      <Icono nombre={s.icono} tamano={20} class="mt-0.5 shrink-0 text-accent-600" />
+      <div>
+        <p class="micro-sm text-brand-900">{s.titulo}</p>
+        {s.texto && <p class="mt-1.5 text-xs leading-relaxed font-light text-brand-500">{s.texto}</p>}
+      </div>
+    </div>
+  ))}
+</div>

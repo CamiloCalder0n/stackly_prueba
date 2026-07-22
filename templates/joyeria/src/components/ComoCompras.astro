@@ -1,0 +1,61 @@
+---
+// Cómo se compra aquí: tres pasos cortos que terminan siempre en WhatsApp,
+// seguidos de los medios de pago (Pagos.astro) para que la respuesta a
+// "¿y cómo pago?" quede resuelta en la misma pantalla.
+import SectionHeading from './SectionHeading.astro';
+import Pagos from './Pagos.astro';
+
+interface Paso {
+  titulo: string;
+  texto: string;
+}
+
+interface Props {
+  numero?: string;
+}
+const { numero = '06' } = Astro.props;
+
+const pasos: Paso[] = [
+  {
+    titulo: 'Eliges la pieza',
+    texto: 'Entras al catálogo y ves el precio, el peso, las medidas y la ley del metal de cada pieza, antes de escribirnos.',
+  },
+  {
+    titulo: 'Nos escribes por WhatsApp',
+    texto: 'Nos das la referencia y resolvemos talla, tiempos de entrega y forma de pago en la misma conversación.',
+  },
+  {
+    titulo: 'Recibes tu pieza',
+    texto: 'La recoges en nuestra tienda de Cabecera o te la enviamos asegurada a cualquier ciudad de Colombia.',
+  },
+];
+---
+
+<section class="bg-paper py-24 md:py-36" id="como-comprar" aria-label="Cómo comprar en Aurea">
+  <div class="container-wide">
+    <SectionHeading
+      numero={numero}
+      eyebrow="Cómo comprar"
+      titulo="Tres pasos,"
+      acento="sin vueltas"
+      descripcion="De ver la pieza a tenerla en tus manos, todo pasa por una sola conversación de WhatsApp."
+      centrado
+    />
+
+    <div class="mt-16 grid gap-x-10 gap-y-14 sm:grid-cols-3" data-reveal-group>
+      {pasos.map((paso, i) => (
+        <div class="text-center sm:text-left">
+          <span class="paso-num">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="type-sub mt-4 text-brand-950">{paso.titulo}</h3>
+          <p class="mt-4 text-[0.9rem] leading-[1.85] font-light text-brand-600">{paso.texto}</p>
+        </div>
+      ))}
+    </div>
+
+    <span class="rule-hair mx-auto mt-16 max-w-3xl origin-left" data-rule></span>
+
+    <div class="mx-auto mt-14 max-w-3xl" data-reveal>
+      <Pagos />
+    </div>
+  </div>
+</section>
