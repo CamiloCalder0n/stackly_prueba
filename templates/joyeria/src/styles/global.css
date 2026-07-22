@@ -252,13 +252,16 @@ h1, h2, h3, h4 {
 /* ── Escala tipográfica (fluida: degrada bien en móvil) ── */
 
 /* Título de portada: el golpe visual de la página.
-   `opsz` alto afina los trazos finos de la didona a gran tamaño. */
+   `opsz` alto afina los trazos finos de la didona a gran tamaño.
+   El tope de 6.5rem no es estético sino de composición: por encima de eso
+   el titular de la portada rompe en cinco líneas dentro de su columna de
+   7/12 y empuja el CTA fuera de la pantalla. */
 @utility type-hero {
   font-family: var(--font-display);
   font-weight: 400;
   font-variation-settings: 'opsz' 96;
-  font-size: clamp(3rem, 8.6vw, 8rem);
-  line-height: 0.94;
+  font-size: clamp(2.8rem, 7vw, 6.5rem);
+  line-height: 0.96;
   letter-spacing: -0.025em;
 }
 

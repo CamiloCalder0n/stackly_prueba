@@ -38,7 +38,10 @@ const trayectoria = `Oficio desde ${NEGOCIO.anoFundacion} (${ANOS_OFICIO} años)
 ---
 
 <section class="relative bg-surface" aria-label="Presentación">
-  <div class="container-wide grid gap-12 pt-32 pb-20 md:gap-16 md:pt-40 md:pb-28 lg:grid-cols-12 lg:items-center lg:gap-10 lg:pt-44 lg:pb-32">
+  <!-- El aire es generoso, pero medido: con más relleno superior el botón de
+       WhatsApp caía por debajo del pliegue en una pantalla de portátil, que es
+       justo donde no puede estar el CTA principal. -->
+  <div class="container-wide grid gap-12 pt-20 pb-20 md:gap-16 md:pt-24 md:pb-28 lg:grid-cols-12 lg:items-center lg:gap-10 lg:pt-24 lg:pb-28">
     <!-- Bloque tipográfico: 7 de 12 columnas (asimetría editorial) -->
     <div class="lg:col-span-7">
       {eyebrow && (
