@@ -3,7 +3,7 @@ nombre: Anillo Herencia de Topacios
 referencia: AUR-AN-003
 slug: anillo-herencia-topacios
 fotos:
-  - ../../assets/fotos/anillo-topacios-lino.jpg
+  - ../../assets/fotos/anillo-piedra-azul.jpg
 categoria: anillos
 material: oro
 ley: 18k

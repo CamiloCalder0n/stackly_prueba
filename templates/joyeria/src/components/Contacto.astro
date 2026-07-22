@@ -60,19 +60,24 @@ const campoClase =
           ))}
         </dl>
 
-        <div class="mt-10 flex items-center gap-3 border-y border-brand-200 py-4">
+        <!-- Aquí había un segundo botón verde de WhatsApp, justo al lado del
+             que cierra el agendador: dos acciones idénticas compitiendo en la
+             misma pantalla. Se deja un enlace discreto —el botón que manda en
+             esta sección es "Confirmar por WhatsApp" del agendador— y así la
+             página pasa de seis puntos de entrada a WhatsApp a cuatro, cada
+             uno con un trabajo distinto. -->
+        <div class="mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-brand-200 py-4">
           <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-whatsapp" aria-hidden="true"></span>
-          <p class="micro-sm text-brand-500">Canal rápido — te respondemos en minutos</p>
+          <p class="micro-sm text-brand-500">Canal rápido — te respondemos en minutos:</p>
+          <a
+            href={waLink(`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`)}
+            target="_blank"
+            rel="noopener"
+            class="micro-sm link-rule text-accent-700 hover:text-accent-600"
+          >
+            escríbenos ahora
+          </a>
         </div>
-        <a
-          href={waLink(`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`)}
-          target="_blank"
-          rel="noopener"
-          class="btn btn-whatsapp mt-6 w-full sm:w-auto"
-        >
-          <Icono nombre="whatsapp" tamano={16} />
-          Escribir por WhatsApp
-        </a>
       </div>
 
       <!-- Agendador de citas: la herramienta que ninguna joyería del benchmark ofrece -->

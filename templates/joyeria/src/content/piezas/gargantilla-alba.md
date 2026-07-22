@@ -3,8 +3,8 @@ nombre: Gargantilla Alba
 referencia: AUR-CO-003
 slug: gargantilla-alba
 fotos:
-  - ../../assets/fotos/gargantilla-piel.jpg
-  - ../../assets/fotos/lifestyle-collar-luna.jpg
+  - ../../assets/fotos/collar-cadena-fina.jpg
+  - ../../assets/fotos/lifestyle-velo-arete.jpg
 categoria: collares
 material: oro rosa
 ley: 18k

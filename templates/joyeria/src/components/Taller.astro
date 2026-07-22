@@ -8,7 +8,7 @@
 // `matchMedia` de animations.ts excluye a propósito.
 import SectionHeading from './SectionHeading.astro';
 import Foto from './Foto.astro';
-import fotoTaller from '../assets/fotos/colgantes-suspendidos.jpg';
+import fotoTaller from '../assets/fotos/taller-anillos-oro.jpg';
 
 interface Paso {
   titulo: string;
@@ -41,7 +41,7 @@ const pasos: Paso[] = [
 ];
 ---
 
-<section class="bg-surface" id="taller" aria-label="El proceso del taller" data-horizontal>
+<section class="bg-surface" id="taller" aria-label="El proceso del taller">
   <div class="container-wide pt-24 pb-16 md:pt-36 md:pb-20 lg:pt-32 lg:pb-16">
     <SectionHeading
       numero={numero}
@@ -52,7 +52,16 @@ const pasos: Paso[] = [
     />
   </div>
 
-  <div class="lg:motion-safe:flex lg:motion-safe:h-screen lg:motion-safe:items-stretch lg:motion-safe:overflow-hidden">
+  <!-- `data-horizontal` va AQUÍ y no en la <section>: GSAP ancla el elemento
+       que recibe el atributo, y anclar algo más alto que la pantalla deja el
+       resto colgando por debajo del pliegue. Antes se anclaba la sección
+       entera —encabezado incluido—, así que la pista quedaba fuera de vista
+       y el recorrido se sentía trabado. Este contenedor mide exactamente una
+       pantalla, que es lo que el anclaje necesita. -->
+  <div
+    class="lg:motion-safe:flex lg:motion-safe:h-screen lg:motion-safe:items-stretch lg:motion-safe:overflow-hidden"
+    data-horizontal
+  >
     <div
       class="flex flex-col gap-14 pb-24 md:pb-36 lg:motion-safe:flex-row lg:motion-safe:flex-nowrap lg:motion-safe:items-stretch lg:motion-safe:gap-0 lg:motion-safe:pb-0"
       data-horizontal-pista

@@ -1,8 +1,8 @@
 ---
-// Catálogo completo: filtros ampliados (pieza, material, ley, ocasión,
-// precio), buscador de texto, orden y atajos de regalo. Todo client-side,
-// vanilla TS sobre data-attributes — sin frameworks. Ver el <script> al
-// final para la lógica de filtrado/orden y la sincronización con la URL.
+// Catálogo completo: buscador, orden y filtros por pieza, material,
+// presupuesto y ocasión. Todo client-side, vanilla TS sobre data-attributes
+// — sin frameworks. Ver el <script> al final para la lógica de filtrado y la
+// sincronización con la URL, que permite compartir un catálogo ya filtrado.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
@@ -11,9 +11,9 @@ import Filtros from '../components/Filtros.astro';
 import CTA from '../components/CTA.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
-import { NEGOCIO, leyLegible, waLink } from '../scripts/site';
+import { NEGOCIO, waLink } from '../scripts/site';
 import Foto from '../components/Foto.astro';
-import fotoPortada from '../assets/fotos/pulsera-oro-revista.jpg';
+import fotoPortada from '../assets/fotos/collar-cadena-fina.jpg';
 import { NAV, NAV_FOOTER } from '../scripts/navegacion';
 
 const piezas = (await getCollection('piezas')).sort((a, b) =>
@@ -41,15 +41,6 @@ const materiales = [
   { valor: 'oro', label: 'Oro' },
   { valor: 'plata', label: 'Plata' },
   { valor: 'oro rosa', label: 'Oro rosa' },
-];
-
-/** Las leyes salen de las piezas reales, no de una lista fija: si el
-    catálogo algún día no tiene plata 950, el filtro tampoco la ofrece. */
-const leyes = [
-  { valor: 'todas', label: 'Todas' },
-  ...Array.from(new Set(piezas.map((p) => p.data.ley)))
-    .sort()
-    .map((ley) => ({ valor: ley, label: leyLegible(ley) })),
 ];
 
 const ocasiones = [
@@ -90,8 +81,8 @@ const precios = [
             Todas<br /><em class="font-normal text-accent-600 italic">nuestras piezas</em>
           </h1>
           <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-600">
-            Filtra por tipo de pieza, material, ley o presupuesto. Cada ficha trae fotos,
-            especificaciones completas y un botón para consultar directo por WhatsApp con la
+            Filtra por tipo de pieza, material o presupuesto. Cada ficha trae fotos,
+            especificaciones completas y un botón para consultar por WhatsApp con la
             referencia lista.
           </p>
           <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -110,7 +101,7 @@ const precios = [
     </div>
   </section>
 
-  <Filtros categorias={categorias} materiales={materiales} leyes={leyes} ocasiones={ocasiones} precios={precios} />
+  <Filtros categorias={categorias} materiales={materiales} ocasiones={ocasiones} precios={precios} />
 
   <!-- ── Grid editorial: la pieza destacada ocupa un mosaico 2×2 ── -->
   <section class="py-16 md:py-24">
@@ -119,10 +110,6 @@ const precios = [
            el h1 de arriba ya lo dice todo, pero tiene que existir: sin él la
            jerarquía salta del h1 a los h3 de cada tarjeta. -->
       <h2 class="sr-only">Piezas del catálogo</h2>
-
-      <p class="micro-sm mb-10 text-brand-500" id="contador-resultados" aria-live="polite">
-        Mostrando {piezas.length} piezas
-      </p>
 
       <div
         class="grid auto-rows-auto grid-flow-dense gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
@@ -182,7 +169,6 @@ const precios = [
   const DEFAULTS = {
     categoria: 'todas',
     material: 'todos',
-    ley: 'todas',
     ocasion: 'todas',
     precio: 'todos',
     q: '',
@@ -197,7 +183,6 @@ const precios = [
     const sinResultados = document.getElementById('sin-resultados');
     const contador = document.getElementById('contador-resultados');
     const grupos = Array.from(document.querySelectorAll<HTMLElement>('[data-filtro]'));
-    const chipsRegalo = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-regalo]'));
     const buscador = document.getElementById('catalogo-buscar') as HTMLInputElement | null;
     const ordenSelect = document.getElementById('catalogo-orden') as HTMLSelectElement | null;
     const toggle = document.getElementById('filtros-toggle');
@@ -222,7 +207,6 @@ const precios = [
     function calcularVisible(card: HTMLElement): boolean {
       const okCategoria = estado.categoria === 'todas' || card.dataset.categoria === estado.categoria;
       const okMaterial = estado.material === 'todos' || card.dataset.material === estado.material;
-      const okLey = estado.ley === 'todas' || card.dataset.ley === estado.ley;
       const okOcasion =
         estado.ocasion === 'todas' || (card.dataset.ocasion || '').split(',').includes(estado.ocasion);
       let okPrecio = true;
@@ -232,7 +216,7 @@ const precios = [
         okPrecio = !Number.isNaN(precio) && enRango(precio, estado.precio);
       }
       const okBusqueda = !estado.q || (card.dataset.busqueda || '').includes(estado.q);
-      return okCategoria && okMaterial && okLey && okOcasion && okPrecio && okBusqueda;
+      return okCategoria && okMaterial && okOcasion && okPrecio && okBusqueda;
     }
 
     // Precio ausente (Consultar precio) siempre al final, sea cual sea la dirección.
@@ -290,6 +274,56 @@ const precios = [
       else cambiar();
     }
 
+    /* Los filtros aplicados se muestran como chips quitables debajo de la
+       barra. Es lo "puntual" que pedía el catálogo: en vez de tener 25
+       opciones a la vista, se ven solo las que están activas. */
+    const activosCaja = document.getElementById('filtros-activos');
+    const cuentaBadge = document.getElementById('filtros-cuenta');
+
+    function etiquetaDe(clave: Clave, valor: string): string {
+      const grupo = grupos.find((g) => g.dataset.filtro === clave);
+      const boton = grupo?.querySelector<HTMLButtonElement>(`.chip-filtro[data-valor="${CSS.escape(valor)}"]`);
+      return boton?.textContent?.trim() ?? valor;
+    }
+
+    function pintarActivos(): void {
+      if (!activosCaja) return;
+      const aplicados = (['categoria', 'material', 'precio', 'ocasion'] as const).filter(
+        (c) => estado[c] !== DEFAULTS[c],
+      );
+      if (estado.q) aplicados.push('q' as never);
+
+      activosCaja.innerHTML = '';
+      for (const clave of aplicados) {
+        const texto = clave === ('q' as string) ? `“${estado.q}”` : etiquetaDe(clave as Clave, estado[clave as Clave]);
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className =
+          'micro-sm inline-flex items-center gap-2 border border-accent-500/60 px-3 py-1.5 text-accent-700 transition-colors duration-300 hover:border-accent-500 hover:text-accent-600';
+        chip.innerHTML = `${texto}<span aria-hidden="true">×</span>`;
+        chip.setAttribute('aria-label', `Quitar el filtro ${texto}`);
+        chip.addEventListener('click', () => {
+          if (clave === ('q' as string)) {
+            estado.q = '';
+            if (buscador) buscador.value = '';
+          } else {
+            estado[clave as Clave] = DEFAULTS[clave as Clave];
+          }
+          sincronizarControles();
+          aplicarFiltros();
+          escribirURL();
+        });
+        activosCaja.appendChild(chip);
+      }
+      activosCaja.classList.toggle('hidden', aplicados.length === 0);
+      activosCaja.classList.toggle('flex', aplicados.length > 0);
+
+      if (cuentaBadge) {
+        cuentaBadge.textContent = String(aplicados.length);
+        cuentaBadge.classList.toggle('hidden', aplicados.length === 0);
+      }
+    }
+
     function sincronizarControles(): void {
       grupos.forEach((grupo) => {
         const clave = grupo.dataset.filtro as Clave;
@@ -297,9 +331,9 @@ const precios = [
           b.setAttribute('aria-pressed', String(b.dataset.valor === estado[clave]));
         });
       });
-      chipsRegalo.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.valor === estado.precio)));
       if (buscador) buscador.value = estado.q;
       if (ordenSelect) ordenSelect.value = estado.orden;
+      pintarActivos();
     }
 
     // ── Estado inicial desde la URL: /catalogo?categoria=anillos&precio=0-800000&q=zafiro ──
@@ -315,13 +349,6 @@ const precios = [
         );
         if (existe) estado[clave] = valor;
       }
-      // El precio también puede venir de un atajo de regalo (rango que no
-      // está entre los botones del grupo "precio").
-      const precioParam = params.get('precio');
-      if (precioParam && estado.precio === DEFAULTS.precio) {
-        const chip = chipsRegalo.find((c) => c.dataset.valor === precioParam);
-        if (chip) estado.precio = precioParam;
-      }
       const q = params.get('q');
       if (q) estado.q = normalizar(q).slice(0, 80);
       const orden = params.get('orden');
@@ -332,7 +359,7 @@ const precios = [
 
     function escribirURL(): void {
       const params = new URLSearchParams();
-      (['categoria', 'material', 'ley', 'ocasion', 'precio', 'orden'] as const).forEach((clave) => {
+      (['categoria', 'material', 'ocasion', 'precio', 'orden'] as const).forEach((clave) => {
         if (estado[clave] !== DEFAULTS[clave]) params.set(clave, estado[clave]);
       });
       if (estado.q) params.set('q', estado.q);
@@ -350,15 +377,6 @@ const precios = [
         if (!btn || !grupo.contains(btn)) return;
         const clave = grupo.dataset.filtro as Clave;
         estado[clave] = btn.dataset.valor!;
-        sincronizarControles();
-        aplicarFiltros();
-        escribirURL();
-      });
-    });
-
-    chipsRegalo.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        estado.precio = chip.dataset.valor!;
         sincronizarControles();
         aplicarFiltros();
         escribirURL();

@@ -4,8 +4,8 @@ referencia: AUR-AN-001
 slug: anillo-solitario-aurora
 fotos:
   - ../../assets/fotos/anillo-halo-oscuro.jpg
-  - ../../assets/fotos/anillos-piedra-crema.jpg
-  - ../../assets/fotos/anillo-topacios-lino.jpg
+  - ../../assets/fotos/anillo-terciopelo.jpg
+  - ../../assets/fotos/anillo-piedra-azul.jpg
 categoria: anillos
 material: oro
 ley: 18k

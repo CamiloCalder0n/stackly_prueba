@@ -3,8 +3,8 @@ nombre: Collar Medallón Sol
 referencia: AUR-CO-001
 slug: collar-medallon-sol
 fotos:
-  - ../../assets/fotos/medallon-dorado-calido.jpg
-  - ../../assets/fotos/colgantes-suspendidos.jpg
+  - ../../assets/fotos/collar-filigrana.jpg
+  - ../../assets/fotos/collar-cadena-fina.jpg
 categoria: collares
 material: oro
 ley: 18k

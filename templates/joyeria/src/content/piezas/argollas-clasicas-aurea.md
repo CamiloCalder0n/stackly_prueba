@@ -3,7 +3,7 @@ nombre: Argollas Clásicas Aurea
 referencia: AUR-AN-004
 slug: argollas-clasicas-aurea
 fotos:
-  - ../../assets/fotos/argollas-caja-beige.jpg
+  - ../../assets/fotos/argollas-piedras.jpg
 categoria: anillos
 material: oro
 ley: 18k

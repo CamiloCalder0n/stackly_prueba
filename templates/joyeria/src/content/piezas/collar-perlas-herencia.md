@@ -3,7 +3,7 @@ nombre: Collar de Perlas Herencia
 referencia: AUR-CO-004
 slug: collar-perlas-herencia
 fotos:
-  - ../../assets/fotos/perlas-estuche.jpg
+  - ../../assets/fotos/collar-perlas.jpg
 categoria: collares
 material: plata
 ley: '950'

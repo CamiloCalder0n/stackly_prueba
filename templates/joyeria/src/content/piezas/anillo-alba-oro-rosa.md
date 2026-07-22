@@ -3,8 +3,8 @@ nombre: Anillo Alba en Oro Rosa
 referencia: AUR-AN-002
 slug: anillo-alba-oro-rosa
 fotos:
-  - ../../assets/fotos/anillo-piedra-rosa-blanco.jpg
-  - ../../assets/fotos/anillos-piedra-crema.jpg
+  - ../../assets/fotos/anillo-zafiro-rosa.jpg
+  - ../../assets/fotos/anillo-terciopelo.jpg
 categoria: anillos
 material: oro rosa
 ley: 18k

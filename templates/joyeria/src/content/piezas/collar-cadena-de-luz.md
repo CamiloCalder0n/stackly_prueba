@@ -3,7 +3,7 @@ nombre: Collar Cadena de Luz
 referencia: AUR-CO-002
 slug: collar-cadena-de-luz
 fotos:
-  - ../../assets/fotos/colgante-diamante-gris.jpg
+  - ../../assets/fotos/collar-diamantes.jpg
 categoria: collares
 material: oro
 ley: 18k

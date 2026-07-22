@@ -24,8 +24,8 @@ import Foto from '../components/Foto.astro';
 import Icono from '../components/Icono.astro';
 import { NEGOCIO, ANOS_OFICIO } from '../scripts/site';
 import { NAV, NAV_FOOTER } from '../scripts/navegacion';
-import fotoHero from '../assets/fotos/anillos-piedra-crema.jpg';
-import fotoHistoria from '../assets/fotos/lifestyle-pulsera-oscuro.jpg';
+import fotoHero from '../assets/fotos/lifestyle-velo-arete.jpg';
+import fotoHistoria from '../assets/fotos/lifestyle-argollas-oro.jpg';
 
 const colecciones = (await getCollection('colecciones')).sort(
   (a, b) => a.data.orden - b.data.orden,
@@ -41,25 +41,6 @@ const ENLACE_COLECCION: Record<string, string> = {
   'Colección Luna': '/catalogo?categoria=aretes',
 };
 
-const guia = [
-  {
-    titulo: 'Cuida tus joyas',
-    texto:
-      'Guárdalas por separado en bolsas de tela, evita el contacto con perfumes y cremas, y límpialas con un paño suave. La limpieza y el pulido profesional de nuestras piezas son gratis de por vida.',
-  },
-  {
-    titulo: 'Conoce tu talla',
-    texto:
-      'Mide el diámetro interno de un anillo que te quede bien o el contorno de tu dedo con un hilo. Con esa medida en milímetros te confirmamos la talla exacta por WhatsApp.',
-    href: '/guia-de-tallas',
-  },
-  {
-    titulo: 'Oro, plata y oro rosa',
-    texto:
-      'Trabajamos oro de 18k (75% de pureza), plata 950 y oro rosa de 18k. Si ninguna pieza del catálogo es exactamente lo que buscas, la fabricamos a tu medida.',
-    href: '/encargos',
-  },
-];
 ---
 
 <BaseLayout>
@@ -198,8 +179,11 @@ const guia = [
     <!-- ── 05 · El taller, paso a paso ── -->
     <Taller numero="03" />
 
-    <!-- ── 06 · Historia + contadores: el único bloque oscuro de la portada ── -->
-    <section class="relative overflow-hidden bg-brand-950" id="historia" aria-label="Nuestra historia">
+    <!-- ── 06 · Historia + contadores ──
+         Sobre una portada ya oscura, el contraste no puede venir de "poner
+         un bloque negro": esta sección se hunde un punto más que la página
+         (`noche`) y deja que la fotografía a sangre haga el corte. -->
+    <section class="relative overflow-hidden bg-noche" id="historia" aria-label="Nuestra historia">
       <div class="grid lg:grid-cols-2">
         <!-- Fotografía que sangra hasta el borde de la pantalla -->
         <div class="relative min-h-[58vh] overflow-hidden lg:min-h-[88vh]" data-reveal-mask>
@@ -211,44 +195,44 @@ const guia = [
               class="h-[118%] object-cover"
             />
           </div>
-          <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-brand-950/60"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-noche/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-noche/70"></div>
         </div>
 
         <div class="flex items-center px-6 py-24 sm:px-10 lg:py-32 xl:px-20">
           <div class="max-w-xl" data-reveal>
             <div class="flex items-center gap-4">
-              <span class="section-num !text-accent-400">04</span>
-              <span class="h-px w-8 bg-accent-400/50" aria-hidden="true"></span>
-              <span class="micro text-accent-300">Nuestra historia</span>
+              <span class="section-num !text-accent-700">04</span>
+              <span class="h-px w-8 bg-accent-700/50" aria-hidden="true"></span>
+              <span class="micro text-accent-700">Nuestra historia</span>
             </div>
 
             <h2 class="type-section mt-7 text-white">
               Un taller familiar,<br />
-              <em class="font-normal text-accent-200 italic">tres generaciones</em>
+              <em class="font-normal text-accent-700 italic">tres generaciones</em>
             </h2>
 
-            <p class="mt-8 text-[0.95rem] leading-[1.9] font-light text-brand-300">
+            <p class="mt-8 text-[0.95rem] leading-[1.9] font-light text-brand-700">
               {NEGOCIO.nombre} nació como un banco de joyero en el centro de Bucaramanga. Hoy seguimos
               haciendo cada pieza a mano: fundimos, laminamos, engastamos y pulimos en nuestro propio
               taller, con materiales certificados y garantía escrita.
             </p>
-            <p class="mt-5 text-[0.95rem] leading-[1.9] font-light text-brand-300">
+            <p class="mt-5 text-[0.95rem] leading-[1.9] font-light text-brand-700">
               Por eso también recibimos encargos: si sueñas una pieza que no existe, la dibujamos
               contigo y la fabricamos a tu medida.
             </p>
 
             <div class="mt-14 grid grid-cols-3 gap-6 border-t border-white/15 pt-10">
               <div>
-                <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter={ANOS_OFICIO}>0</span></p>
-                <p class="micro-sm mt-3 text-brand-400">Años de oficio</p>
+                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={ANOS_OFICIO}>0</span></p>
+                <p class="micro-sm mt-3 text-brand-500">Años de oficio</p>
               </div>
               <div>
-                <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter={NEGOCIO.piezasEntregadas}>0</span>+</p>
-                <p class="micro-sm mt-3 text-brand-400">Piezas entregadas</p>
+                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={NEGOCIO.piezasEntregadas}>0</span>+</p>
+                <p class="micro-sm mt-3 text-brand-500">Piezas entregadas</p>
               </div>
               <div>
-                <p class="font-display text-4xl font-light text-accent-300 md:text-5xl"><span data-counter={NEGOCIO.encargosAMedida}>0</span>+</p>
-                <p class="micro-sm mt-3 text-brand-400">Encargos a medida</p>
+                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={NEGOCIO.encargosAMedida}>0</span>+</p>
+                <p class="micro-sm mt-3 text-brand-500">Encargos a medida</p>
               </div>
             </div>
 
@@ -291,52 +275,6 @@ const guia = [
     <!-- ── 08 · Cómo compras aquí + medios de pago ── -->
     <ComoCompras numero="06" />
 
-    <!-- ── 09 · Guía rápida ── -->
-    <section class="py-24 md:py-32" id="guia" aria-label="Guía rápida antes de comprar">
-      <div class="container-wide grid gap-14 lg:grid-cols-12 lg:gap-20">
-        <div class="lg:col-span-4">
-          <div class="lg:sticky lg:top-28">
-            <SectionHeading
-              numero="07"
-              eyebrow="Guía rápida"
-              titulo="Antes de"
-              acento="elegir tu joya"
-              descripcion="Lo esencial sobre materiales, tallas y cuidado, para que compres con confianza."
-            />
-          </div>
-        </div>
-
-        <dl class="lg:col-span-7 lg:col-start-6" data-reveal-group>
-          {guia.map((g, i) => {
-            const Contenedor = g.href ? 'a' : 'div';
-            return (
-              <div class="grid gap-4 border-t border-brand-200 py-10 last:border-b sm:grid-cols-[auto_1fr] sm:gap-10">
-                <dt class="section-num pt-1">0{i + 1}</dt>
-                <dd>
-                  <Contenedor
-                    href={g.href}
-                    class={g.href ? 'group inline-flex items-center gap-3' : undefined}
-                  >
-                    <h3 class={`type-sub text-brand-950 ${g.href ? 'transition-colors duration-500 group-hover:text-accent-700' : ''}`}>
-                      {g.titulo}
-                    </h3>
-                    {g.href && (
-                      <Icono
-                        nombre="flecha"
-                        tamano={14}
-                        class="text-accent-600 transition-transform duration-500 group-hover:translate-x-1"
-                      />
-                    )}
-                  </Contenedor>
-                  <p class="mt-4 max-w-lg text-[0.9rem] leading-[1.9] font-light text-brand-600">{g.texto}</p>
-                </dd>
-              </div>
-            );
-          })}
-        </dl>
-      </div>
-    </section>
-
     <!-- ── 10 · FAQ ── -->
     <FAQ
       numero="08"
@@ -360,6 +298,11 @@ const guia = [
           pregunta: '¿Cómo se paga y se reserva una pieza?',
           respuesta:
             'Reservas con el 30% por transferencia, Nequi o en la tienda, y pagas el resto al recibir. También aceptamos Addi y Sistecrédito para diferir a cuotas: la aprobación se hace por WhatsApp y toma minutos. No manejamos pagos dentro de la página: preferimos confirmar cada detalle contigo antes de cerrar la compra.',
+        },
+        {
+          pregunta: '¿Cómo cuido mis joyas?',
+          respuesta:
+            'Guárdalas por separado en bolsas de tela, evita el contacto con perfumes y cremas, y límpialas con un paño suave. La limpieza y el pulido profesional de nuestras piezas son gratis de por vida: tráelas cuando quieras.',
         },
         {
           pregunta: '¿Qué pasa si el anillo no me queda?',

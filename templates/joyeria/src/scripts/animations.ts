@@ -194,6 +194,11 @@ function montarAnimaciones(): void {
         document.querySelectorAll<HTMLElement>('[data-horizontal]').forEach((seccion) => {
           const pista = seccion.querySelector<HTMLElement>('[data-horizontal-pista]');
           if (!pista) return;
+          /* El recorrido se mide contra el propio contenedor anclado. Ojo con
+             esto: si `[data-horizontal]` estuviera en un elemento más alto que
+             la pantalla, el anclaje dejaría la pista debajo del pliegue y la
+             sección se sentiría trabada. Debe ir siempre en un contenedor de
+             una pantalla de alto. */
           const recorrido = () => pista.scrollWidth - seccion.clientWidth;
           if (recorrido() <= 0) return;
 

@@ -43,53 +43,70 @@
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
    PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
 
-   Dirección: maison editorial clara.
-   El hueso manda, la tinta estructura y el oro solo subraya.
+   Dirección: negro y oro. La página es una vitrina de noche: el fondo
+   se apaga para que la pieza y el metal sean lo único que brilla.
 
-   brand  → neutros cálidos, del hueso (50) a la tinta (950)
-   accent → oro; se usa en filetes, precios y micro-etiquetas.
-            NO se usa para rellenar áreas grandes: el lujo aquí es
-            el contraste de escala, no la cantidad de dorado.
-   Las clases resultantes son: bg-brand-50, text-accent-600, etc.
+   CÓMO LEER LAS RAMPAS — importante:
+   ambas van de SUPERFICIE (50) a TINTA (950). Es decir, el 50 es el
+   fondo de la página y el 950 es el color del texto principal. Por eso
+   aquí el 50 es casi negro y el 950 casi blanco: es lo contrario de lo
+   que hacen los grises de Tailwind, y es a propósito. Gracias a eso,
+   `text-brand-950` siempre significa "texto principal" y
+   `border-brand-200` siempre significa "filete sutil", sea el tema
+   claro u oscuro. Para volver a un tema claro basta con invertir los
+   valores de este bloque: ni una clase del resto del proyecto cambia.
+
+   brand  → neutros cálidos, del negro (50) al hueso (950)
+   accent → oro, del más profundo (50) al champán (900). Se usa en
+            filetes, precios y micro-etiquetas. Sobre negro el oro pesa
+            el doble que sobre blanco: si una sección se ve dorada,
+            está mal.
    ═══════════════════════════════════════════════════════════════ */
 @theme {
   --font-display: 'Bodoni Moda Variable', 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Jost Variable', system-ui, sans-serif;
 
-  /* brand → neutros cálidos sobre base hueso.
-     A partir del 500 la rampa está calibrada para texto: cualquiera de esos
-     tonos sobre `surface` o `paper` supera el 4.5:1 que pide la WCAG AA,
-     incluso en los tamaños de 10-11px de las micro-etiquetas. Del 400 hacia
-     arriba son tonos decorativos (bordes, marcas de agua, placeholders):
-     no los uses para texto que haya que leer. */
-  --color-brand-50: #faf8f4;
-  --color-brand-100: #f2eee7;
-  --color-brand-200: #e4ded3;
-  --color-brand-300: #cfc7b8;
-  --color-brand-400: #9d9384;
-  --color-brand-500: #6f6659; /* 4.88:1 sobre paper — el mínimo para texto */
-  --color-brand-600: #564f45;
-  --color-brand-700: #413c35;
-  --color-brand-800: #302c27;
-  --color-brand-900: #201d18;
-  --color-brand-950: #14120f;
+  /* brand → neutros cálidos, del negro de la vitrina al hueso del texto.
+     Un negro cálido y no un #000: el negro puro sobre pantalla se ve
+     barato y aplasta la fotografía de producto.
+     De 500 en adelante la rampa está calibrada para texto: cualquiera de
+     esos tonos sobre `surface` o `paper` supera el 4.5:1 de la WCAG AA,
+     incluso en las micro-etiquetas de 10-11px. Del 400 hacia abajo son
+     tonos de fondo y filete: no los uses para texto que haya que leer. */
+  --color-brand-50: #0d0c0a;
+  --color-brand-100: #15130f;
+  --color-brand-200: #221e19;
+  --color-brand-300: #332d25;
+  --color-brand-400: #6a6153;
+  --color-brand-500: #9a9083; /* 8.4:1 sobre el fondo — el mínimo para texto */
+  --color-brand-600: #b3a897;
+  --color-brand-700: #c9bfae;
+  --color-brand-800: #ddd4c5;
+  --color-brand-900: #ece6db;
+  --color-brand-950: #f6f2ea;
 
-  /* accent → oro sobrio, sin viraje mostaza */
-  --color-accent-50: #fbf7ed;
-  --color-accent-100: #f5ecd6;
-  --color-accent-200: #ead7a9;
-  --color-accent-300: #dcbe76;
-  --color-accent-400: #cea74f;
-  --color-accent-500: #bd9138;
-  --color-accent-600: #a1762c;
-  --color-accent-700: #825c27;
-  --color-accent-800: #6b4b26;
-  --color-accent-900: #5a4024;
+  /* accent → oro sobrio, sin viraje mostaza. Sobre negro hay que subir el
+     tono: el oro oscuro que funcionaba sobre hueso aquí se ensucia. */
+  --color-accent-50: #3d2c12;
+  --color-accent-100: #56401a;
+  --color-accent-200: #6f5322;
+  --color-accent-300: #8a682b;
+  --color-accent-400: #a67f34;
+  --color-accent-500: #c69c45;
+  --color-accent-600: #d6b163;
+  --color-accent-700: #e3c68a;
+  --color-accent-800: #eed9ae;
+  --color-accent-900: #f6ead0;
 
-  /* Superficies: el hueso es el fondo por defecto de todo el sitio */
-  --color-surface: #faf8f4;
-  --color-paper: #f2eee7;
-  --color-ink: #14120f;
+  /* Superficies: el negro cálido es el fondo por defecto de todo el sitio */
+  --color-surface: #0d0c0a;
+  --color-paper: #15130f;
+  --color-ink: #f6f2ea;
+
+  /* Negro absoluto de la vitrina. NO sigue el tema: es el velo que va
+     sobre las fotos y el fondo del visor de imágenes, y tiene que ser
+     oscuro aunque algún día la plantilla vuelva a un tema claro. */
+  --color-noche: #0a0908;
 
   /* Verde WhatsApp oficial: se conserva sin retocar porque su
      reconocibilidad es lo que convierte. Ver nota en `btn-whatsapp`. */
@@ -133,8 +150,8 @@ h1, h2, h3, h4 {
 }
 
 ::selection {
-  background: var(--color-accent-200);
-  color: var(--color-brand-950);
+  background: var(--color-accent-500);
+  color: var(--color-brand-50);
 }
 
 /* ── Estados iniciales de animación ──
@@ -203,36 +220,38 @@ h1, h2, h3, h4 {
   cursor: pointer;
 }
 
-/* Primario en tinta, no en oro: en una maison el botón manda por
-   contraste, y el oro se reserva para los detalles finos. */
+/* Sobre negro el botón manda en oro macizo con la tinta oscura encima:
+   es el único bloque dorado grande que se permite en toda la página, y
+   por eso funciona como punto de llegada de la mirada. */
 @utility btn-primary {
-  background: var(--color-brand-950);
-  color: #fff;
+  background: var(--color-accent-500);
+  color: var(--color-brand-50);
   &:hover {
-    background: var(--color-brand-800);
+    background: var(--color-accent-600);
   }
 }
 
 @utility btn-outline {
   border: 1px solid var(--color-brand-300);
-  color: var(--color-brand-800);
+  color: var(--color-brand-900);
   background: transparent;
   &:hover {
     border-color: var(--color-brand-950);
     background: var(--color-brand-950);
-    color: #fff;
+    color: var(--color-brand-50);
   }
 }
 
-/* Variante clara para usar sobre el único bloque oscuro del sitio */
+/* Variante para usar encima de una fotografía, donde el filete tiene que
+   apoyarse en el blanco y no en la rampa del tema. */
 @utility btn-outline-claro {
-  border: 1px solid rgb(255 255 255 / 0.35);
+  border: 1px solid rgb(255 255 255 / 0.4);
   color: #fff;
   background: transparent;
   &:hover {
     border-color: #fff;
     background: #fff;
-    color: var(--color-brand-950);
+    color: var(--color-brand-50);
   }
 }
 
@@ -364,15 +383,15 @@ h1, h2, h3, h4 {
 }
 
 /* Paso numerado de un proceso (cómo compras, el taller, el cotizador).
-   El tono es deliberadamente tenue, pero no tanto como para desaparecer:
-   a este tamaño la WCAG pide 3:1 y este color da 3,2:1 sobre el papel. */
+   Deliberadamente tenue, pero no tanto como para desaparecer: a este
+   tamaño la WCAG pide 3:1 y este tono lo supera sobre el fondo negro. */
 @utility paso-num {
   font-family: var(--font-display);
   font-variation-settings: 'opsz' 48;
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
   line-height: 1;
-  color: #8d8474;
+  color: var(--color-brand-400);
 }
 
 /* ── Controles de catálogo ── */

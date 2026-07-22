@@ -3,8 +3,7 @@ nombre: Pulsera Eslabones Áurea
 referencia: AUR-PU-001
 slug: pulsera-eslabones-aurea
 fotos:
-  - ../../assets/fotos/pulsera-oro-revista.jpg
-  - ../../assets/fotos/colgantes-suspendidos.jpg
+  - ../../assets/fotos/lifestyle-pulsera-oscuro.jpg
 categoria: pulseras
 material: oro
 ley: 18k

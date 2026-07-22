@@ -3,7 +3,7 @@ nombre: Pulsera Rosa del Alba
 referencia: AUR-PU-003
 slug: pulsera-rosa-del-alba
 fotos:
-  - ../../assets/fotos/pulsera-rosa-palido.jpg
+  - ../../assets/fotos/pulsera-calada.jpg
 categoria: pulseras
 material: oro rosa
 ley: 18k

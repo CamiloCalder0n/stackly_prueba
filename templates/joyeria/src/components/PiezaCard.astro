@@ -71,7 +71,7 @@ const nombreTransicion = `pieza-${d.slug}`;
 {variante === 'destacada' ? (
   <a
     href={`/piezas/${d.slug}/`}
-    class={`group relative block aspect-[4/5] overflow-hidden bg-brand-950 lg:aspect-auto lg:h-full ${clase}`}
+    class={`group relative block aspect-[4/5] overflow-hidden bg-noche lg:aspect-auto lg:h-full ${clase}`}
     {...datos}
   >
     <Foto
@@ -81,34 +81,34 @@ const nombreTransicion = `pieza-${d.slug}`;
       sizes="(max-width: 640px) 100vw, 66vw"
       class="h-full opacity-90 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-100"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/15 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-noche/90 via-noche/15 to-transparent"></div>
 
     <div class="absolute inset-x-5 top-5 flex items-start justify-between gap-2 md:inset-x-7 md:top-7">
       <div class="flex flex-wrap gap-1.5">
         {d.nuevo && (
-          <span class="micro-sm bg-accent-500 px-2.5 py-1.5 text-brand-950">Nuevo</span>
+          <span class="micro-sm bg-accent-500 px-2.5 py-1.5 text-brand-50">Nuevo</span>
         )}
         {!disponible && (
-          <span class="micro-sm bg-brand-950/70 px-2.5 py-1.5 text-accent-200 backdrop-blur-sm">
+          <span class="micro-sm bg-noche/70 px-2.5 py-1.5 text-accent-700 backdrop-blur-sm">
             Por encargo
           </span>
         )}
       </div>
-      <span class="micro-sm shrink-0 border border-accent-300/70 bg-brand-950/70 px-2.5 py-1.5 text-accent-200 backdrop-blur-sm">
+      <span class="micro-sm shrink-0 border border-accent-300/70 bg-noche/70 px-2.5 py-1.5 text-accent-700 backdrop-blur-sm">
         {leyLegible(d.ley)}
       </span>
     </div>
 
     <div class="absolute inset-x-0 bottom-0 p-7 md:p-9">
-      <span class="micro-sm text-accent-300">{d.categoria} · {d.material}</span>
+      <span class="micro-sm text-accent-600">{d.categoria} · {d.material}</span>
       <h3 class="mt-3 font-display text-3xl leading-tight font-light text-white md:text-4xl">
         {d.nombre}
       </h3>
       <div class="mt-4 flex items-end justify-between gap-4">
         <div>
-          <p class="precio text-lg text-accent-200">{precioTexto}</p>
+          <p class="precio text-lg text-accent-700">{precioTexto}</p>
           {senalDisponibilidad && (
-            <p class="micro-sm mt-1.5 text-brand-300">{senalDisponibilidad}</p>
+            <p class="micro-sm mt-1.5 text-brand-700">{senalDisponibilidad}</p>
           )}
         </div>
         <span class="micro-sm inline-flex translate-y-1 items-center gap-2 text-white/0 transition-all duration-500 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:translate-y-0 group-hover:text-white/80">
@@ -131,7 +131,7 @@ const nombreTransicion = `pieza-${d.slug}`;
         class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
       />
       <!-- Velo que aparece lento y revela el CTA -->
-      <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent opacity-0 transition-opacity duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:opacity-100"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-noche/70 via-transparent to-transparent opacity-0 transition-opacity duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:opacity-100"></div>
       <span class="micro-sm absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-center gap-2 pb-6 text-white opacity-0 transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
         Ver pieza
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -140,10 +140,10 @@ const nombreTransicion = `pieza-${d.slug}`;
       <div class="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
         <div class="flex flex-col items-start gap-1.5">
           {d.nuevo && (
-            <span class="micro-sm bg-accent-500 px-2 py-1 text-brand-950">Nuevo</span>
+            <span class="micro-sm bg-accent-500 px-2 py-1 text-brand-50">Nuevo</span>
           )}
           {!disponible && (
-            <span class="micro-sm bg-brand-950/70 px-2 py-1 text-accent-200 backdrop-blur-sm">
+            <span class="micro-sm bg-noche/70 px-2 py-1 text-accent-700 backdrop-blur-sm">
               Por encargo
             </span>
           )}

@@ -2,17 +2,22 @@
 /**
  * Barra de filtros del catálogo.
  *
- * Componente de presentación: solo pinta botones, inputs y `data-*`. Toda la
- * lógica de filtrado/orden/URL vive en el <script> de `catalogo.astro`, que
- * es quien conoce las tarjetas y sabe recomponer la grilla con Flip.
+ * Componente de presentación: solo pinta controles y `data-*`. La lógica de
+ * filtrado, orden y URL vive en el <script> de `catalogo.astro`, que es quien
+ * conoce las tarjetas y sabe recomponer la grilla con Flip.
  *
- * Decisión de móvil: a 390px cinco grupos de filtro no caben sin comerse
- * media pantalla, así que el cuerpo (chips de regalo + los cinco grupos)
- * va detrás de un acordeón (`#filtros-cuerpo`, oculto por defecto). El
- * buscador y el orden quedan siempre visibles porque son las herramientas
- * que más se usan. En ≥1024px el acordeón se ignora: `lg:block` lo fuerza
- * visible y el botón que lo abre se esconde con `lg:hidden` (mismo patrón
- * que el menú móvil de Header.astro).
+ * Por qué está así y no como una parrilla de chips siempre visible:
+ * con doce piezas en catálogo, la versión anterior mostraba veinticinco
+ * chips en una barra fija de unos 250px. Ocupaba un tercio de la pantalla
+ * para filtrar una vitrina que se recorre entera de un vistazo, y se leía
+ * como un muro de texto suelto. Ahora la barra ocupa una línea —lo puntual:
+ * buscar, cuántas piezas hay, ordenar y abrir filtros— y los grupos viven
+ * dentro de un panel que se abre cuando de verdad hacen falta.
+ *
+ * También se cayó el grupo "Ley": en los datos reales cada material tiene
+ * una sola ley (oro→18k, oro rosa→18k, plata→950), así que era un filtro
+ * que no filtraba nada. La ley sigue visible en cada tarjeta y en la ficha,
+ * que es donde el comprador la busca.
  */
 import Icono from './Icono.astro';
 
@@ -24,27 +29,17 @@ interface Opcion {
 interface Props {
   categorias: Opcion[];
   materiales: Opcion[];
-  leyes: Opcion[];
   ocasiones: Opcion[];
   precios: Opcion[];
 }
 
-const { categorias, materiales, leyes, ocasiones, precios } = Astro.props;
+const { categorias, materiales, ocasiones, precios } = Astro.props;
 
 const grupos = [
   { nombre: 'categoria', label: 'Pieza', opciones: categorias, aria: 'Filtrar por tipo de pieza' },
   { nombre: 'material', label: 'Material', opciones: materiales, aria: 'Filtrar por material' },
-  { nombre: 'ley', label: 'Ley', opciones: leyes, aria: 'Filtrar por ley del metal' },
+  { nombre: 'precio', label: 'Presupuesto', opciones: precios, aria: 'Filtrar por presupuesto' },
   { nombre: 'ocasion', label: 'Ocasión', opciones: ocasiones, aria: 'Filtrar por ocasión' },
-  { nombre: 'precio', label: 'Precio', opciones: precios, aria: 'Filtrar por precio' },
-];
-
-/** Atajos de regalo: rangos propios, pensados para convertir sin obligar
-    a leer la grilla de precio completa. Comparten el estado `precio`. */
-const regalos = [
-  { valor: '0-500000', label: 'Regalos hasta $500.000' },
-  { valor: '0-1000000', label: 'Hasta $1.000.000' },
-  { valor: '0-2000000', label: 'Hasta $2.000.000' },
 ];
 
 const ordenes = [
@@ -60,12 +55,10 @@ const ordenes = [
   id="filtros"
 >
   <div class="container-wide">
-    <!-- ── Fila siempre visible: buscador, orden y el acordeón en móvil ── -->
+    <!-- ── La barra: una sola línea, siempre ── -->
     <div class="flex flex-wrap items-center gap-x-6 gap-y-3 py-3.5">
-      <div class="relative min-w-[12rem] flex-1">
-        <label for="catalogo-buscar" class="sr-only">
-          Buscar por nombre, referencia, material o piedra
-        </label>
+      <div class="relative min-w-[11rem] flex-1">
+        <label for="catalogo-buscar" class="sr-only">Buscar por nombre, material o piedra</label>
         <Icono
           nombre="lupa"
           tamano={13}
@@ -75,10 +68,12 @@ const ordenes = [
           type="search"
           id="catalogo-buscar"
           autocomplete="off"
-          placeholder="Buscar por nombre, referencia, material o piedra…"
+          placeholder="Buscar una pieza…"
           class="w-full border-0 border-b border-brand-200 bg-transparent py-2 pl-6 text-[0.83rem] font-light text-brand-950 placeholder:text-brand-400 focus:border-accent-500 focus:outline-none"
         />
       </div>
+
+      <p class="micro-sm shrink-0 text-brand-500" id="contador-resultados" aria-live="polite"></p>
 
       <div class="flex shrink-0 items-center gap-2.5">
         <label for="catalogo-orden" class="micro-sm text-brand-500">Ordenar</label>
@@ -93,57 +88,52 @@ const ordenes = [
       <button
         type="button"
         id="filtros-toggle"
-        class="micro-sm flex shrink-0 items-center gap-2 text-brand-800 lg:hidden"
+        class="micro-sm flex shrink-0 items-center gap-2 border border-brand-300 px-4 py-2 text-brand-900 transition-colors duration-300 hover:border-accent-500 hover:text-accent-700"
         aria-expanded="false"
         aria-controls="filtros-cuerpo"
       >
-        Filtros
+        Filtrar
+        <span
+          id="filtros-cuenta"
+          class="hidden min-w-5 bg-accent-500 px-1.5 py-0.5 text-center text-[0.6rem] text-brand-50"
+        ></span>
         <Icono nombre="flecha-abajo" tamano={11} class="transition-transform duration-300" />
       </button>
     </div>
 
-    <!-- ── Cuerpo: chips de regalo + grupos. Acordeón en móvil, siempre visible en desktop ── -->
-    <div id="filtros-cuerpo" class="hidden border-t border-brand-100 pb-4 lg:block lg:pb-0">
-      <div
-        class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-brand-100 py-3.5"
-        role="group"
-        aria-label="Regalos por presupuesto"
-        id="filtros-regalos"
-      >
-        <span class="micro-sm text-brand-500">Regalo</span>
-        {regalos.map((r) => (
-          <button type="button" class="chip-filtro" data-regalo data-valor={r.valor} aria-pressed="false">
-            {r.label}
-          </button>
-        ))}
-      </div>
+    <!-- ── Filtros activos: lo puntual, siempre a la vista y quitables uno a uno ── -->
+    <div
+      id="filtros-activos"
+      class="hidden flex-wrap items-center gap-2 border-t border-brand-200 py-3"
+      aria-label="Filtros aplicados"
+    >
+    </div>
 
-      <div class="flex flex-wrap items-center gap-x-8 gap-y-3 py-3.5">
-        {grupos.map((grupo, i) => (
-          <div
-            class={`flex flex-wrap items-center gap-x-5 gap-y-2 ${i > 0 ? 'lg:border-l lg:border-brand-200 lg:pl-8' : ''}`}
-            data-filtro={grupo.nombre}
-            role="group"
-            aria-label={grupo.aria}
-          >
-            <span class="micro-sm shrink-0 text-brand-500">{grupo.label}</span>
-            {grupo.opciones.map((o, i2) => (
-              <button
-                type="button"
-                class="chip-filtro"
-                data-valor={o.valor}
-                aria-pressed={i2 === 0 ? 'true' : 'false'}
-              >
-                {o.label}
-              </button>
-            ))}
+    <!-- ── Panel: los grupos completos, solo cuando se piden ── -->
+    <div id="filtros-cuerpo" class="hidden border-t border-brand-200 pb-6" >
+      <div class="grid gap-x-10 gap-y-6 py-5 sm:grid-cols-2 lg:grid-cols-4">
+        {grupos.map((grupo) => (
+          <div data-filtro={grupo.nombre} role="group" aria-label={grupo.aria}>
+            <p class="micro-sm mb-3 text-accent-700">{grupo.label}</p>
+            <div class="flex flex-col items-start gap-1.5">
+              {grupo.opciones.map((o, i) => (
+                <button
+                  type="button"
+                  class="chip-filtro"
+                  data-valor={o.valor}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
-
-        <button type="button" data-limpiar-filtros class="micro-sm ml-auto text-accent-700 hover:text-accent-900">
-          Limpiar filtros
-        </button>
       </div>
+
+      <button type="button" data-limpiar-filtros class="micro-sm text-accent-700 hover:text-accent-600">
+        Limpiar todo
+      </button>
     </div>
   </div>
 </section>
