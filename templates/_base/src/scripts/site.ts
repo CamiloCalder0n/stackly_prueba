@@ -2,6 +2,11 @@ import negocio from '../data/negocio.json';
 
 export const NEGOCIO = negocio;
 
+/** Años de trayectoria, calculados solos (no hay que actualizarlos a mano).
+    En los negocios locales colombianos el tiempo en el mercado es el
+    sustituto natural de las certificaciones formales: úsalo cerca del CTA. */
+export const ANOS_OFICIO = new Date().getFullYear() - NEGOCIO.anoFundacion;
+
 /** Genera un enlace de WhatsApp con mensaje pre-armado. */
 export function waLink(mensaje: string): string {
   return `https://wa.me/${NEGOCIO.whatsapp}?text=${encodeURIComponent(mensaje)}`;

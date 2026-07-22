@@ -11,17 +11,16 @@ import CTA from '../components/CTA.astro';
 import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import CitaEnTienda from '../components/CitaEnTienda.astro';
+import Pagos from '../components/Pagos.astro';
+import { NAV, NAV_FOOTER } from '../scripts/navegacion';
 
-const navLinks = [
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Testimonios', href: '#testimonios' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Contacto', href: '#contacto' },
-];
 ---
 
 <BaseLayout>
-  <Header links={navLinks} />
+  <Header links={NAV} />
+
+  <main id="contenido">
 
   <Hero
     eyebrow="Sistema base Stackly"
@@ -83,8 +82,29 @@ const navLinks = [
     ]}
   />
 
+  <section class="bg-paper py-20" aria-label="Medios de pago">
+    <div class="container-site" data-reveal>
+      <SectionHeading
+        eyebrow="Demo"
+        titulo="Medios de pago"
+        descripcion="Bloque reutilizable: lee los medios desde negocio.json. En Colombia, mostrar Addi y Sistecrédito reduce la barrera del precio en tickets altos."
+      />
+      <div class="mt-10">
+        <Pagos />
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20" aria-label="Agendar visita">
+    <div class="container-site" data-reveal>
+      <CitaEnTienda />
+    </div>
+  </section>
+
   <Contacto />
   <CTA />
-  <Footer links={navLinks} />
+  </main>
+
+  <Footer links={NAV_FOOTER} />
   <WhatsAppFlotante />
 </BaseLayout>

@@ -1,24 +1,55 @@
 @import 'tailwindcss';
 
+/* ── Tipografías variables self-hosted ──
+   Se declaran a mano, con el subconjunto `latin` únicamente: cubre todo el
+   español (tildes, ñ, ¿, ¡) y evita arrastrar cirílico, griego o vietnamita
+   que este tipo de sitio no usa jamás. Importar el CSS del paquete traería
+   los seis subconjuntos y varios kB de CSS bloqueante.
+
+   Al re-tematizar por nicho, cambia estas dos caras y las variables
+   `--font-display` / `--font-body` de abajo. */
+@font-face {
+  font-family: 'Space Grotesk Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
 /* ═══════════════════════════════════════════════════════════════
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
    PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
 
-   brand  → color principal (fondos oscuros, header, footer)
+   brand  → color principal (fondos, texto, estructura)
    accent → color de acción (botones, links, precios, detalles)
    Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+
+   REGLA QUE NO CONVIENE ROMPER: la rampa `brand` está calibrada para que
+   del 500 en adelante cualquier tono pase el contraste AA (4.5:1) sobre
+   `surface`. Si cambias los hex, verifica ese punto: el texto secundario
+   de todo el sitio usa brand-500.
    ═══════════════════════════════════════════════════════════════ */
 @theme {
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', system-ui, sans-serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
 
   --color-brand-50: #f6f7f9;
   --color-brand-100: #eceef2;
   --color-brand-200: #d5dae2;
   --color-brand-300: #b0bac9;
   --color-brand-400: #8595ab;
-  --color-brand-500: #667891;
-  --color-brand-600: #516078;
+  --color-brand-500: #5b6b82; /* 5.4:1 sobre blanco — el mínimo para texto */
+  --color-brand-600: #4a5a70;
   --color-brand-700: #434e61;
   --color-brand-800: #3a4352;
   --color-brand-900: #1d222b;
@@ -36,14 +67,25 @@
   --color-accent-900: #6e3a1b;
 
   --color-surface: #ffffff;
+  --color-paper: #f6f7f9;
   --color-ink: #1d222b;
+
+  /* Verde oficial de WhatsApp: no lo retoques. Su reconocibilidad es lo
+     que convierte, y vale más que la coherencia cromática. */
+  --color-whatsapp: #25d366;
 
   --radius-btn: 0.5rem;
   --radius-card: 1rem;
+
+  /* Curva de movimiento del sistema */
+  --ease-silk: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ── Base ── */
-html {
+
+/* Lenis toma el control del scroll cuando está activo; sin él (o con
+   movimiento reducido) dejamos el scroll suave nativo. */
+html:not(.lenis) {
   scroll-behavior: smooth;
 }
 
@@ -58,14 +100,30 @@ h1, h2, h3, h4 {
   font-family: var(--font-display);
 }
 
-/* ── Estados iniciales de animación (GSAP los revela) ──
-   Si JS no carga o el usuario prefiere menos movimiento,
-   el contenido queda visible. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-600);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Estados iniciales de animación ──
+   La clase `motion` la pone el propio motor DESPUÉS de cargar GSAP con
+   éxito. Si el script falla, nunca se añade y el contenido queda visible:
+   un error de JS no puede dejar la página en blanco. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal],
-  html.js [data-reveal-group] > * {
+  html.motion [data-reveal],
+  html.motion [data-reveal-group] > * {
     opacity: 0;
-    transform: translateY(28px);
+  }
+  html.motion [data-rule] {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  html.motion [data-reveal-mask] {
+    clip-path: inset(0% 0% 100% 0%);
+  }
+  html.motion [data-split] {
+    opacity: 0;
   }
 }
 
@@ -80,6 +138,20 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Contenedor amplio para composiciones editoriales que respiran más */
+@utility container-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 88rem;
+  padding-inline: 1.25rem;
+  @media (width >= 768px) {
+    padding-inline: 2.5rem;
+  }
+  @media (width >= 1280px) {
+    padding-inline: 4rem;
+  }
+}
+
 @utility btn {
   display: inline-flex;
   align-items: center;
@@ -89,7 +161,8 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-btn);
   font-weight: 600;
   font-size: 0.95rem;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.25s var(--ease-silk), color 0.25s var(--ease-silk),
+    border-color 0.25s var(--ease-silk);
   cursor: pointer;
 }
 
@@ -98,34 +171,229 @@ h1, h2, h3, h4 {
   color: var(--color-brand-950);
   &:hover {
     background: var(--color-accent-400);
-    transform: translateY(-1px);
   }
 }
 
 @utility btn-outline {
-  border: 1.5px solid var(--color-brand-300);
+  border: 1px solid var(--color-brand-300);
   color: var(--color-brand-800);
   background: transparent;
   &:hover {
-    border-color: var(--color-accent-500);
-    color: var(--color-accent-600);
+    border-color: var(--color-brand-950);
+    background: var(--color-brand-950);
+    color: #fff;
+  }
+}
+
+@utility btn-outline-claro {
+  border: 1px solid rgb(255 255 255 / 0.35);
+  color: #fff;
+  background: transparent;
+  &:hover {
+    border-color: #fff;
+    background: #fff;
+    color: var(--color-brand-950);
   }
 }
 
 @utility btn-whatsapp {
-  background: #25d366;
-  color: #fff;
+  background: var(--color-whatsapp);
+  color: #0b3d1e;
   &:hover {
     background: #1fb457;
-    transform: translateY(-1px);
+    color: #fff;
   }
+}
+
+/* ── Escala tipográfica fluida ── */
+@utility type-hero {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+@utility type-section {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.4vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+@utility type-sub {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  line-height: 1.2;
+}
+
+/* Micro-etiqueta en mayúsculas: el contraste de escala estructura la página */
+@utility micro {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+@utility micro-sm {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+@utility section-num {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--color-accent-700);
+  font-variant-numeric: tabular-nums;
 }
 
 @utility eyebrow {
   display: inline-block;
+  font-family: var(--font-body);
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-accent-600);
+  color: var(--color-accent-700);
+}
+
+@utility precio {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fila de ficha técnica: etiqueta a la izquierda, dato a la derecha.
+   En negocios de ticket alto, el detalle técnico es lo que sustituye a
+   poder ver el producto en persona. */
+@utility dato-tecnico {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-items: baseline;
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-brand-200);
+  padding-block: 0.9rem;
+  @media (width >= 640px) {
+    grid-template-columns: 8rem 1fr;
+  }
+}
+
+/* Paso numerado de un proceso. El tono es tenue pero no invisible:
+   a este tamaño la WCAG pide 3:1. */
+@utility paso-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-brand-400);
+}
+
+/* Chip de filtro: texto con filete, no botón de aplicación */
+@utility chip-filtro {
+  position: relative;
+  border: 0;
+  padding: 0.35rem 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-brand-500);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.3s var(--ease-silk);
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--color-accent-500);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.3s var(--ease-silk);
+  }
+  &:hover {
+    color: var(--color-brand-900);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+  &[aria-pressed='true'] {
+    color: var(--color-brand-950);
+  }
+  &[aria-pressed='true']::after {
+    transform: scaleX(1);
+  }
+}
+
+/* ── Detalle de línea fina ── */
+@utility rule-hair {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--color-brand-200);
+}
+
+@utility link-rule {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.3rem;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    opacity: 0.35;
+    transform-origin: right center;
+    transform: scaleX(1);
+    transition: transform 0.4s var(--ease-silk), opacity 0.4s var(--ease-silk);
+  }
+  &:hover::after {
+    opacity: 1;
+    transform-origin: left center;
+  }
+}
+
+@utility frame-fine {
+  border: 1px solid var(--color-brand-200);
+}
+
+/* Barrido de luz al hover: el brillo "premium" sin WebGL */
+@utility shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 0.28) 50%,
+      transparent 65%
+    );
+    background-size: 300% 100%;
+    background-position: 180% 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shine::after {
+    transition: background-position 1.1s var(--ease-silk);
+  }
+  .group:hover .shine::after,
+  .shine:hover::after {
+    background-position: -80% 0;
+  }
 }

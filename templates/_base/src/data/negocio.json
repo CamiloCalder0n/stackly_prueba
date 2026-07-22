@@ -8,7 +8,11 @@
   "direccion": "Cra 00 # 00-00, Local 1",
   "ciudad": "Bucaramanga",
   "horario": "Lun - Sáb: 9:00 AM - 7:00 PM",
+  "horarioCitas": ["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM", "6:00 PM"],
+  "anoFundacion": 2015,
   "instagram": "https://instagram.com/minegocio",
   "facebook": "https://facebook.com/minegocio",
-  "mapsUrl": "https://maps.google.com/?q=Bucaramanga"
+  "mapsUrl": "https://maps.google.com/?q=Bucaramanga",
+  "googleReviewsUrl": "",
+  "pagos": ["Addi", "Sistecrédito", "PSE", "Nequi", "Bancolombia", "Efectivo"]
 }
