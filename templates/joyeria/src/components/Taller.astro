@@ -67,7 +67,7 @@ const pasos: Paso[] = [
       data-horizontal-pista
     >
       {pasos.map((paso, i) => (
-        <div class="flex flex-col justify-center gap-5 border-t border-brand-200 px-6 pt-10 first:border-t-0 sm:px-8 lg:motion-safe:w-[68vw] lg:motion-safe:shrink-0 lg:motion-safe:border-t-0 lg:motion-safe:border-l lg:motion-safe:first:border-l-0 lg:motion-safe:px-14 lg:motion-safe:pt-0 xl:motion-safe:w-[48vw]">
+        <div class="flex flex-col justify-center gap-5 border-t border-brand-200 px-6 pt-10 first:border-t-0 sm:px-8 lg:motion-safe:w-[46vw] lg:motion-safe:shrink-0 lg:motion-safe:border-t-0 lg:motion-safe:border-l lg:motion-safe:first:border-l-0 lg:motion-safe:px-14 lg:motion-safe:pt-0 xl:motion-safe:w-[34vw]">
           <span class="paso-num">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="type-sub text-brand-950">{paso.titulo}</h3>
           <p class="max-w-md text-[0.92rem] leading-[1.85] font-light text-brand-600">{paso.texto}</p>
@@ -76,7 +76,7 @@ const pasos: Paso[] = [
 
       <!-- Foto de apoyo: solo forma parte del recorrido horizontal real;
            en el resto de los casos ya se contó todo con los cuatro pasos. -->
-      <div class="hidden lg:motion-safe:block lg:motion-safe:w-[40vw] lg:motion-safe:shrink-0 xl:motion-safe:w-[32vw]">
+      <div class="hidden lg:motion-safe:block lg:motion-safe:w-[34vw] lg:motion-safe:shrink-0 xl:motion-safe:w-[26vw]">
         <Foto
           src={fotoTaller}
           alt="Piezas terminadas colgando en el taller de Aurea"
