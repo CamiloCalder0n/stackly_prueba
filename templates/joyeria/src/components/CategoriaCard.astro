@@ -1,0 +1,49 @@
+---
+// Tarjeta de categoría de la portada (Figma 1:188). Medidas del molde:
+// foto de 379×467 (≈4/5) a canto vivo, nombre en Playfair 32px sobre la
+// tinta, descripción en Inria Serif 20px y un "Ver más" dentro de una caja
+// de 139×42 con filete dorado de 2px — no un enlace suelto ni una versalita.
+// Nada de sombras: en el Figma las fotos se separan por aire, no por
+// elevación.
+import Foto from './Foto.astro';
+
+interface Props {
+  imagen: ImageMetadata;
+  imagenAlt?: string;
+  nombre: string;
+  descripcion: string;
+  /** Enlace al catálogo filtrado, p. ej. /catalogo?categoria=anillos */
+  href: string;
+}
+
+const { imagen, imagenAlt = '', nombre, descripcion, href } = Astro.props;
+---
+
+<div class="group flex flex-col text-center">
+  <a href={href} class="block overflow-hidden bg-brand-200">
+    <Foto
+      src={imagen}
+      alt={imagenAlt}
+      ratio="4/5"
+      sizes="(max-width: 768px) 100vw, 30vw"
+      class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.05]"
+    />
+  </a>
+
+  <h3 class="type-sub mt-5 text-brand-950">
+    <a href={href} class="transition-colors duration-500 hover:text-accent-700">{nombre}</a>
+  </h3>
+  <p class="mt-1.5 text-[0.95rem] text-brand-900">{descripcion}</p>
+
+  <div class="mt-4">
+    <!-- El filete va en el oro literal del Figma (#d4af37 = accent-500);
+         el texto sube a accent-700 porque a 17px el oro puro no llega al
+         4.5:1 que pide la WCAG. El borde sí puede: no es texto. -->
+    <a
+      href={href}
+      class="inline-flex min-w-[8.5rem] items-center justify-center border-2 border-accent-500 px-6 py-2 font-display text-[1.0625rem] text-accent-700 transition-colors duration-500 hover:bg-accent-500 hover:text-brand-950"
+    >
+      Ver más
+    </a>
+  </div>
+</div>

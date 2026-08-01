@@ -28,14 +28,18 @@ interface Props {
     | 'camion'
     | 'tienda'
     | 'calendario'
-    | 'regla';
+    | 'regla'
+    | 'corazon'
+    | 'bolsa'
+    | 'usuario'
+    | 'estrella';
   tamano?: number;
   class?: string;
 }
 
 const { nombre, tamano = 16, class: clase = '' } = Astro.props;
 
-const macizo = nombre === 'whatsapp';
+const macizo = nombre === 'whatsapp' || nombre === 'estrella';
 ---
 
 <svg
@@ -187,5 +191,32 @@ const macizo = nombre === 'whatsapp';
       <line x1="12" y1="8" x2="12" y2="13" />
       <line x1="17" y1="8" x2="17" y2="12" />
     </>
+  )}
+
+  {/* Favoritos, header */}
+  {nombre === 'corazon' && (
+    <path d="M12 20.5s-7.5-4.6-9.7-9.1C.7 8.1 2.2 4.8 5.4 4.1c2-.4 3.9.5 5 2.1 1.1-1.6 3-2.5 5-2.1 3.2.7 4.7 4 3.1 7.3-2.2 4.5-9.7 9.1-9.7 9.1z" />
+  )}
+
+  {/* Cuenta, header */}
+  {nombre === 'usuario' && (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="10" r="3" />
+      <path d="M6 19c1.2-2.6 3.4-4 6-4s4.8 1.4 6 4" />
+    </>
+  )}
+
+  {/* Bolsa/carrito, header */}
+  {nombre === 'bolsa' && (
+    <>
+      <path d="M6 8h12l1 13H5z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+    </>
+  )}
+
+  {/* Calificación, testimonios */}
+  {nombre === 'estrella' && (
+    <path d="m12 2.5 2.9 6.3 6.6.7-5 4.7 1.4 6.6L12 17.7l-5.9 3.1 1.4-6.6-5-4.7 6.6-.7z" />
   )}
 </svg>

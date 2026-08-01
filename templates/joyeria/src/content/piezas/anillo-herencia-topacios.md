@@ -1,6 +1,6 @@
 ---
 nombre: Anillo Herencia de Topacios
-referencia: AUR-AN-003
+referencia: CJ-AN-003
 slug: anillo-herencia-topacios
 fotos:
   - ../../assets/fotos/anillo-piedra-azul.jpg

@@ -124,7 +124,7 @@ function montarAnimaciones(): void {
           {
             scaleX: 1,
             duration: 1.3,
-            ease: 'power2.out',
+            ease: SILK,
             scrollTrigger: { trigger: el, start: 'top 94%' },
           },
         );
@@ -176,7 +176,7 @@ function montarAnimaciones(): void {
         gsap.to(obj, {
           valor: objetivo,
           duration: 1.7,
-          ease: 'power1.out',
+          ease: SILK,
           scrollTrigger: { trigger: el, start: 'top 92%' },
           onUpdate: () => {
             el.textContent = Math.round(obj.valor).toLocaleString('es-CO');

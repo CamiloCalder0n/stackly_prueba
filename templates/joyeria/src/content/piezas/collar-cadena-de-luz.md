@@ -1,9 +1,9 @@
 ---
 nombre: Collar Cadena de Luz
-referencia: AUR-CO-002
+referencia: CJ-CO-002
 slug: collar-cadena-de-luz
 fotos:
-  - ../../assets/fotos/collar-diamantes.jpg
+  - ../../assets/fotos/collar-cadena-oro.jpg
 categoria: collares
 material: oro
 ley: 18k
@@ -15,7 +15,7 @@ acabado: Pulido espejo
 tallas: Cadena de 42 cm
 precio: 2150000
 ocultarPrecio: false
-descripcion: Un dije de halo que se ve mucho más grande de lo que es, sobre cadena veneciana fina de oro blanco de 18k. Pensado para llevarlo todos los días sin que estorbe y que igual se note cuando la luz le pega de frente.
+descripcion: Un dije de halo que se ve mucho más grande de lo que es, sobre cadena veneciana fina de oro amarillo de 18k. Pensado para llevarlo todos los días sin que estorbe y que igual se note cuando la luz le pega de frente.
 disponibilidad: disponible
 unidades: 2
 ocasion:

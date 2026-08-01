@@ -1,99 +1,104 @@
 ---
-// Hero de portada: maison editorial clara. Nada de foto oscura a pantalla
-// completa — el hueso manda, la foto es una pieza más de la composición y
-// la trayectoria del taller hace de prueba social bajo el CTA.
-import { waLink, NEGOCIO, ANOS_OFICIO } from '../scripts/site';
-import Icono from './Icono.astro';
+// Hero de portada (Figma 1:21). Banda a sangre de 1400×712 —proporción casi
+// 2:1, mucho más baja que una portada a pantalla completa— con la modelo a
+// la derecha y el bloque de texto sobre el fondo liso de la propia foto.
+//
+// Tratamiento de la imagen: el molde NO lleva velo. En el Figma la foto va
+// limpia, a color pleno, y el texto se apoya en el barrido beige del propio
+// fondo del estudio. La versión anterior superponía un degradado de `paper`
+// al 85% MÁS una sombra oscura al pie: eso era exactamente el "lavado" que
+// se veía. Aquí no queda ningún velo claro.
+//
+// La foto disponible (`lifestyle-argollas-oro`) es de clave tonal baja: no
+// hay en la biblioteca ninguna imagen con el fondo beige de estudio del
+// mockup, y esta es la única con modelo a la derecha + espacio negativo a
+// la izquierda, que es la composición que pide el molde. Trabajar con la
+// foto tal como es —en vez de intentar aclararla con un velo— da el
+// resultado que pedía el encargo: la imagen a color pleno, sin lavar.
+//
+// Y tiene una ventaja: sobre esa zona casi negra el oro literal del Figma
+// (#d4af37 = accent-500) rinde ~9:1, así que aquí sí se puede usar el tono
+// exacto del molde en el titular, sin la corrección de contraste que hace
+// falta cuando el oro va sobre blanco.
+//
+// Tipografía del titular: las DOS líneas van en oro en el Figma (nodo 1:26
+// declara #d4af37 y ambos párrafos lo heredan), no una en tinta y otra en
+// oro. Y la segunda línea no es cursiva: es la misma Playfair Regular a la
+// mitad de cuerpo (96px → 48px).
 import Foto from './Foto.astro';
 
 interface Props {
-  eyebrow?: string;
-  titulo: string;
-  /** Segunda línea del título, en cursiva dorada: el acento editorial. */
-  acento?: string;
-  subtitulo?: string;
-  /** Foto macro vertical — es la imagen LCP de la página. */
+  /** Foto de fondo a sangre — es la imagen LCP de la página. */
   imagen: ImageMetadata;
   imagenAlt?: string;
+  /** Primera línea del titular, a cuerpo completo. */
+  titulo: string;
+  /** Segunda línea, a la mitad de cuerpo. Mismo oro, misma cara. */
+  acento?: string;
+  subtitulo?: string;
   ctaTexto?: string;
-  ctaMensaje?: string;
-  ctaSecundario?: { label: string; href: string };
+  ctaHref?: string;
 }
 
 const {
-  eyebrow,
+  imagen,
+  imagenAlt = '',
   titulo,
   acento,
   subtitulo,
-  imagen,
-  imagenAlt = '',
-  ctaTexto = 'Consultar por WhatsApp',
-  ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
-  ctaSecundario,
+  ctaTexto = 'Explorar colección',
+  ctaHref = '/catalogo',
 } = Astro.props;
-
-/* Prueba de trayectoria: sale directo de site.ts, nunca a mano, para que
-   no se desactualice con el correr de los años. */
-const trayectoria = `Oficio desde ${NEGOCIO.anoFundacion} (${ANOS_OFICIO} años) · más de ${NEGOCIO.piezasEntregadas.toLocaleString('es-CO')} piezas entregadas`;
 ---
 
-<section class="relative bg-surface" aria-label="Presentación">
-  <!-- El aire es generoso, pero medido: con más relleno superior el botón de
-       WhatsApp caía por debajo del pliegue en una pantalla de portátil, que es
-       justo donde no puede estar el CTA principal. -->
-  <div class="container-wide grid gap-12 pt-20 pb-20 md:gap-16 md:pt-24 md:pb-28 lg:grid-cols-12 lg:items-center lg:gap-10 lg:pt-24 lg:pb-28">
-    <!-- Bloque tipográfico: 7 de 12 columnas (asimetría editorial) -->
-    <div class="lg:col-span-7">
-      {eyebrow && (
-        <div class="flex items-center gap-4">
-          <span class="h-px w-10 bg-accent-500/70" aria-hidden="true"></span>
-          <span class="micro text-accent-700">{eyebrow}</span>
-        </div>
-      )}
+<section class="relative overflow-hidden bg-noche" aria-label="Presentación">
+  <div class="absolute inset-0">
+    <Foto
+      src={imagen}
+      alt={imagenAlt}
+      widths={[900, 1300, 1800, 2200]}
+      sizes="100vw"
+      prioridad
+      class="h-full object-cover object-[55%_32%]"
+    />
+    <!-- Único velo que queda, y va en la MISMA dirección tonal que la foto:
+         profundiza el negro que ya existe a la izquierda en vez de aclararlo.
+         Sobre la modelo se apaga por completo, así que ella llega intacta.
+         Nada de degradado claro encima ni sombra al pie. -->
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-noche/75 via-noche/25 to-transparent md:from-noche/70 md:via-noche/10"
+    >
+    </div>
+  </div>
 
-      <h1 class="type-hero mt-7 text-brand-950" data-split="hero">
+  <!-- Proporción del molde (1400×712 ≈ 1.97:1) en vez de min-h-[88vh]: el
+       hero del Figma es una banda ancha y baja, no una portada a pantalla
+       completa. En móvil se le da altura mínima para que quepa el texto. -->
+  <div
+    class="container-wide relative flex min-h-[32rem] items-center py-20 md:min-h-[clamp(30rem,50vw,44.5rem)] md:py-0"
+  >
+    <div class="max-w-xl">
+      <!-- Oro literal del Figma (#d4af37): sobre esta zona casi negra da
+           ~9:1, de sobra para AA. La segunda línea es la misma cara y el
+           mismo tono a la mitad de cuerpo (96px → 48px en el molde), no una
+           cursiva en otro color. -->
+      <h1 class="type-hero text-accent-500" data-split="hero">
         {titulo}
-        {acento && (
-          <>
-            <br />
-            <em class="font-normal text-accent-600 italic">{acento}</em>
-          </>
-        )}
+        {/* `block` ya hace el salto de línea: un <br /> extra le daría a
+            SplitText una línea vacía que animar. */}
+        {acento && <span class="block text-[0.5em] leading-[1.15]">{acento}</span>}
       </h1>
 
       {subtitulo && (
-        <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-600">
+        <p class="mt-5 max-w-md font-display text-lg text-brand-100" data-reveal>
           {subtitulo}
         </p>
       )}
 
-      <div class="mt-11 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-primary">
-          <Icono nombre="whatsapp" tamano={15} />
-          {ctaTexto}
-        </a>
-        {ctaSecundario && (
-          <a href={ctaSecundario.href} class="link-rule micro text-brand-700 hover:text-accent-700">
-            {ctaSecundario.label}
-            <Icono nombre="flecha" tamano={14} />
-          </a>
-        )}
-      </div>
-
-      <p class="micro-sm mt-12 text-brand-500">{trayectoria}</p>
-    </div>
-
-    <!-- Foto macro vertical: rompe la simetría, sin overlay oscuro -->
-    <div class="lg:col-span-4 lg:col-start-9">
-      <div class="frame-fine overflow-hidden">
-        <Foto
-          src={imagen}
-          alt={imagenAlt}
-          ratio="4/5"
-          widths={[500, 700, 900, 1200]}
-          sizes="(max-width: 1024px) 70vw, 30vw"
-          prioridad
-        />
+      <!-- Bloque dorado macizo con la tinta encima y sin ícono: así es el
+           CTA del Figma (nodo 1:30). La flecha era un añadido nuestro. -->
+      <div class="mt-9" data-reveal>
+        <a href={ctaHref} class="btn btn-primary">{ctaTexto}</a>
       </div>
     </div>
   </div>

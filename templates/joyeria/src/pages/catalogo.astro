@@ -1,55 +1,30 @@
 ---
-// Catálogo completo: buscador, orden y filtros por pieza, material,
-// presupuesto y ocasión. Todo client-side, vanilla TS sobre data-attributes
-// — sin frameworks. Ver el <script> al final para la lógica de filtrado y la
-// sincronización con la URL, que permite compartir un catálogo ya filtrado.
+// Catálogo reconstruido sobre el molde de Figma: sidebar de filtros con
+// acordeones + top bar (conteo / orden) + grilla de 4 columnas + paginación.
+// El filtrado, el orden y la sincronización con la URL viven en el <script>
+// del final (vanilla TS sobre data-attributes, sin frameworks) — permite
+// compartir por WhatsApp un catálogo ya filtrado.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import PiezaCard from '../components/PiezaCard.astro';
 import Filtros from '../components/Filtros.astro';
-import CTA from '../components/CTA.astro';
-import Footer from '../components/Footer.astro';
+import Icono from '../components/Icono.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import { NEGOCIO, waLink } from '../scripts/site';
-import Foto from '../components/Foto.astro';
-import fotoPortada from '../assets/fotos/collar-cadena-fina.jpg';
-import { NAV, NAV_FOOTER } from '../scripts/navegacion';
+import { NAV } from '../scripts/navegacion';
 
 const piezas = (await getCollection('piezas')).sort((a, b) =>
   a.data.nombre.localeCompare(b.data.nombre, 'es'),
 );
 
-
-/**
- * Pieza que se muestra como mosaico grande en la grilla editorial.
- * Es determinista (no depende del orden tras filtrar/ordenar): si el
- * filtro la oculta, la grilla simplemente se recompone con `grid-flow-dense`.
- */
-const piezaMosaico = piezas.find((p) => p.data.destacada)?.data.slug;
-
 const categorias = [
   { valor: 'todas', label: 'Todas' },
   { valor: 'anillos', label: 'Anillos' },
-  { valor: 'collares', label: 'Collares' },
+  { valor: 'collares', label: 'Cadenas y collares' },
   { valor: 'aretes', label: 'Aretes' },
   { valor: 'pulseras', label: 'Pulseras' },
-];
-
-const materiales = [
-  { valor: 'todos', label: 'Todos' },
-  { valor: 'oro', label: 'Oro' },
-  { valor: 'plata', label: 'Plata' },
-  { valor: 'oro rosa', label: 'Oro rosa' },
-];
-
-const ocasiones = [
-  { valor: 'todas', label: 'Todas' },
-  { valor: 'compromiso', label: 'Compromiso' },
-  { valor: 'matrimonio', label: 'Matrimonio' },
-  { valor: 'aniversario', label: 'Aniversario' },
-  { valor: 'cumpleaños', label: 'Cumpleaños' },
-  { valor: 'uso diario', label: 'Uso diario' },
 ];
 
 const precios = [
@@ -58,107 +33,180 @@ const precios = [
   { valor: '800000-2000000', label: '$800.000 a $2.000.000' },
   { valor: '2000000-', label: 'Más de $2.000.000' },
 ];
+
+const disponibilidades = [
+  { valor: 'todas', label: 'Todas' },
+  { valor: 'disponible', label: 'Disponible' },
+  { valor: 'por encargo', label: 'Por encargo' },
+];
+
+const ordenes = [
+  { valor: 'az', label: 'Alfabéticamente, A-Z' },
+  { valor: 'za', label: 'Alfabéticamente, Z-A' },
+  { valor: 'precio-asc', label: 'Precio: menor a mayor' },
+  { valor: 'precio-desc', label: 'Precio: mayor a menor' },
+  { valor: 'destacadas', label: 'Destacadas primero' },
+  { valor: 'novedades', label: 'Novedades primero' },
+];
+
+// Paginación real, dimensionada a la colección real. Con 12 piezas y este
+// tamaño de página cabe una sola página: es lo honesto, nada de "15 páginas"
+// de relleno del mockup. Si el cliente carga más piezas, crece solo.
+const PAGE_SIZE = 12;
+const totalPaginas = Math.ceil(piezas.length / PAGE_SIZE);
 ---
 
 <BaseLayout
   title="Catálogo"
   description={`Catálogo de ${NEGOCIO.nombre}: anillos, collares, aretes y pulseras en oro, plata y oro rosa, con precios visibles. Filtra y consulta por WhatsApp.`}
 >
-  <Header links={NAV} cta="Consultar" />
-
+  <Header links={NAV} />
 
   <main id="contenido">
-  <!-- ── Encabezado editorial: dirección maison clara, un solo bloque, sin foto de fondo pesada ── -->
-  <section class="border-b border-brand-200/70 bg-surface py-24 md:py-36">
-    <div class="container-wide">
-      <div class="grid items-end gap-12 lg:grid-cols-12 lg:gap-10">
-        <div class="lg:col-span-7">
-          <div class="flex items-center gap-4">
-            <span class="h-px w-10 bg-accent-500/70" aria-hidden="true"></span>
-            <span class="micro text-accent-700">Catálogo</span>
-          </div>
-          <h1 class="type-hero mt-7 text-brand-950" data-split="hero">
-            Todas<br /><em class="font-normal text-accent-600 italic">nuestras piezas</em>
-          </h1>
-          <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-600">
-            Filtra por tipo de pieza, material o presupuesto. Cada ficha trae fotos,
-            especificaciones completas y un botón para consultar por WhatsApp con la
-            referencia lista.
-          </p>
-          <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <span class="badge-ley">Oro 18k · Plata 950</span>
-            <span class="micro-sm text-brand-500">Garantía escrita · Ajuste de talla sin costo</span>
-          </div>
-        </div>
-
-        <!-- Decorativa y solo visible en escritorio: NO se marca como prioritaria,
-             porque en móvil estaría descargando con prioridad alta una imagen
-             que ni siquiera se ve, castigando el LCP donde más duele. -->
-        <div class="hidden lg:col-span-4 lg:col-start-9 lg:block" data-reveal-mask>
-          <Foto src={fotoPortada} alt="" ratio="4/5" sizes="(max-width: 1024px) 0px, 33vw" />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <Filtros categorias={categorias} materiales={materiales} ocasiones={ocasiones} precios={precios} />
-
-  <!-- ── Grid editorial: la pieza destacada ocupa un mosaico 2×2 ── -->
-  <section class="py-16 md:py-24">
-    <div class="container-wide">
-      <!-- Encabezado de la región de resultados. Va oculto a la vista porque
-           el h1 de arriba ya lo dice todo, pero tiene que existir: sin él la
-           jerarquía salta del h1 a los h3 de cada tarjeta. -->
-      <h2 class="sr-only">Piezas del catálogo</h2>
-
-      <div
-        class="grid auto-rows-auto grid-flow-dense gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
-        id="grid-piezas"
-        data-reveal-group
-      >
-        {piezas.map((pieza) => (
-          <PiezaCard
-            pieza={pieza}
-            variante={pieza.data.slug === piezaMosaico ? 'destacada' : 'normal'}
-            class={pieza.data.slug === piezaMosaico ? 'sm:col-span-2 lg:row-span-2' : ''}
-          />
-        ))}
-      </div>
-
-      <!-- Estado vacío: con CTA a WhatsApp, porque muchas piezas se hacen por encargo -->
-      <div id="sin-resultados" class="hidden border border-brand-200 px-6 py-20 text-center">
-        <p class="type-sub text-brand-950">No encontramos piezas con esos filtros</p>
-        <p class="mx-auto mt-5 max-w-md text-[0.9rem] leading-[1.9] font-light text-brand-500">
-          Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras
-          piezas se hacen por encargo.
+    <!-- ── Encabezado editorial (Figma 1:237) ──
+         Franja gris #f5f5f5 con la miga de pan a la izquierda en Playfair
+         18px ("Inicio" al 57% de opacidad, la página actual en tinta) y el
+         título en ORO a 96px CENTRADO, con la frase de apoyo debajo, también
+         centrada y entrecomillada. Antes iba todo alineado a la izquierda,
+         sobre blanco y en tinta. -->
+    <section class="bg-paper pt-8 pb-12 md:pt-10 md:pb-16">
+      <div class="container-wide">
+        <nav class="font-display text-[1.05rem] text-brand-500" aria-label="Ruta de navegación">
+          <a href="/" class="transition-colors duration-500 hover:text-accent-700">Inicio</a>
+          <span class="mx-1.5" aria-hidden="true">/</span>
+          <span class="text-brand-950">Catálogo</span>
+        </nav>
+        <h1 class="type-hero mt-8 text-center text-accent-600" data-split="hero">Catálogo</h1>
+        <p class="mx-auto mt-4 max-w-xl text-center text-[1.05rem] leading-relaxed text-brand-950">
+          “Descubre el arte del oro hecho elegancia.”
         </p>
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <button type="button" data-limpiar-filtros class="btn btn-outline">Limpiar filtros</button>
-          <a
-            href={waLink(
-              `Hola, vengo del catálogo de ${NEGOCIO.nombre}. Busco una pieza que no encontré filtrando, ¿me ayudan a cotizarla por encargo?`,
+      </div>
+    </section>
+
+    <!-- ── Filtros (sidebar) + resultados ── -->
+    <section class="py-14 md:py-20">
+      <div class="container-wide">
+        <div class="grid gap-x-12 gap-y-8 lg:grid-cols-[15rem_1fr]">
+          <aside>
+            <Filtros categorias={categorias} precios={precios} disponibilidades={disponibilidades} />
+          </aside>
+
+          <div>
+            <!-- Top bar (Figma 1:263/1:264): conteo a la izquierda y orden a
+                 la derecha, ambos en Playfair 18px caja y baja. La etiqueta
+                 "Ordenar por" va atenuada y el valor en tinta, tal cual el
+                 molde. Antes era versalita con tracking abierto. -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-5">
+              <div class="flex items-center gap-4">
+                <p
+                  class="font-display text-[1.05rem] text-brand-950"
+                  id="contador-resultados"
+                  aria-live="polite"
+                >
+                  {piezas.length} Productos
+                </p>
+                <button
+                  type="button"
+                  id="filtros-toggle"
+                  class="flex items-center gap-2 border border-brand-300 px-3 py-1.5 font-display text-[0.9rem] text-brand-900 transition-colors duration-300 hover:border-accent-500 hover:text-accent-700 lg:hidden"
+                  aria-expanded="false"
+                  aria-controls="filtros-cuerpo"
+                >
+                  Filtros
+                  <span
+                    id="filtros-cuenta"
+                    class="hidden min-w-4 bg-accent-500 px-1 text-center text-[0.7rem] text-brand-950"
+                  ></span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <label for="catalogo-orden" class="font-display text-[1.05rem] text-brand-500">
+                  Ordenar por
+                </label>
+                <select
+                  id="catalogo-orden"
+                  class="border-0 bg-transparent py-1 font-display text-[1.05rem] text-brand-950 focus:outline-none"
+                >
+                  {ordenes.map((o) => <option value={o.valor}>{o.label}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <!-- El h1 de arriba encabeza la página; este h2 existe (aunque
+                 oculto) para no saltar de h1 a los h3 de cada tarjeta. -->
+            <h2 class="sr-only">Piezas del catálogo</h2>
+
+            <!-- Grilla del molde (1:265 y siguientes): 4 columnas de fotos
+                 en retrato ≈4/5 (212×261), separación horizontal corta y
+                 vertical amplia. Antes las fotos eran cuadradas: es al revés
+                 que en portada, donde el molde sí las pone casi cuadradas. -->
+            <div
+              class="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4"
+              id="grid-piezas"
+              data-reveal-group
+            >
+              {piezas.map((pieza) => (
+                <PiezaCard pieza={pieza} ratio="4/5" />
+              ))}
+            </div>
+
+            <!-- Estado vacío: con CTA a WhatsApp, porque muchas piezas se hacen por encargo -->
+            <div id="sin-resultados" class="hidden border border-brand-300 px-6 py-20 text-center">
+              <p class="type-sub text-brand-950">No encontramos piezas con esos filtros</p>
+              <p class="mx-auto mt-5 max-w-md text-[0.95rem] leading-[1.7] text-brand-900">
+                Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras
+                piezas se hacen por encargo.
+              </p>
+              <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <button type="button" data-limpiar-filtros class="btn btn-outline">Limpiar filtros</button>
+                <a
+                  href={waLink(
+                    `Hola, vengo del catálogo de ${NEGOCIO.nombre}. Busco una pieza que no encontré filtrando, ¿me ayudan a cotizarla por encargo?`,
+                  )}
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn-whatsapp"
+                >
+                  Cotizar por encargo
+                </a>
+              </div>
+            </div>
+
+            <!-- Paginación real (Figma 1:336-1:351): celdas cuadradas de 57px
+                 pegadas entre sí sobre la franja gris, filete #c8c8c8 y la
+                 página actual con el filete en tinta. Cifras en Playfair. -->
+            {totalPaginas > 1 && (
+              <nav class="mt-14 flex justify-center" aria-label="Paginación">
+                <div class="flex bg-paper">
+                  {Array.from({ length: totalPaginas }).map((_, i) => (
+                    <span
+                      aria-current={i === 0 ? 'page' : undefined}
+                      class={`flex h-14 w-14 items-center justify-center border font-display text-[1.05rem] ${
+                        i === 0
+                          ? 'border-brand-950 text-brand-950'
+                          : '-ml-px border-brand-300 text-brand-700'
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                  ))}
+                  <span
+                    class="-ml-px flex h-14 w-14 items-center justify-center border border-brand-300 text-brand-700"
+                    aria-hidden="true"
+                  >
+                    <Icono nombre="flecha" tamano={15} />
+                  </span>
+                </div>
+              </nav>
             )}
-            target="_blank"
-            rel="noopener"
-            class="btn btn-whatsapp"
-          >
-            Cotizar por encargo
-          </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <CTA
-    titulo="¿No encuentras lo que buscas?"
-    descripcion="Muchas piezas se fabrican por encargo. Cuéntanos tu idea y te cotizamos sin compromiso."
-    botonTexto="Pedir una pieza a la medida"
-    mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre}. Quiero cotizar una pieza a la medida.`}
-  />
+    </section>
   </main>
 
-
-  <Footer links={NAV_FOOTER} />
+  <Footer />
   <WhatsAppFlotante mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`} />
 </BaseLayout>
 
@@ -168,14 +216,15 @@ const precios = [
   /** Claves de filtro que se leen/escriben en la URL y sus valores por defecto. */
   const DEFAULTS = {
     categoria: 'todas',
-    material: 'todos',
-    ocasion: 'todas',
     precio: 'todos',
+    disponibilidad: 'todas',
     q: '',
-    orden: 'destacadas',
+    orden: 'az',
   } as const;
 
   type Clave = keyof typeof DEFAULTS;
+
+  const ORDENES_VALIDOS = ['az', 'za', 'precio-asc', 'precio-desc', 'destacadas', 'novedades'];
 
   function montarCatalogo(): void {
     const grid = document.getElementById('grid-piezas');
@@ -206,9 +255,8 @@ const precios = [
 
     function calcularVisible(card: HTMLElement): boolean {
       const okCategoria = estado.categoria === 'todas' || card.dataset.categoria === estado.categoria;
-      const okMaterial = estado.material === 'todos' || card.dataset.material === estado.material;
-      const okOcasion =
-        estado.ocasion === 'todas' || (card.dataset.ocasion || '').split(',').includes(estado.ocasion);
+      const okDisponibilidad =
+        estado.disponibilidad === 'todas' || card.dataset.disponibilidad === estado.disponibilidad;
       let okPrecio = true;
       if (estado.precio !== 'todos') {
         // Las piezas sin precio publicado ("Consultar precio") solo aparecen con "Todos".
@@ -216,7 +264,7 @@ const precios = [
         okPrecio = !Number.isNaN(precio) && enRango(precio, estado.precio);
       }
       const okBusqueda = !estado.q || (card.dataset.busqueda || '').includes(estado.q);
-      return okCategoria && okMaterial && okOcasion && okPrecio && okBusqueda;
+      return okCategoria && okDisponibilidad && okPrecio && okBusqueda;
     }
 
     // Precio ausente (Consultar precio) siempre al final, sea cual sea la dirección.
@@ -227,7 +275,7 @@ const precios = [
 
     function comparador(orden: string): (a: HTMLElement, b: HTMLElement) => number {
       switch (orden) {
-        // En ambas direcciones hay que atajar el caso de dos piezas sin precio:
+        // En ambas direcciones de precio hay que atajar dos piezas sin precio:
         // Infinity - Infinity es NaN, y un comparador que devuelve NaN deja el
         // orden indefinido.
         case 'precio-asc':
@@ -246,10 +294,15 @@ const precios = [
             if (pb === Infinity) return -1;
             return pb - pa;
           };
+        case 'destacadas':
+          return (a, b) =>
+            Number(b.dataset.destacada === 'true') - Number(a.dataset.destacada === 'true');
         case 'novedades':
           return (a, b) => Number(b.dataset.nuevo === 'true') - Number(a.dataset.nuevo === 'true');
-        default: // 'destacadas'
-          return (a, b) => Number(b.dataset.destacada === 'true') - Number(a.dataset.destacada === 'true');
+        case 'za':
+          return (a, b) => (b.dataset.nombre || '').localeCompare(a.dataset.nombre || '', 'es');
+        default: // 'az'
+          return (a, b) => (a.dataset.nombre || '').localeCompare(b.dataset.nombre || '', 'es');
       }
     }
 
@@ -267,39 +320,43 @@ const precios = [
         [...cards].sort(comparador(estado.orden)).forEach((c) => grid!.appendChild(c));
         sinResultados?.classList.toggle('hidden', visibles > 0);
         if (contador) {
-          contador.textContent = visibles === 1 ? 'Mostrando 1 pieza' : `Mostrando ${visibles} piezas`;
+          contador.textContent = visibles === 1 ? '1 Producto' : `${visibles} Productos`;
         }
       };
       if (animado) recomponerGrilla(grid!, cambiar);
       else cambiar();
     }
 
-    /* Los filtros aplicados se muestran como chips quitables debajo de la
-       barra. Es lo "puntual" que pedía el catálogo: en vez de tener 25
-       opciones a la vista, se ven solo las que están activas. */
+    /* Los filtros aplicados se muestran como chips quitables. */
     const activosCaja = document.getElementById('filtros-activos');
     const cuentaBadge = document.getElementById('filtros-cuenta');
 
     function etiquetaDe(clave: Clave, valor: string): string {
       const grupo = grupos.find((g) => g.dataset.filtro === clave);
-      const boton = grupo?.querySelector<HTMLButtonElement>(`.chip-filtro[data-valor="${CSS.escape(valor)}"]`);
+      const boton = grupo?.querySelector<HTMLButtonElement>(
+        `.chip-filtro[data-valor="${CSS.escape(valor)}"]`,
+      );
       return boton?.textContent?.trim() ?? valor;
     }
 
     function pintarActivos(): void {
       if (!activosCaja) return;
-      const aplicados = (['categoria', 'material', 'precio', 'ocasion'] as const).filter(
+      const aplicados = (['categoria', 'precio', 'disponibilidad'] as const).filter(
         (c) => estado[c] !== DEFAULTS[c],
       );
       if (estado.q) aplicados.push('q' as never);
 
       activosCaja.innerHTML = '';
       for (const clave of aplicados) {
-        const texto = clave === ('q' as string) ? `“${estado.q}”` : etiquetaDe(clave as Clave, estado[clave as Clave]);
+        const texto =
+          clave === ('q' as string)
+            ? `“${estado.q}”`
+            : etiquetaDe(clave as Clave, estado[clave as Clave]);
         const chip = document.createElement('button');
         chip.type = 'button';
+        // Serif en caja y baja, como todo lo demás del molde (nada de versalitas).
         chip.className =
-          'micro-sm inline-flex items-center gap-2 border border-accent-500/60 px-3 py-1.5 text-accent-700 transition-colors duration-300 hover:border-accent-500 hover:text-accent-600';
+          'inline-flex items-center gap-2 border border-accent-500 px-3 py-1.5 font-display text-[0.9rem] text-accent-700 transition-colors duration-300 hover:bg-accent-500 hover:text-brand-950';
         chip.innerHTML = `${texto}<span aria-hidden="true">×</span>`;
         chip.setAttribute('aria-label', `Quitar el filtro ${texto}`);
         chip.addEventListener('click', () => {
@@ -336,8 +393,8 @@ const precios = [
       pintarActivos();
     }
 
-    // ── Estado inicial desde la URL: /catalogo?categoria=anillos&precio=0-800000&q=zafiro ──
-    // Se valida contra los botones que existen de verdad, para no aceptar basura de un enlace manipulado.
+    // ── Estado inicial desde la URL: /catalogo?categoria=anillos&precio=0-800000 ──
+    // Se valida contra los botones que existen de verdad, para no aceptar basura.
     function leerEstadoDesdeURL(): void {
       const params = new URLSearchParams(window.location.search);
       for (const grupo of grupos) {
@@ -352,14 +409,12 @@ const precios = [
       const q = params.get('q');
       if (q) estado.q = normalizar(q).slice(0, 80);
       const orden = params.get('orden');
-      if (orden && ['destacadas', 'precio-asc', 'precio-desc', 'novedades'].includes(orden)) {
-        estado.orden = orden;
-      }
+      if (orden && ORDENES_VALIDOS.includes(orden)) estado.orden = orden;
     }
 
     function escribirURL(): void {
       const params = new URLSearchParams();
-      (['categoria', 'material', 'ocasion', 'precio', 'orden'] as const).forEach((clave) => {
+      (['categoria', 'precio', 'disponibilidad', 'orden'] as const).forEach((clave) => {
         if (estado[clave] !== DEFAULTS[clave]) params.set(clave, estado[clave]);
       });
       if (estado.q) params.set('q', estado.q);
@@ -408,7 +463,7 @@ const precios = [
       });
     });
 
-    // Acordeón de filtros en móvil (en ≥1024px el CSS lo fuerza visible).
+    // Toggle del sidebar en móvil (en ≥1024px el CSS lo fuerza visible).
     toggle?.addEventListener('click', () => {
       const expandido = toggle.getAttribute('aria-expanded') === 'true';
       toggle.setAttribute('aria-expanded', String(!expandido));

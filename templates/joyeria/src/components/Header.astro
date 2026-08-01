@@ -1,69 +1,91 @@
 ---
+// Header calcado del molde de Figma: franja de pago sobre fondo oscuro,
+// logo en oro, nav clara y un cluster de iconos. El Figma trae carrito,
+// lista de deseos y cuenta con contador — chrome de e-commerce clásico
+// que esta plantilla no tiene (el cierre es por WhatsApp, sin backend).
+// Se mantiene el layout, pero cada ícono apunta a algo real: la lupa
+// lleva al catálogo (que es donde de verdad se busca) y la cuenta abre
+// WhatsApp (el "hablar con alguien" real de este negocio). No se
+// renderizan carrito ni lista de deseos: un ícono que promete una
+// función que no existe es peor que no tener el ícono.
 import { NEGOCIO, waLink } from '../scripts/site';
 import Icono from './Icono.astro';
 
 interface Props {
   links: { label: string; href: string }[];
-  /** Texto del botón de acción del header. */
-  cta?: string;
-  /** Mensaje de WhatsApp que dispara el CTA. */
-  ctaMensaje?: string;
 }
 
-const {
-  links,
-  cta = 'Escríbenos',
-  ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
-} = Astro.props;
+const { links } = Astro.props;
+const mensajeCuenta = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`;
 ---
 
+<!-- ── Franja de pago: el mismo gesto de confianza que en el Figma,
+     con los medios de pago reales del negocio. ── -->
+<!-- Franja de pago del molde (Figma 1:368): fondo #0b0b0c = brand-950, texto
+     blanco a 12px, centrado y en caja y baja. Ya existía; solo se le quita
+     la versalita con tracking que no está en el Figma. Los medios de pago
+     salen de `negocio.json`, no del texto del mockup. -->
+<div class="bg-brand-950 py-2.5 text-center">
+  <p class="text-[0.78rem] text-brand-50">
+    Compra con {NEGOCIO.pagos.filter((p) => p === 'Addi' || p === 'Sistecrédito').join(' y ')}
+  </p>
+</div>
+
 <header
-  class="sticky top-0 z-50 border-b border-brand-200 bg-surface/85 backdrop-blur-md"
+  class="sticky top-0 z-50 border-b border-brand-200 bg-surface/92 shadow-joya backdrop-blur-md"
   id="cabecera"
 >
-  <div class="container-wide flex h-[4.5rem] items-center justify-between gap-6">
+  <div class="container-wide flex h-[4.75rem] items-center justify-between gap-6">
     <a
       href="/"
-      class="font-display text-[1.35rem] tracking-[0.14em] text-brand-950 uppercase"
-      style="font-variation-settings: 'opsz' 20;"
+      class="font-display text-2xl font-medium tracking-[0.04em] text-accent-600"
     >
       {NEGOCIO.nombre}
     </a>
 
-    <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegación principal">
+    <nav class="hidden items-center gap-9 lg:flex" aria-label="Navegación principal">
       {links.map((l) => (
         <a
           href={l.href}
-          class="micro-sm text-brand-600 transition-colors duration-500 hover:text-accent-700"
+          class="text-[0.95rem] font-light text-brand-800 transition-colors duration-500 hover:text-accent-700"
         >
           {l.label}
         </a>
       ))}
-      <a
-        href={waLink(ctaMensaje)}
-        target="_blank"
-        rel="noopener"
-        class="btn btn-primary !px-5 !py-2.5"
-      >
-        <Icono nombre="whatsapp" tamano={14} />
-        {cta}
-      </a>
     </nav>
 
-    <button
-      id="menu-toggle"
-      class="-mr-2 flex h-11 w-11 items-center justify-center text-brand-950 lg:hidden"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="menu-movil"
-    >
-      <Icono nombre="menu" tamano={22} />
-    </button>
+    <div class="flex items-center gap-5">
+      <a
+        href="/catalogo"
+        aria-label="Buscar en el catálogo"
+        class="hidden text-brand-800 transition-colors duration-500 hover:text-accent-700 sm:block"
+      >
+        <Icono nombre="lupa" tamano={19} />
+      </a>
+      <a
+        href={waLink(mensajeCuenta)}
+        target="_blank"
+        rel="noopener"
+        aria-label="Escríbenos por WhatsApp"
+        class="hidden text-brand-800 transition-colors duration-500 hover:text-accent-700 sm:block"
+      >
+        <Icono nombre="usuario" tamano={20} />
+      </a>
+
+      <button
+        id="menu-toggle"
+        class="-mr-2 flex h-11 w-11 items-center justify-center text-brand-950 lg:hidden"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="menu-movil"
+      >
+        <Icono nombre="menu" tamano={22} />
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- Menú móvil a pantalla completa: los enlaces en tipografía de titular,
-     que es el gesto de navegación de una maison y además se toca mejor. -->
+<!-- Menú móvil a pantalla completa -->
 <div
   id="menu-movil"
   class="fixed inset-0 z-[60] hidden bg-surface lg:hidden"
@@ -71,8 +93,8 @@ const {
   aria-modal="true"
   aria-label="Menú de navegación"
 >
-  <div class="container-wide flex h-[4.5rem] items-center justify-between border-b border-brand-200">
-    <span class="font-display text-[1.35rem] tracking-[0.14em] text-brand-950 uppercase">
+  <div class="container-wide flex h-[4.75rem] items-center justify-between border-b border-brand-200">
+    <span class="font-display text-2xl font-medium tracking-[0.04em] text-accent-600">
       {NEGOCIO.nombre}
     </span>
     <button
@@ -94,14 +116,9 @@ const {
         {l.label}
       </a>
     ))}
-    <a
-      href={waLink(ctaMensaje)}
-      target="_blank"
-      rel="noopener"
-      class="btn btn-whatsapp mt-8"
-    >
+    <a href={waLink(mensajeCuenta)} target="_blank" rel="noopener" class="btn btn-whatsapp mt-8">
       <Icono nombre="whatsapp" tamano={17} />
-      {cta}
+      Escríbenos
     </a>
     <p class="mt-8 text-[0.82rem] leading-relaxed font-light text-brand-500">
       {NEGOCIO.direccion}, {NEGOCIO.ciudad}<br />
@@ -131,7 +148,6 @@ const {
     abrir.addEventListener('click', () => mostrar(true));
     cerrar?.addEventListener('click', () => mostrar(false));
 
-    // Al navegar dentro del menú, se cierra solo.
     menu.querySelectorAll('a').forEach((a) =>
       a.addEventListener('click', () => mostrar(false)),
     );

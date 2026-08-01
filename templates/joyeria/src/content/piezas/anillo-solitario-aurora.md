@@ -1,11 +1,9 @@
 ---
 nombre: Anillo Solitario Aurora
-referencia: AUR-AN-001
+referencia: CJ-AN-001
 slug: anillo-solitario-aurora
 fotos:
-  - ../../assets/fotos/anillo-halo-oscuro.jpg
-  - ../../assets/fotos/anillo-terciopelo.jpg
-  - ../../assets/fotos/anillo-piedra-azul.jpg
+  - ../../assets/fotos/anillo-solitario-oro.jpg
 categoria: anillos
 material: oro
 ley: 18k
@@ -17,7 +15,7 @@ acabado: Pulido espejo
 tallas: 5 a 9
 precio: 3850000
 ocultarPrecio: false
-descripcion: El clásico que nunca falla. Solitario en oro blanco de 18k con diamante central certificado, halo de diamantes y engaste de cuatro garras. La banda se afina hacia atrás para que el diamante se vea más grande y el anillo se sienta liviano. Sale del taller con estuche, certificado GIA y garantía escrita.
+descripcion: El clásico que nunca falla. Solitario en oro amarillo de 18k con diamante central certificado, halo de diamantes y engaste de cuatro garras. La banda se afina hacia atrás para que el diamante se vea más grande y el anillo se sienta liviano. Sale del taller con estuche, certificado GIA y garantía escrita.
 disponibilidad: disponible
 unidades: 1
 ocasion:

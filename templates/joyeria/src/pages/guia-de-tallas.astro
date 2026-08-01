@@ -10,7 +10,7 @@ import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import Icono from '../components/Icono.astro';
 import { NEGOCIO, waLink } from '../scripts/site';
-import { NAV, NAV_FOOTER } from '../scripts/navegacion';
+import { NAV } from '../scripts/navegacion';
 
 /**
  * Tabla de tallas de anillo: solo el diámetro interno es el dato "duro"
@@ -88,7 +88,7 @@ const advertencias = [
   description={`Mide tu talla de anillo desde casa con el método del hilo, un conversor interactivo o un medidor para imprimir a tamaño real. El primer ajuste de talla va por cuenta de ${NEGOCIO.nombre}.`}
 >
   <div class="no-imprimir">
-    <Header links={NAV} cta="Consultar" />
+    <Header links={NAV} />
   </div>
 
   <main id="contenido">
@@ -338,7 +338,7 @@ const advertencias = [
 
   <div class="no-imprimir">
 
-    <Footer links={NAV_FOOTER} />
+    <Footer />
   </div>
   <div class="no-imprimir">
     <WhatsAppFlotante mensaje={`Hola, vengo de la página de guía de tallas de ${NEGOCIO.nombre} y tengo una duda con mi talla.`} />

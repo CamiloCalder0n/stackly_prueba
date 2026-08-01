@@ -1,6 +1,6 @@
 ---
 nombre: Collar Medallón Sol
-referencia: AUR-CO-001
+referencia: CJ-CO-001
 slug: collar-medallon-sol
 fotos:
   - ../../assets/fotos/collar-filigrana.jpg

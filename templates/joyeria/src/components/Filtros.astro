@@ -1,23 +1,18 @@
 ---
 /**
- * Barra de filtros del catálogo.
+ * Barra lateral de filtros del catálogo (molde de Figma: sidebar "Filtros"
+ * con acordeones). Componente de presentación: solo pinta controles y los
+ * `data-*` que el <script> de `catalogo.astro` lee para filtrar y recomponer
+ * la grilla con Flip.
  *
- * Componente de presentación: solo pinta controles y `data-*`. La lógica de
- * filtrado, orden y URL vive en el <script> de `catalogo.astro`, que es quien
- * conoce las tarjetas y sabe recomponer la grilla con Flip.
+ * Grupos: Categoría, Precio y Disponibilidad. El Figma trae también "Talla",
+ * pero en los datos reales `tallas` es texto libre por pieza ("4 a 9",
+ * "Cadena de 42 cm", "Talla única"): no hay un conjunto discreto de tallas
+ * contra el que filtrar sin fingirlo, así que se omite en vez de simularlo.
  *
- * Por qué está así y no como una parrilla de chips siempre visible:
- * con doce piezas en catálogo, la versión anterior mostraba veinticinco
- * chips en una barra fija de unos 250px. Ocupaba un tercio de la pantalla
- * para filtrar una vitrina que se recorre entera de un vistazo, y se leía
- * como un muro de texto suelto. Ahora la barra ocupa una línea —lo puntual:
- * buscar, cuántas piezas hay, ordenar y abrir filtros— y los grupos viven
- * dentro de un panel que se abre cuando de verdad hacen falta.
- *
- * También se cayó el grupo "Ley": en los datos reales cada material tiene
- * una sola ley (oro→18k, oro rosa→18k, plata→950), así que era un filtro
- * que no filtraba nada. La ley sigue visible en cada tarjeta y en la ficha,
- * que es donde el comprador la busca.
+ * El contrato con el script se conserva: cada grupo es un `[data-filtro]` con
+ * botones `.chip-filtro[data-valor]`, más `#filtros-cuerpo` (el panel que el
+ * toggle móvil muestra/oculta), `#filtros-activos` y `[data-limpiar-filtros]`.
  */
 import Icono from './Icono.astro';
 
@@ -28,120 +23,94 @@ interface Opcion {
 
 interface Props {
   categorias: Opcion[];
-  materiales: Opcion[];
-  ocasiones: Opcion[];
   precios: Opcion[];
+  disponibilidades: Opcion[];
 }
 
-const { categorias, materiales, ocasiones, precios } = Astro.props;
+const { categorias, precios, disponibilidades } = Astro.props;
 
 const grupos = [
-  { nombre: 'categoria', label: 'Pieza', opciones: categorias, aria: 'Filtrar por tipo de pieza' },
-  { nombre: 'material', label: 'Material', opciones: materiales, aria: 'Filtrar por material' },
-  { nombre: 'precio', label: 'Presupuesto', opciones: precios, aria: 'Filtrar por presupuesto' },
-  { nombre: 'ocasion', label: 'Ocasión', opciones: ocasiones, aria: 'Filtrar por ocasión' },
-];
-
-const ordenes = [
-  { valor: 'destacadas', label: 'Destacadas primero' },
-  { valor: 'precio-asc', label: 'Precio: menor a mayor' },
-  { valor: 'precio-desc', label: 'Precio: mayor a menor' },
-  { valor: 'novedades', label: 'Novedades primero' },
+  { nombre: 'categoria', label: 'Categoría', opciones: categorias, aria: 'Filtrar por tipo de pieza' },
+  { nombre: 'precio', label: 'Precio', opciones: precios, aria: 'Filtrar por presupuesto' },
+  {
+    nombre: 'disponibilidad',
+    label: 'Disponibilidad',
+    opciones: disponibilidades,
+    aria: 'Filtrar por disponibilidad',
+  },
 ];
 ---
 
-<section
-  class="z-30 border-b border-brand-200 bg-surface/95 backdrop-blur-md lg:sticky lg:top-[4.5rem]"
-  id="filtros"
->
-  <div class="container-wide">
-    <!-- ── La barra: una sola línea, siempre ── -->
-    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 py-3.5">
-      <div class="relative min-w-[11rem] flex-1">
-        <label for="catalogo-buscar" class="sr-only">Buscar por nombre, material o piedra</label>
-        <Icono
-          nombre="lupa"
-          tamano={13}
-          class="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-brand-400"
-        />
-        <input
-          type="search"
-          id="catalogo-buscar"
-          autocomplete="off"
-          placeholder="Buscar una pieza…"
-          class="w-full border-0 border-b border-brand-200 bg-transparent py-2 pl-6 text-[0.83rem] font-light text-brand-950 placeholder:text-brand-400 focus:border-accent-500 focus:outline-none"
-        />
-      </div>
+<!-- En móvil el panel arranca oculto y lo abre el toggle del top bar; en
+     ≥1024px el `lg:block` lo fuerza visible pase lo que pase con `hidden`. -->
+<div id="filtros-cuerpo" class="hidden lg:sticky lg:top-28 lg:block">
+  <!-- "Filtros" en Playfair 32px con un filete debajo, y cada grupo separado
+       por otro filete: así lo dibuja el molde (1:259 y las líneas 1:250-253). -->
+  <h2 class="font-display text-[2rem] font-normal text-brand-950">Filtros</h2>
+  <span class="mt-4 block rule-hair"></span>
 
-      <p class="micro-sm shrink-0 text-brand-500" id="contador-resultados" aria-live="polite"></p>
-
-      <div class="flex shrink-0 items-center gap-2.5">
-        <label for="catalogo-orden" class="micro-sm text-brand-500">Ordenar</label>
-        <select
-          id="catalogo-orden"
-          class="border-0 border-b border-brand-200 bg-transparent py-2 text-[0.78rem] font-light text-brand-800 focus:border-accent-500 focus:outline-none"
-        >
-          {ordenes.map((o) => <option value={o.valor}>{o.label}</option>)}
-        </select>
-      </div>
-
+  {grupos.map((grupo) => (
+    <div data-filtro={grupo.nombre} role="group" aria-label={grupo.aria} class="border-b border-brand-300">
       <button
         type="button"
-        id="filtros-toggle"
-        class="micro-sm flex shrink-0 items-center gap-2 border border-brand-300 px-4 py-2 text-brand-900 transition-colors duration-300 hover:border-accent-500 hover:text-accent-700"
+        data-acordeon
+        class="flex w-full items-center justify-between gap-4 py-4 text-left"
         aria-expanded="false"
-        aria-controls="filtros-cuerpo"
       >
-        Filtrar
-        <span
-          id="filtros-cuenta"
-          class="hidden min-w-5 bg-accent-500 px-1.5 py-0.5 text-center text-[0.6rem] text-brand-50"
-        ></span>
-        <Icono nombre="flecha-abajo" tamano={11} class="transition-transform duration-300" />
+        <span class="font-display text-[1.25rem] font-normal text-brand-950">{grupo.label}</span>
+        <Icono nombre="flecha-abajo" tamano={13} class="shrink-0 text-brand-500 transition-transform duration-300" />
       </button>
-    </div>
-
-    <!-- ── Filtros activos: lo puntual, siempre a la vista y quitables uno a uno ── -->
-    <div
-      id="filtros-activos"
-      class="hidden flex-wrap items-center gap-2 border-t border-brand-200 py-3"
-      aria-label="Filtros aplicados"
-    >
-    </div>
-
-    <!-- ── Panel: los grupos completos, solo cuando se piden ── -->
-    <div id="filtros-cuerpo" class="hidden border-t border-brand-200 pb-6" >
-      <div class="grid gap-x-10 gap-y-6 py-5 sm:grid-cols-2 lg:grid-cols-4">
-        {grupos.map((grupo) => (
-          <div data-filtro={grupo.nombre} role="group" aria-label={grupo.aria}>
-            <p class="micro-sm mb-3 text-accent-700">{grupo.label}</p>
-            <div class="flex flex-col items-start gap-1.5">
-              {grupo.opciones.map((o, i) => (
-                <button
-                  type="button"
-                  class="chip-filtro"
-                  data-valor={o.valor}
-                  aria-pressed={i === 0 ? 'true' : 'false'}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
+      <div data-acordeon-cuerpo class="hidden pb-5">
+        <div class="flex flex-col items-start gap-2">
+          {grupo.opciones.map((o, i) => (
+            <button
+              type="button"
+              class="chip-filtro"
+              data-valor={o.valor}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
-
-      <button type="button" data-limpiar-filtros class="micro-sm text-accent-700 hover:text-accent-600">
-        Limpiar todo
-      </button>
     </div>
-  </div>
-</section>
+  ))}
+
+  <!-- Filtros aplicados: quitables uno a uno (los pinta el script). -->
+  <div id="filtros-activos" class="mt-6 hidden flex-wrap items-center gap-2" aria-label="Filtros aplicados"></div>
+
+  <button
+    type="button"
+    data-limpiar-filtros
+    class="mt-6 font-display text-[1rem] text-accent-700 hover:text-accent-600"
+  >
+    Limpiar todo
+  </button>
+</div>
+
+<script>
+  /* Acordeones del sidebar. La lógica de filtrado vive en catalogo.astro;
+     esto solo abre/cierra cada grupo. Se cuelga de astro:page-load para
+     sobrevivir a las navegaciones del ClientRouter. */
+  function montarAcordeones(): void {
+    document.querySelectorAll<HTMLButtonElement>('[data-acordeon]').forEach((btn) => {
+      const cuerpo = btn.nextElementSibling as HTMLElement | null;
+      btn.addEventListener('click', () => {
+        const abierto = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!abierto));
+        cuerpo?.classList.toggle('hidden', abierto);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', montarAcordeones);
+</script>
 
 <style>
-  /* El <svg> lo pinta <Icono>, un componente hijo: su elemento no lleva el
-     scope de este archivo, así que hace falta `:global()` para alcanzarlo. */
-  #filtros-toggle[aria-expanded='true'] :global(svg) {
+  /* El <svg> lo pinta <Icono> (componente hijo), fuera del scope de este
+     archivo: hace falta :global() para girar la flecha al abrir el grupo. */
+  [data-acordeon][aria-expanded='true'] :global(svg) {
     transform: rotate(180deg);
   }
 </style>

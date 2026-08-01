@@ -1,10 +1,10 @@
 ---
 nombre: Aretes Gota de Luz
-referencia: AUR-AR-001
+referencia: CJ-AR-001
 slug: aretes-gota-de-luz
 fotos:
+  - ../../assets/fotos/aretes-hoop-oro.jpg
   - ../../assets/fotos/lifestyle-aretes-modelo.jpg
-  - ../../assets/fotos/aretes-diamante.jpg
 categoria: aretes
 material: oro
 ley: 18k

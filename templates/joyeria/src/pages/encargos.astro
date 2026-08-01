@@ -8,7 +8,7 @@ import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import Icono from '../components/Icono.astro';
 import { NEGOCIO } from '../scripts/site';
-import { NAV, NAV_FOOTER } from '../scripts/navegacion';
+import { NAV } from '../scripts/navegacion';
 
 /** Convierte una opción en un id de HTML válido y estable. */
 function slugificar(texto: string): string {
@@ -48,7 +48,7 @@ const TOTAL_PASOS_CONTENIDO = pasos.length - 1; // el último es el resumen
   title="Encargos"
   description={`Cotiza un encargo a la medida en ${NEGOCIO.nombre}: cuéntanos tu idea en un asistente de un minuto y recíbelo listo para enviar por WhatsApp. Sin registros ni pagos en línea.`}
 >
-  <Header links={NAV} cta="Consultar" />
+  <Header links={NAV} />
 
 
   <main id="contenido">
@@ -291,7 +291,7 @@ const TOTAL_PASOS_CONTENIDO = pasos.length - 1; // el último es el resumen
   </main>
 
 
-  <Footer links={NAV_FOOTER} />
+  <Footer />
   <WhatsAppFlotante mensaje={`Hola, vengo de la página de encargos de ${NEGOCIO.nombre} y tengo una duda antes de cotizar.`} />
 </BaseLayout>
 

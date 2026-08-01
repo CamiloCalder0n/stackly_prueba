@@ -15,7 +15,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText, Flip);
 export { gsap, ScrollTrigger, SplitText, Flip };
 
 /** Curva de movimiento de la marca: lenta, sin rebotes. */
-export const SILK = 'power3.out';
+export const SILK = 'expo.out';
 
 /** `true` si el sistema pide menos movimiento. Se consulta en caliente. */
 export function menosMovimiento(): boolean {
@@ -52,6 +52,6 @@ export function recomponerGrilla(contenedor: HTMLElement, cambiar: () => void): 
         { opacity: 0, y: 18 },
         { opacity: 1, y: 0, duration: 0.5, ease: SILK, stagger: 0.03 },
       ),
-    onLeave: (elementos) => gsap.to(elementos, { opacity: 0, duration: 0.25 }),
+    onLeave: (elementos) => gsap.to(elementos, { opacity: 0, duration: 0.25, ease: 'power3.in' }),
   });
 }

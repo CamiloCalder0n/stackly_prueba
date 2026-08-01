@@ -14,7 +14,7 @@ import BloqueConfianza from '../../components/BloqueConfianza.astro';
 import Icono from '../../components/Icono.astro';
 import Pagos from '../../components/Pagos.astro';
 import { NEGOCIO, waLink, precioCOP, mensajeConsulta, leyLegible } from '../../scripts/site';
-import { NAV, NAV_FOOTER } from '../../scripts/navegacion';
+import { NAV } from '../../scripts/navegacion';
 
 export async function getStaticPaths() {
   const piezas = await getCollection('piezas');
@@ -145,7 +145,7 @@ const breadcrumbLd = {
   <!-- JSON-LD del producto y las migas de pan (válidos dentro de <body>) -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} is:inline />
-  <Header links={NAV} cta="Consultar" />
+  <Header links={NAV} />
 
 
   <main id="contenido">
@@ -288,7 +288,7 @@ const breadcrumbLd = {
   </main>
 
 
-  <Footer links={NAV_FOOTER} />
+  <Footer />
   <WhatsAppFlotante mensaje={mensajeInicial} />
 </BaseLayout>
 

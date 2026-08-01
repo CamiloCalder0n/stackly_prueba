@@ -1,333 +1,219 @@
 ---
-// Portada de la plantilla joyería: maison editorial clara que lleva la
-// investigación de mercado (13 joyerías colombianas auditadas) a una
-// consulta por WhatsApp. Ver CONTRATO.md del rediseño para el porqué de
-// cada sección — no son adornos, son respuestas a lo que pide el
-// comprador colombiano (ley del metal, garantía, trayectoria, testimonios
-// con ciudad, Addi/Sistecrédito).
+// Portada reconstruida sobre el molde de Figma del cliente: maison editorial
+// clara (blanco/crudo + tinta + oro sobrio). Seis secciones en el orden del
+// Figma. El cierre del negocio es por WhatsApp (header + botón flotante), así
+// que los CTA de contenido llevan al catálogo y a la ficha, no a un carrito
+// que no existe.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import Hero from '../components/Hero.astro';
-import FranjaConfianza from '../components/FranjaConfianza.astro';
-import SectionHeading from '../components/SectionHeading.astro';
+import CategoriaCard from '../components/CategoriaCard.astro';
 import PiezaCard from '../components/PiezaCard.astro';
-import Taller from '../components/Taller.astro';
+import ShowcaseEditorial from '../components/ShowcaseEditorial.astro';
 import Testimonios from '../components/Testimonios.astro';
-import ComoCompras from '../components/ComoCompras.astro';
-import FAQ from '../components/FAQ.astro';
-import Contacto from '../components/Contacto.astro';
-import CTA from '../components/CTA.astro';
-import Foto from '../components/Foto.astro';
+import InstagramGaleria from '../components/InstagramGaleria.astro';
 import Icono from '../components/Icono.astro';
-import { NEGOCIO, ANOS_OFICIO } from '../scripts/site';
-import { NAV, NAV_FOOTER } from '../scripts/navegacion';
-import fotoHero from '../assets/fotos/lifestyle-velo-arete.jpg';
-import fotoHistoria from '../assets/fotos/lifestyle-argollas-oro.jpg';
+import { NEGOCIO } from '../scripts/site';
+import { NAV } from '../scripts/navegacion';
 
-const colecciones = (await getCollection('colecciones')).sort(
-  (a, b) => a.data.orden - b.data.orden,
-);
-const piezasDestacadas = (await getCollection('piezas'))
-  .filter((p) => p.data.destacada)
-  .slice(0, 4);
+/* ── Selección de fotografía ──────────────────────────────────────────────
+   Se re-eligió foto por foto midiendo la luminancia media de las 22
+   imágenes de `src/assets/fotos`. El molde de Figma es fotografía de
+   estudio CLARA y CÁLIDA (fondos crudo/marfil, luz de día, oro amarillo);
+   la selección anterior usaba justo las tres imágenes más oscuras de toda
+   la biblioteca para las tarjetas de categoría —luminancia 38, 46 y 13
+   sobre 255— y metía plata, perlas y piezas de museo en un negocio que
+   vende SOLO oro 18k.
 
-/** A qué catálogo filtrado manda cada colección, cuando tiene sentido. */
-const ENLACE_COLECCION: Record<string, string> = {
-  'Colección Alba': '/catalogo?material=oro%20rosa',
-  'Colección Herencia': '/catalogo?categoria=anillos',
-  'Colección Luna': '/catalogo?categoria=aretes',
-};
+   Ahora las categorías usan las tres fotos claras de oro amarillo que sí
+   existen (186, 248 y 89) y el Instagram usa solo oro sobre piel.
 
+   OJO — límite real de la biblioteca: de 22 fotos solo 4 superan 150 de
+   luminancia. No hay ninguna que reproduzca el fondo beige de estudio del
+   Figma, así que el hero usa la única imagen con modelo + espacio negativo
+   a la izquierda (la composición correcta) aunque su clave tonal sea baja.
+   Cerrar del todo esta brecha pide fotografía nueva, no código. */
+import fotoHero from '../assets/fotos/lifestyle-argollas-oro.jpg';
+import fotoAnillos from '../assets/fotos/argollas-oro.jpg';
+import fotoAretes from '../assets/fotos/aretes-hoop-oro.jpg';
+import fotoCadenas from '../assets/fotos/collar-cadena-oro.jpg';
+// Galería de Instagram: oro sobre piel, como el molde. Fuera la plata, las
+// perlas y los diamantes sobre negro que había antes (material equivocado).
+import ig1 from '../assets/fotos/lifestyle-velo-arete.jpg';
+import ig2 from '../assets/fotos/lifestyle-aretes-modelo.jpg';
+import ig3 from '../assets/fotos/lifestyle-pulsera-oscuro.jpg';
+import ig4 from '../assets/fotos/anillo-solitario-oro.jpg';
+import ig5 from '../assets/fotos/anillo-alba-oro.jpg';
+
+const piezas = await getCollection('piezas');
+const destacadas = piezas.filter((p) => p.data.destacada).slice(0, 4);
+
+/** Dos piezas reales para el showcase editorial (foto = pieza etiquetada).
+    El molde muestra dos primeros planos de modelo, así que se prefiere la
+    pieza cuya foto principal ES un plano de modelo (`pulsera-eslabones`). */
+const porSlug = (slug: string) => piezas.find((p) => p.data.slug === slug)!;
+const showcase = [porSlug('pulsera-eslabones'), porSlug('collar-cadena-de-luz')];
+
+/** Tarjetas de categoría → catálogo filtrado.
+    "Cadenas y Pulsos" agrupa cadenas/collares, que en el schema es `collares`. */
+const categorias = [
+  {
+    nombre: 'Anillos',
+    descripcion: 'Elegancia que perdura',
+    href: '/catalogo?categoria=anillos',
+    imagen: fotoAnillos,
+    alt: 'Argollas de matrimonio en oro de 18k sobre lino crudo',
+  },
+  {
+    nombre: 'Aretes',
+    descripcion: 'Detalles que elevan tu estilo',
+    href: '/catalogo?categoria=aretes',
+    imagen: fotoAretes,
+    alt: 'Arete argolla en oro de 18k',
+  },
+  {
+    nombre: 'Cadenas y Pulsos',
+    descripcion: 'Lujo que te acompaña siempre',
+    href: '/catalogo?categoria=collares',
+    imagen: fotoCadenas,
+    alt: 'Cadena tejida en oro de 18k',
+  },
+];
+
+const fotosInstagram = [
+  { src: ig1, alt: 'Arete en oro de 18k sobre la piel' },
+  { src: ig2, alt: 'Modelo con aretes y gargantilla en oro de 18k' },
+  { src: ig3, alt: 'Cadena y pulsera en oro de 18k sobre la piel' },
+  { src: ig4, alt: 'Anillo solitario en oro de 18k' },
+  { src: ig5, alt: 'Anillo en oro de 18k' },
+];
 ---
 
 <BaseLayout>
-  <Header links={NAV} cta="Consultar" />
+  <Header links={NAV} />
 
   <main id="contenido">
-    <!-- ── 01 · Hero claro ── -->
+    <!-- ── 01 · Hero ── -->
     <Hero
-      eyebrow={`Joyería fina en ${NEGOCIO.ciudad}`}
-      titulo="Piezas hechas a mano"
-      acento="que guardan tu historia"
-      subtitulo="Anillos, collares, aretes y pulseras en oro de 18k, plata 950 y oro rosa. Precios visibles en el catálogo y asesoría real por WhatsApp antes de decidir."
       imagen={fotoHero}
-      imagenAlt="Anillos en oro fotografiados de cerca sobre fondo crema"
-      ctaTexto="Consultar por WhatsApp"
-      ctaMensaje={`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`}
-      ctaSecundario={{ label: 'Ver el catálogo', href: '/catalogo' }}
+      imagenAlt={`Modelo con argollas, aretes y gargantilla en oro de 18k de ${NEGOCIO.nombre}`}
+      titulo="Oro"
+      acento="que trasciende tendencias"
+      subtitulo="Oro 18k. Atemporal. Colombiano."
+      ctaTexto="Explorar colección"
+      ctaHref="/catalogo"
     />
 
-    <!-- ── 02 · Franja de confianza ── -->
-    <FranjaConfianza />
-
-    <!-- ── 03 · Colecciones: composición asimétrica, re-tematizada en claro ── -->
-    <section class="bg-surface py-24 md:py-40" id="colecciones" aria-label="Colecciones">
+    <!-- ── 02 · Explora nuestras categorías ──
+         El molde (1:199) pone el titular ENTERO en oro, centrado, a 48px y
+         sin cursiva: no es "texto en tinta + palabra dorada en itálica".
+         Ese partido en dos tonos era invención nuestra. -->
+    <section class="bg-surface py-16 md:py-20" aria-label="Categorías">
       <div class="container-wide">
-        <div class="grid items-end gap-10 lg:grid-cols-12">
-          <div class="lg:col-span-7">
-            <SectionHeading
-              numero="01"
-              eyebrow="Colecciones"
-              titulo="Tres líneas,"
-              acento="un mismo taller"
-              descripcion="Cada colección nace de un material y una idea. Todas se fabrican a mano en nuestro taller de Bucaramanga."
+        <h2 class="type-section text-center text-accent-600" data-reveal>
+          Explora nuestras categorías
+        </h2>
+
+        <div
+          class="mt-12 grid gap-10 sm:grid-cols-2 md:gap-x-14 lg:grid-cols-3"
+          data-reveal-group
+        >
+          {categorias.map((c) => (
+            <CategoriaCard
+              imagen={c.imagen}
+              imagenAlt={c.alt}
+              nombre={c.nombre}
+              descripcion={c.descripcion}
+              href={c.href}
             />
-          </div>
-          <div class="lg:col-span-4 lg:col-start-9 lg:pb-3" data-reveal>
-            <a href="/catalogo" class="micro link-rule text-brand-700 hover:text-accent-700">
-              Ver el catálogo completo
-              <Icono nombre="flecha" tamano={14} />
-            </a>
-          </div>
-        </div>
-
-        <span class="rule-hair mt-14 origin-left" data-rule></span>
-
-        <div class="mt-14 grid gap-6 lg:grid-cols-12" data-reveal-group>
-          <!-- La primera colección, grande -->
-          {colecciones[0] && (
-            <a
-              href={ENLACE_COLECCION[colecciones[0].data.nombre] ?? '/catalogo'}
-              class="group frame-fine block overflow-hidden bg-paper transition-colors duration-500 hover:border-accent-400 lg:col-span-7"
-            >
-              <Foto
-                src={colecciones[0].data.portada}
-                alt={colecciones[0].data.nombre}
-                ratio="4/5"
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                class="transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.05]"
-              />
-              <div class="p-8 md:p-10">
-                <span class="micro-sm text-accent-700">Colección</span>
-                <h3 class="mt-2 font-display text-3xl leading-tight font-light text-brand-950 md:text-4xl">
-                  {colecciones[0].data.nombre}
-                </h3>
-                <p class="mt-3 max-w-md text-[0.85rem] leading-relaxed font-light text-brand-600">
-                  {colecciones[0].data.descripcion}
-                </p>
-                <span class="micro-sm mt-5 inline-flex items-center gap-2 text-brand-500 transition-colors duration-500 group-hover:text-accent-700">
-                  Explorar
-                  <span class="h-px w-6 bg-current transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:w-10" aria-hidden="true"></span>
-                </span>
-              </div>
-            </a>
-          )}
-
-          <!-- Las otras dos, apiladas -->
-          <div class="flex flex-col gap-6 lg:col-span-5">
-            {colecciones.slice(1).map((c) => (
-              <a
-                href={ENLACE_COLECCION[c.data.nombre] ?? '/catalogo'}
-                class="group frame-fine block overflow-hidden bg-paper transition-colors duration-500 hover:border-accent-400"
-              >
-                <Foto
-                  src={c.data.portada}
-                  alt={c.data.nombre}
-                  ratio="3/2"
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-                  class="transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.05]"
-                />
-                <div class="p-7">
-                  <span class="micro-sm text-accent-700">Colección</span>
-                  <h3 class="mt-2 font-display text-2xl leading-tight font-light text-brand-950">
-                    {c.data.nombre}
-                  </h3>
-                  <p class="mt-3 max-w-md text-[0.85rem] leading-relaxed font-light text-brand-600">
-                    {c.data.descripcion}
-                  </p>
-                  <span class="micro-sm mt-5 inline-flex items-center gap-2 text-brand-500 transition-colors duration-500 group-hover:text-accent-700">
-                    Explorar
-                    <span class="h-px w-6 bg-current transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:w-10" aria-hidden="true"></span>
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </section>
 
-    <!-- ── 04 · Piezas destacadas: grid escalonado ── -->
-    <section class="bg-paper py-24 md:py-36" id="destacadas" aria-label="Piezas destacadas">
+    <!-- ── 03 · Joyas que amarás (piezas destacadas) ──
+         Sobre blanco, no sobre crudo: en el Figma (1:32) esta sección
+         comparte fondo con la de categorías. El rótulo es deliberadamente
+         pequeño —Playfair 20px en tinta, a la izquierda— y contrasta con
+         los 48px dorados de la sección de arriba. -->
+    <section class="bg-surface pt-4 pb-16 md:pt-8 md:pb-20" aria-label="Piezas destacadas">
       <div class="container-wide">
-        <SectionHeading
-          numero="02"
-          eyebrow="Piezas destacadas"
-          titulo="Las favoritas"
-          acento="de la vitrina"
-          descripcion="Precios claros y ficha técnica completa en cada pieza. Si algo te gusta, se consulta y se reserva por WhatsApp."
-        />
-
-        <div class="mt-16 grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
-          {piezasDestacadas.map((pieza, i) => (
-            <PiezaCard pieza={pieza} class={i % 2 === 1 ? 'lg:mt-16' : ''} />
-          ))}
-        </div>
-
-        <div class="mt-20 flex justify-center" data-reveal>
-          <a href="/catalogo" class="micro link-rule text-brand-800 hover:text-accent-700">
-            Ver todo el catálogo
+        <div class="flex items-end justify-between gap-6">
+          <h2 class="type-rotulo text-brand-950" data-reveal>Joyas que amarás.</h2>
+          <a
+            href="/catalogo"
+            class="link-rule hidden font-display text-[1rem] text-brand-900 hover:text-accent-700 sm:inline-flex"
+            data-reveal
+          >
+            Ver todo
             <Icono nombre="flecha" tamano={14} />
           </a>
         </div>
-      </div>
-    </section>
 
-    <!-- ── 05 · El taller, paso a paso ── -->
-    <Taller numero="03" />
-
-    <!-- ── 06 · Historia + contadores ──
-         Sobre una portada ya oscura, el contraste no puede venir de "poner
-         un bloque negro": esta sección se hunde un punto más que la página
-         (`noche`) y deja que la fotografía a sangre haga el corte. -->
-    <section class="relative overflow-hidden bg-noche" id="historia" aria-label="Nuestra historia">
-      <div class="grid lg:grid-cols-2">
-        <!-- Fotografía que sangra hasta el borde de la pantalla -->
-        <div class="relative min-h-[58vh] overflow-hidden lg:min-h-[88vh]" data-reveal-mask>
-          <div class="absolute inset-0" data-parallax="0.1">
-            <Foto
-              src={fotoHistoria}
-              alt={`El taller de ${NEGOCIO.nombre}`}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              class="h-[118%] object-cover"
-            />
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-t from-noche/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-noche/70"></div>
-        </div>
-
-        <div class="flex items-center px-6 py-24 sm:px-10 lg:py-32 xl:px-20">
-          <div class="max-w-xl" data-reveal>
-            <div class="flex items-center gap-4">
-              <span class="section-num !text-accent-700">04</span>
-              <span class="h-px w-8 bg-accent-700/50" aria-hidden="true"></span>
-              <span class="micro text-accent-700">Nuestra historia</span>
-            </div>
-
-            <h2 class="type-section mt-7 text-white">
-              Un taller familiar,<br />
-              <em class="font-normal text-accent-700 italic">tres generaciones</em>
-            </h2>
-
-            <p class="mt-8 text-[0.95rem] leading-[1.9] font-light text-brand-700">
-              {NEGOCIO.nombre} nació como un banco de joyero en el centro de Bucaramanga. Hoy seguimos
-              haciendo cada pieza a mano: fundimos, laminamos, engastamos y pulimos en nuestro propio
-              taller, con materiales certificados y garantía escrita.
-            </p>
-            <p class="mt-5 text-[0.95rem] leading-[1.9] font-light text-brand-700">
-              Por eso también recibimos encargos: si sueñas una pieza que no existe, la dibujamos
-              contigo y la fabricamos a tu medida.
-            </p>
-
-            <div class="mt-14 grid grid-cols-3 gap-6 border-t border-white/15 pt-10">
-              <div>
-                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={ANOS_OFICIO}>0</span></p>
-                <p class="micro-sm mt-3 text-brand-500">Años de oficio</p>
-              </div>
-              <div>
-                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={NEGOCIO.piezasEntregadas}>0</span>+</p>
-                <p class="micro-sm mt-3 text-brand-500">Piezas entregadas</p>
-              </div>
-              <div>
-                <p class="font-display text-4xl font-light text-accent-700 md:text-5xl"><span data-counter={NEGOCIO.encargosAMedida}>0</span>+</p>
-                <p class="micro-sm mt-3 text-brand-500">Encargos a medida</p>
-              </div>
-            </div>
-
-            <a href="/encargos" class="btn btn-outline-claro mt-12">
-              Cómo funcionan los encargos
-            </a>
-          </div>
+        <div class="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 md:gap-x-12 lg:grid-cols-4" data-reveal-group>
+          {destacadas.map((pieza) => (
+            <PiezaCard pieza={pieza} ratio="1/1" mostrarPeso />
+          ))}
         </div>
       </div>
     </section>
 
-    <!-- ── 07 · Testimonios ── -->
+    <!-- ── 04 · Showcase editorial ── -->
+    <ShowcaseEditorial piezas={showcase} />
+
+    <!-- ── 05 · Nuestros clientes ── -->
     <Testimonios
-      numero="05"
+      titulo="Nuestros Clientes"
+      descripcion={`Descubre por qué quienes eligen a ${NEGOCIO.nombre} confían en nuestra joyería para acompañar sus momentos más especiales. Cada opinión refleja la elegancia, la calidad y la dedicación de cada pieza en oro de 18k colombiano.`}
       items={[
         {
-          nombre: 'Laura Méndez',
+          nombre: 'Paula M.',
           ciudad: 'Bucaramanga',
+          fecha: '22 may 2026',
+          estrellas: 5,
           texto:
-            'Vi el Solitario Aurora en la página con el precio y la ficha completa. Por WhatsApp me confirmaron que en talla 6 había una unidad disponible y al día siguiente lo recogí en la tienda de Cabecera. Costó $3.850.000, tal cual estaba publicado, sin sorpresas.',
-          detalle: 'Compró el Anillo Solitario Aurora, talla 6',
+            'Vi el Solitario Aurora con el precio y la ficha completa en la página. Por WhatsApp me confirmaron talla 6 disponible y lo recogí al día siguiente en Cabecera. Sin sorpresas.',
+          detalle: 'Anillo Solitario Aurora, talla 6',
         },
         {
-          nombre: 'Andrés Rueda',
+          nombre: 'Camila V.',
           ciudad: 'Floridablanca',
+          fecha: '4 abr 2026',
+          estrellas: 5,
           texto:
-            'Encargamos las Argollas Clásicas Aurea para la boda: la mía en talla 10 y la de mi esposa en talla 6, con el grabado interior incluido. Nos mandaron fotos del avance en el taller y las tuvimos listas en los 15 días hábiles que nos dijeron por WhatsApp.',
-          detalle: 'Encargo de Argollas Clásicas Aurea, talla 10 y 6',
+            'Encargamos las Argollas Clásicas con grabado interior. Nos mandaron fotos del avance en el taller y las tuvimos listas en los 15 días hábiles que prometieron.',
+          detalle: 'Argollas Clásicas, tallas 10 y 6',
         },
         {
-          nombre: 'Carolina Prada',
+          nombre: 'Luis F.',
           ciudad: 'Girón',
+          fecha: '14 feb 2026',
+          estrellas: 4,
           texto:
-            'Compré la Pulsera Rosa del Alba financiada con Addi: la aprobación llegó por WhatsApp en menos de diez minutos y terminé pagando los $1.350.000 en cuotas. Llegó con su certificado de materiales y la garantía escrita, tal como lo prometen en la página.',
-          detalle: 'Compró la Pulsera Rosa del Alba, financiada con Addi',
+            'Compré la Pulsera Calada del Alba financiada con Addi: la aprobación llegó por WhatsApp en minutos. Llegó con certificado de materiales y garantía escrita.',
+          detalle: 'Pulsera Calada del Alba, financiada con Addi',
+        },
+        {
+          nombre: 'Sofía C.',
+          ciudad: 'Bucaramanga',
+          fecha: '9 ene 2026',
+          estrellas: 5,
+          texto:
+            'Los Aretes Gota de Luz superaron lo que esperaba: acabado impecable y el oro se siente macizo. La asesoría por WhatsApp fue clara y honesta en todo momento.',
+          detalle: 'Aretes Gota de Luz',
         },
       ]}
     />
 
-    <!-- ── 08 · Cómo compras aquí + medios de pago ── -->
-    <ComoCompras numero="06" />
-
-    <!-- ── 10 · FAQ ── -->
-    <FAQ
-      numero="08"
-      items={[
-        {
-          pregunta: '¿Las piezas tienen garantía?',
-          respuesta:
-            'Sí. Toda pieza sale con certificado de materiales y garantía escrita de un año que cubre defectos de fabricación, engastes y broches. La limpieza y el pulido de nuestras piezas son gratis de por vida.',
-        },
-        {
-          pregunta: '¿Cómo sé que el oro es de verdad 18k?',
-          respuesta:
-            'Cada pieza lleva el contraste de ley (750 para oro 18k, 950 para plata) grabado, como exige la norma colombiana, y sale con su certificado de materiales. Si la piedra tiene certificación GIA o IGI, también va incluida.',
-        },
-        {
-          pregunta: '¿Hacen envíos a otras ciudades?',
-          respuesta:
-            'Hacemos envíos asegurados a toda Colombia con transportadoras especializadas en valores. En Bucaramanga y su área metropolitana la entrega puede ser personal el mismo día.',
-        },
-        {
-          pregunta: '¿Cómo se paga y se reserva una pieza?',
-          respuesta:
-            'Reservas con el 30% por transferencia, Nequi o en la tienda, y pagas el resto al recibir. También aceptamos Addi y Sistecrédito para diferir a cuotas: la aprobación se hace por WhatsApp y toma minutos. No manejamos pagos dentro de la página: preferimos confirmar cada detalle contigo antes de cerrar la compra.',
-        },
-        {
-          pregunta: '¿Cómo cuido mis joyas?',
-          respuesta:
-            'Guárdalas por separado en bolsas de tela, evita el contacto con perfumes y cremas, y límpialas con un paño suave. La limpieza y el pulido profesional de nuestras piezas son gratis de por vida: tráelas cuando quieras.',
-        },
-        {
-          pregunta: '¿Qué pasa si el anillo no me queda?',
-          respuesta:
-            'El primer ajuste de talla es gratuito dentro de los 30 días siguientes a la compra. Solo necesitas traer la pieza con su certificado.',
-        },
-      ]}
-    />
-
-    <!-- ── Contacto ── -->
-    <Contacto
-      numero="09"
-      titulo="Visita la vitrina"
-      descripcion="Estamos en Cabecera, Bucaramanga. Si prefieres, te asesoramos por WhatsApp antes de venir."
-    />
-
-    <!-- ── CTA final ── -->
-    <CTA
-      titulo="¿Viste algo que te encantó?"
-      descripcion="Escríbenos por WhatsApp con la referencia de la pieza y te confirmamos disponibilidad, talla y entrega en minutos."
-      botonTexto="Consultar una pieza"
-      mensaje={`Hola, vengo de la página de ${NEGOCIO.nombre}. Quiero consultar por una pieza del catálogo.`}
-    />
+    <!-- ── 06 · Esenciales de Instagram ── -->
+    <InstagramGaleria fotos={fotosInstagram} />
   </main>
 
-  <Footer links={NAV_FOOTER} />
-  <WhatsAppFlotante mensaje={`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`} />
+  <Footer />
+  <WhatsAppFlotante
+    mensaje={`Hola, vengo de la página de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`}
+  />
 </BaseLayout>

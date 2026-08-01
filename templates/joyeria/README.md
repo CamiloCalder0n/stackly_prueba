@@ -2,7 +2,7 @@
 
 Vitrina premium para joyerías que convierte la investigación online en **consultas por WhatsApp**. No es un e-commerce con pasarela: en Colombia la joya de ticket alto se cierra conversando, así que la plantilla apuesta por catálogo + conversación. Los precios y la ficha técnica van en HTML visible, sin fricción, y cada botón genera un mensaje de WhatsApp ya armado con la pieza, su referencia, la talla y el grabado.
 
-Demo: **Aurea Joyería** (Bucaramanga) — negocio, datos y fotos ficticias.
+Demo: **Celesse Jewel** (Bucaramanga) — negocio, datos y fotos ficticias.
 
 ## En qué se apoyan las decisiones
 

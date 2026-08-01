@@ -11,10 +11,10 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.3
         version: 3.7.3
-      '@fontsource-variable/bodoni-moda':
+      '@fontsource-variable/playfair-display':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource-variable/jost':
+      '@fontsource/inria-serif':
         specifier: ^5.3.0
         version: 5.3.0
       '@tailwindcss/vite':
@@ -421,11 +421,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource-variable/bodoni-moda@5.3.0':
-    resolution: {integrity: sha512-yTDXk4+/J8I20KjtkHBbXDQNeE5PR3BZa0gv/YRza+kyxsz+mmg0la/n/hsr6+WvSfVP7Lc8lRTjHGIYwBW43A==}
+  '@fontsource-variable/playfair-display@5.3.0':
+    resolution: {integrity: sha512-IHdzTvE8eGIXHteZql7KXoqdc3Gfm+Zs1u4XlSC3MeplkwviT3sx/P6gI0tLwg/xIYLF4ZJYveZ5V+bl9cnDwA==}
 
-  '@fontsource-variable/jost@5.3.0':
-    resolution: {integrity: sha512-9FS8iBMJnfyPqQOi9dfMjSwYBIWd0kBD3/jl8VvtbIMY2pK+CSp3oAaTLS1V60rDoM7AfyPvuT+IUfJfGeCTKg==}
+  '@fontsource/inria-serif@5.3.0':
+    resolution: {integrity: sha512-/vZEDS79VEjVGULcDnDMV+XlHgaructG0Of1/Y3Hlky88YRW+Jk9/nD8sixyi0x02Hnw8sInvnHMjegvCzuFbQ==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2388,9 +2388,9 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@fontsource-variable/bodoni-moda@5.3.0': {}
+  '@fontsource-variable/playfair-display@5.3.0': {}
 
-  '@fontsource-variable/jost@5.3.0': {}
+  '@fontsource/inria-serif@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 

@@ -1,10 +1,10 @@
 {
-  "nombre": "Aurea Joyería",
+  "nombre": "Celesse Jewel",
   "eslogan": "Joyas que guardan tu historia",
   "descripcion": "Joyería fina en Bucaramanga: anillos, collares, aretes y pulseras en oro de 18k, plata 950 y oro rosa. Piezas propias y por encargo, con certificado de materiales, garantía escrita y asesoría personalizada por WhatsApp.",
   "whatsapp": "573001112233",
   "telefono": "+57 300 111 2233",
-  "correo": "hola@aureajoyeria.co",
+  "correo": "hola@celessejewel.co",
   "direccion": "Cra 35 # 48-20, Local 3, Cabecera",
   "ciudad": "Bucaramanga",
   "horario": "Lun - Sáb: 10:00 AM - 7:00 PM",
@@ -12,9 +12,9 @@
   "anoFundacion": 1992,
   "piezasEntregadas": 4800,
   "encargosAMedida": 900,
-  "instagram": "https://instagram.com/aureajoyeria",
-  "facebook": "https://facebook.com/aureajoyeria",
-  "mapsUrl": "https://maps.google.com/?q=Aurea+Joyeria+Bucaramanga",
-  "googleReviewsUrl": "https://g.page/r/aurea-joyeria/review",
+  "instagram": "https://instagram.com/celessejewel",
+  "facebook": "https://facebook.com/celessejewel",
+  "mapsUrl": "https://maps.google.com/?q=Celesse+Jewel+Bucaramanga",
+  "googleReviewsUrl": "https://g.page/r/celesse-jewel/review",
   "pagos": ["Addi", "Sistecrédito", "PSE", "Nequi", "Bancolombia", "Efectivo en tienda"]
 }
