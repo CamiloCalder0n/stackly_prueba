@@ -1,5 +1,35 @@
 @import 'tailwindcss';
 
+/* ── Tipografías variables self-hosted ──
+   Se declaran a mano, con el subconjunto `latin` únicamente: cubre todo el
+   español (tildes, ñ, ¿, ¡) y evita arrastrar cirílico, griego o vietnamita
+   que esta plantilla no usa jamás. Importar el CSS del paquete traería los
+   seis subconjuntos y varios kB de CSS bloqueante para nada.
+
+   Ninguna de las dos lleva cursiva declarada: el sitio no usa <em>/<i> en
+   ningún componente (Oswald en mayúsculas para titulares, Inter recto para
+   cuerpo), así que esa cara ni se pide.
+
+   Al re-tematizar por nicho, cambia estas dos caras y las variables
+   `--font-display` / `--font-body` de abajo. */
+@font-face {
+  font-family: 'Oswald Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url('@fontsource-variable/oswald/files/oswald-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
 /* ═══════════════════════════════════════════════════════════════
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
    PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
@@ -14,8 +44,8 @@
    ═══════════════════════════════════════════════════════════════ */
 @theme {
   /* Barbería El Patrón: display condensado + cuerpo neutro */
-  --font-display: 'Oswald', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Oswald Variable', system-ui, sans-serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
 
   /* brand → carbón/negro cálido (base masculina oscura) */
   --color-brand-50: #fafaf9;
@@ -61,7 +91,10 @@
 }
 
 /* ── Base ── */
-html {
+
+/* Lenis toma el control del scroll cuando está activo; sin él (o con
+   movimiento reducido) dejamos el scroll suave nativo. */
+html:not(.lenis) {
   scroll-behavior: smooth;
 }
 
@@ -95,14 +128,24 @@ section[id] {
   border-radius: 2px;
 }
 
-/* ── Estados iniciales de animación (GSAP los revela) ──
-   Si JS no carga o el usuario prefiere menos movimiento,
-   el contenido queda visible. */
+/* ── Estados iniciales de animación ──
+   La clase `motion` la pone el propio motor DESPUÉS de cargar GSAP con
+   éxito. Si el script falla, nunca se añade y el contenido queda visible:
+   un error de JS no puede dejar la página en blanco. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal],
-  html.js [data-reveal-group] > * {
+  html.motion [data-reveal],
+  html.motion [data-reveal-group] > * {
     opacity: 0;
-    transform: translateY(28px);
+  }
+  html.motion [data-rule] {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  html.motion [data-reveal-mask] {
+    clip-path: inset(0% 0% 100% 0%);
+  }
+  html.motion [data-split] {
+    opacity: 0;
   }
 }
 

@@ -9,7 +9,7 @@ interface Props {
   links?: { label: string; href: string }[];
   desde?: string;
 }
-const { links = [], desde = '2015' } = Astro.props;
+const { links = [], desde = String(NEGOCIO.anoFundacion) } = Astro.props;
 const year = new Date().getFullYear();
 
 const monograma = NEGOCIO.nombre

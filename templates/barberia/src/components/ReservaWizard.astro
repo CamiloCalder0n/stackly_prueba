@@ -14,6 +14,7 @@
  */
 import { getCollection } from 'astro:content';
 import { precioCOP } from '../scripts/site';
+import Foto from './Foto.astro';
 
 const servicios = (await getCollection('servicios'))
   .map((e) => ({ id: e.id, ...e.data }))
@@ -156,18 +157,25 @@ const pasos = ['Servicio', 'Barbero', 'Fecha y hora'];
                 data-barbero-opcion={b.id}
                 aria-pressed="false"
               >
-                <img
-                  src={b.foto}
-                  alt={`Foto de ${b.nombre}`}
-                  class="h-12 w-12 shrink-0 rounded-sm object-cover grayscale"
-                  loading="lazy"
-                />
+                <span class="block h-12 w-12 shrink-0 overflow-hidden rounded-sm">
+                  <Foto
+                    src={b.foto}
+                    alt={`Foto de ${b.nombre}`}
+                    ratio="1/1"
+                    widths={[96, 192]}
+                    sizes="48px"
+                    class="grayscale"
+                  />
+                </span>
                 <span class="min-w-0">
                   <span class="block font-display text-base font-semibold tracking-wide text-brand-950 uppercase">
                     {b.nombre}
                   </span>
                   <span class="mt-0.5 block text-[0.68rem] font-semibold tracking-[0.14em] text-brand-500 uppercase">
                     {b.especialidad}
+                  </span>
+                  <span class="mt-0.5 block text-[0.68rem] font-medium text-accent-600">
+                    {b.aniosOficio} años de oficio
                   </span>
                 </span>
               </button>
@@ -244,7 +252,7 @@ const pasos = ['Servicio', 'Barbero', 'Fecha y hora'];
   </div>
 
   <!-- Datos para el script del wizard (src/scripts/reserva.ts) -->
-  <script type="application/json" id="reserva-data" set:html={JSON.stringify(datosWizard)} />
+  <script type="application/json" id="reserva-data" is:inline set:html={JSON.stringify(datosWizard)} />
 </section>
 
 <script src="../scripts/reserva.ts"></script>
