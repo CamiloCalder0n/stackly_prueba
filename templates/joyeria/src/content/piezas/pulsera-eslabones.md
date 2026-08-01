@@ -1,7 +1,7 @@
 ---
-nombre: Pulsera Eslabones Áurea
-referencia: AUR-PU-001
-slug: pulsera-eslabones-aurea
+nombre: Pulsera Eslabones
+referencia: CJ-PU-001
+slug: pulsera-eslabones
 fotos:
   - ../../assets/fotos/lifestyle-pulsera-oscuro.jpg
 categoria: pulseras

@@ -1,12 +1,11 @@
 ---
-nombre: Anillo Alba en Oro Rosa
-referencia: AUR-AN-002
-slug: anillo-alba-oro-rosa
+nombre: Anillo Alba
+referencia: CJ-AN-002
+slug: anillo-alba
 fotos:
-  - ../../assets/fotos/anillo-zafiro-rosa.jpg
-  - ../../assets/fotos/anillo-terciopelo.jpg
+  - ../../assets/fotos/anillo-alba-oro.jpg
 categoria: anillos
-material: oro rosa
+material: oro
 ley: 18k
 piedras: Zafiro rosa talla cojín de 1,10 ct rodeado de 22 diamantes
 certificacion: Certificado de autenticidad del zafiro
@@ -16,7 +15,7 @@ acabado: Pulido espejo
 tallas: 4 a 9
 precio: 1950000
 ocultarPrecio: false
-descripcion: Un rosa sobre otro rosa. El zafiro talla cojín se engasta sobre oro rosa de 18k con un halo de diamantes que le devuelve la luz. Es la pieza que más nos piden para aniversarios, y también la que más se lleva quien viene a comprarse algo a sí misma.
+descripcion: Un zafiro rosa que se enciende sobre oro amarillo de 18k, con un halo de diamantes que le devuelve la luz. Es la pieza que más nos piden para aniversarios, y también la que más se lleva quien viene a comprarse algo a sí misma.
 disponibilidad: disponible
 unidades: 2
 ocasion:
