@@ -1,6 +1,19 @@
-# Stackly — Plantillas de proyecto por nicho
+# Stackly
 
-Repositorio de plantillas reutilizables para arrancar proyectos de clientes sin empezar de cero (ticket **SCRUM-43**). Cada plantilla nace de una [investigación de mercado por nicho](https://app.notion.com/p/3a23a1de538681828ba2e16a8a327e96) (Notion) y comparte un mismo sistema técnico.
+Repositorio de Stackly: la [landing propia](landing) (ticket **SCRUM-54**) y las plantillas reutilizables para arrancar proyectos de clientes sin empezar de cero (ticket **SCRUM-43**). Cada plantilla de nicho nace de una [investigación de mercado](https://app.notion.com/p/3a23a1de538681828ba2e16a8a327e96) (Notion) y comparte un mismo sistema técnico; la landing es un proyecto aparte, con su propio stack.
+
+## `landing/` — sitio propio de Stackly (SCRUM-54)
+
+Landing page principal de Stackly: propuesta de valor, servicios, portafolio, proceso, testimonios y CTA de contacto. Construida en Bolt.new y traída tal cual al repo — **no** comparte stack con `templates/` (es Vite + React + TypeScript + Tailwind 3, no Astro).
+
+```bash
+cd landing
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # genera dist/
+```
+
+## Plantillas de nicho (`templates/`)
 
 ## Stack (100% gratuito, sin cuotas mensuales)
 
@@ -44,6 +57,7 @@ pnpm build          # genera dist/ listo para Netlify / Cloudflare Pages
 ## Estructura
 
 ```
+landing/          Sitio propio de Stackly (SCRUM-54) — Vite + React + TS, stack aparte
 templates/
 ├── _base/         Sistema compartido: tokens, componentes, animaciones data-*, Decap, SEO local
 ├── joyeria/       Vitrina + catálogo con filtros + ficha + guía de tallas + encargos
