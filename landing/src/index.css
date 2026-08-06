@@ -28,15 +28,24 @@
     html {
       scroll-behavior: auto;
     }
+
+    /* El indicador de scroll del hero usa `animate-bounce`, que se repite
+       infinitamente. Era la única animación del sitio que ignoraba esta
+       preferencia — y de paso la razón de que dos capturas del mismo build
+       nunca salieran idénticas, porque el rebote iba por libre. */
+    .animate-bounce,
+    .animate-pulse {
+      animation: none;
+    }
   }
 }
 
 @layer components {
   .card {
-    background: #ffffff;
+    background: theme('colors.surface');
     border: 1px solid theme('colors.border-color');
-    border-radius: 1rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: theme('borderRadius.card');
+    box-shadow: theme('boxShadow.card');
   }
 
   .card-hover {
@@ -45,10 +54,10 @@
 
   .btn-primary {
     background-color: theme('colors.brand-primary');
-    color: #ffffff;
+    color: theme('colors.on-brand');
     font-weight: 600;
     padding: 0.875rem 1.75rem;
-    border-radius: 0.625rem;
+    border-radius: theme('borderRadius.btn');
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
@@ -60,7 +69,7 @@
   .btn-primary:hover {
     background-color: theme('colors.brand-dark');
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px theme('colors.brand-primary / 15%');
+    box-shadow: theme('boxShadow.btn-hover');
   }
 
   .btn-secondary {
@@ -68,7 +77,7 @@
     color: theme('colors.brand-primary');
     font-weight: 600;
     padding: 0.875rem 1.75rem;
-    border-radius: 0.625rem;
+    border-radius: theme('borderRadius.btn');
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
@@ -90,7 +99,7 @@
   .btn-secondary:focus-visible {
     outline: 2px solid theme('colors.brand-dark');
     outline-offset: 3px;
-    border-radius: 0.625rem;
+    border-radius: theme('borderRadius.btn');
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -112,6 +121,25 @@
     padding-right: 2rem;
   }
 
+  /* Ritmo vertical de sección. Hoy las seis secciones escriben
+     `py-20 md:py-32` a mano; esta clase es su equivalente exacto en una
+     sola palabra, leyendo los dos escalones desde `spacing` en
+     tailwind.config.js. `padding-block` es lo mismo que `padding-top` +
+     `padding-bottom` en escritura horizontal, que es la única que el
+     sitio usa.
+     ⚠ NADIE la consume todavía: migrar las secciones es un cambio
+     aparte, porque `.section-y` vive en la capa `components` y
+     cualquier `py-*` que quedara suelto en el JSX le ganaría. */
+  .section-y {
+    padding-block: theme('spacing.section');
+  }
+
+  @media (min-width: theme('screens.md')) {
+    .section-y {
+      padding-block: theme('spacing.section-lg');
+    }
+  }
+
   /* Sin `font-size` ni `line-height` a propósito: las cinco llamadas
      traen su propia escala (`text-5xl`) y, al vivir esa utilidad en una
      capa posterior, siempre ganaba. Declararlos aquí solo simulaba
@@ -129,8 +157,13 @@
     padding: 0.5rem 1rem;
     background-color: theme('colors.brand-light');
     color: theme('colors.brand-dark');
+    /* `font-size` se deja como literal a propósito: el token equivalente
+       (`fontSize.body-sm`) es una tupla [tamaño, {lineHeight}] y
+       `theme()` no puede leerla como un valor simple sin indexarla. Da
+       igual en la práctica — las 5 llamadas envuelven el texto en un
+       `text-xs` que gana por capa y este 0.875rem nunca se ve. */
     font-size: 0.875rem;
     font-weight: 600;
-    border-radius: 0.5rem;
+    border-radius: theme('borderRadius.control');
   }
 }
