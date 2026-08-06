@@ -1,6 +1,11 @@
 # Stackly — Landing (SCRUM-54)
 
-Landing page principal de Stackly. Traída de Bolt.new; **no** comparte stack con `templates/` (Vite + React + TypeScript + Tailwind 3, no Astro).
+Landing page principal de Stackly. **No** comparte stack con `templates/`: es Vite + React +
+TypeScript + Tailwind 3, no Astro, y se maneja con `npm` en vez de `pnpm`.
+
+El andamiaje inicial salió de Bolt.new, pero desde entonces se le rehízo el portafolio y se le
+hizo una pasada completa de contenido, accesibilidad y SEO. Queda poco del generador, así que no
+asumas que algo está como está «porque lo puso Bolt».
 
 ## Desarrollo
 
@@ -8,15 +13,46 @@ Landing page principal de Stackly. Traída de Bolt.new; **no** comparte stack co
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # genera dist/
-npm run typecheck
+npm run preview    # sirve el dist/ ya compilado, para revisar el build real
+npm run typecheck  # tsc --noEmit sobre tsconfig.app.json
+npm run lint       # eslint .
 ```
+
+`npm run lint` no es solo estilo: la configuración de `eslint.config.js` incluye
+`eslint-plugin-jsx-a11y`, así que ahí es donde se cazan los problemas de accesibilidad del JSX
+(elementos interactivos sin rol, `label` sin campo asociado, handlers sobre elementos que no los
+admiten). Vale la pena correrlo antes de cada deploy: la accesibilidad de esta página es parte de
+lo que se vende.
+
+`npm run preview` sirve el `dist/` ya compilado en vez del servidor de desarrollo. Es la única
+forma de ver el sitio como queda de verdad en producción — con el bundle minificado y las
+variables de entorno ya incrustadas.
+
+## Despliegue (Vercel)
+
+La landing se despliega en **Vercel** (proyecto `landing`; el enlace vive en `.vercel/`, que git
+ignora). Las variables de entorno se configuran en el panel de Vercel, en Settings → Environment
+Variables, no en un archivo del repositorio.
+
+> **Nota sobre `.netlify/`:** en disco conviven `.vercel/` y `.netlify/`. Ambos están ignorados
+> por git y ninguno se sube. **Manda Vercel**: `.netlify/` es residuo de un intento anterior de
+> desplegar en Netlify que falló por permisos. No hay que borrar ninguna de las dos carpetas —
+> son configuración local de la máquina, no del proyecto.
 
 ## Formulario de contacto (Supabase)
 
 El formulario de la sección `#contacto` guarda los mensajes en una tabla de Supabase. Sin configurar, el formulario muestra un aviso y no rompe el resto del sitio.
 
+> [!IMPORTANT]
+> **Tarea abierta: falta correr el segundo bloque de `supabase/schema.sql` en el Supabase real.**
+> El primer bloque (tabla + RLS) ya está aplicado; el segundo, el marcado
+> `EJECUTAR DESPUÉS DEL SCRIPT INICIAL`, **no**. Hasta que se ejecute, la base acepta nombres
+> vacíos, correos con cualquier formato y mensajes de megabytes: las validaciones solo existen en
+> el navegador, y la anon key es pública, así que saltárselas es trivial. Ver
+> [Orden de ejecución del SQL](#orden-de-ejecución-del-sql).
+
 1. Crea un proyecto gratuito en [supabase.com](https://supabase.com).
-2. En el SQL Editor del proyecto, corre `supabase/schema.sql` (crea la tabla `contact_submissions` con RLS: el público solo puede insertar, no leer).
+2. En el SQL Editor del proyecto, corre `supabase/schema.sql` — **los dos bloques**, en el orden en que están (crea la tabla `contact_submissions` con RLS —el público solo puede insertar, no leer— y luego le añade las validaciones).
 3. Copia `.env.example` a `.env` y completa con los datos del proyecto (Settings → API):
    ```
    VITE_SUPABASE_URL=
@@ -24,7 +60,9 @@ El formulario de la sección `#contacto` guarda los mensajes en una tabla de Sup
    ```
 4. Los mensajes quedan en Supabase → Table Editor → `contact_submissions`.
 
-En el hosting (Netlify/Cloudflare Pages), agrega las mismas variables de entorno antes de hacer deploy.
+En **Vercel** (Settings → Environment Variables) hay que agregar esas dos mismas variables antes
+de desplegar, y volver a construir para que queden dentro del bundle. Vite las incrusta en tiempo
+de compilación, así que cambiarlas en el panel no surte efecto hasta el siguiente build.
 
 > **Ojo:** nadie recibe una notificación cuando alguien envía el formulario. Los mensajes se
 > quedan en la tabla hasta que alguien abra el dashboard. Por eso el copy de la sección de
@@ -65,8 +103,14 @@ La anon key viaja en el bundle JS público y la política de inserción es `with
 que cualquiera podría insertar filas. En el cliente (`src/components/CTA.tsx`) hay dos barreras:
 
 - **Honeypot**: un campo oculto (`empresa-web`) que una persona nunca ve. Si llega lleno, el
-  envío se descarta en silencio, se finge éxito y **no se inserta nada**. Mismo patrón que usa
-  `templates/_base/src/components/Contacto.astro`.
+  envío se descarta en silencio, se finge éxito y **no se inserta nada**.
+
+  La idea es la misma que en `templates/_base/src/components/Contacto.astro`, pero **el mecanismo
+  no**, y conviene no confundirlos al copiar código de un lado al otro. Allí el campo se llama
+  `bot-field` y lo declara `netlify-honeypot="bot-field"`: quien filtra es **Netlify Forms**, en
+  el servidor, antes de que el envío llegue a ninguna parte. Aquí no hay servidor de por medio —
+  el campo se llama `empresa-web` y **lo descarta el propio React** en `src/components/CTA.tsx`,
+  en el navegador del visitante.
 - **Time-trap**: se rechazan los envíos que llegan en menos de 3 segundos desde que el formulario
   quedó disponible.
 

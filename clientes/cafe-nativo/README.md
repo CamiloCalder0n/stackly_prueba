@@ -11,7 +11,7 @@ estático, sin build ni dependencias: se sirve tal cual está.
 > [!WARNING]
 > **No publicar todavía.** El sitio funciona, pero el contenido es de relleno:
 > la dirección dice literalmente "Calle por confirmar", no hay teléfono, los
-> precios están en euros y las 14 fotos son de stock — dos de ellas con marca
+> precios están en euros y las 12 fotos son de stock — dos de ellas con marca
 > de agua visible y tres mostrando **sacos de café de otras empresas**.
 > El detalle completo está más abajo.
 
@@ -268,7 +268,7 @@ información antes de publicar.
 | 2 | **Teléfono** | **No hay ninguno en todo el sitio** | Fijo y/o WhatsApp. Es el canal de contacto que más se usa en el nicho |
 | 3 | **Enlace a Maps** | Botón desactivado a la espera de la dirección | URL de Google Maps del local |
 | 4 | **Precios** | Los **15 precios** del menú están en formato euro (`2,50`, `3,80`) y **sin símbolo de moneda**, conviviendo con vocabulario colombiano (panela, apellido Restrepo, "cooperativa de mujeres") | Carta real en pesos colombianos |
-| 5 | **Fotos** | Las 14 son de stock, de otras cafeterías | 10-20 fotos propias (ver más abajo) |
+| 5 | **Fotos** | Las 12 son de stock, de otras cafeterías | 10-20 fotos propias (ver más abajo) |
 | 6 | **Dominio** | `cafenativo.com.co` es un **marcador puesto por nosotros**; el cliente todavía no tiene dominio | Dominio real. Hay que cambiarlo en `canonical`, `og:url`, `og:image`, `twitter:image` y en el JSON-LD |
 
 ### Contenido a confirmar

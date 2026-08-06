@@ -20,6 +20,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.env
-.vercel
+
+# Variables de entorno: nunca se suben, salvo el ejemplo vacío
+# que le dice al siguiente qué hay que llenar.
 .env*
+!.env.example
+
+# Enlaces con los hostings. El que manda es Vercel; .netlify/ es
+# residuo de un intento anterior. Ninguno de los dos se sube.
+.vercel
+.netlify
+
+# Andamiaje de Bolt.new (config y prompt del generador original).
+# Ya no describe este proyecto: el portafolio, el contenido, la
+# accesibilidad y el SEO se rehicieron a mano después.
+.bolt/
