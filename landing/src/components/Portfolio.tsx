@@ -3,30 +3,33 @@ import { ArrowRight } from 'lucide-react';
 const caseStudies = [
   {
     id: '1',
-    company: 'EcoStore',
-    industry: 'eCommerce',
-    problem: 'Vendían solo en Instagram, sin tienda propia',
-    solution: 'Sitio web rápido y optimizado para compras',
-    result: 'Ahora venden directamente desde su web',
-    imageUrl: 'https://images.pexels.com/photos/5632371/pexels-photo-5632371.jpeg?auto=compress&cs=tinysrgb&w=600',
+    company: 'Celesse Jewel',
+    industry: 'Joyería',
+    problem: 'Sin vitrina propia: el catálogo vivía solo en fotos sueltas de WhatsApp',
+    solution: 'Catálogo filtrable con ficha por pieza, certificado de materiales y pedido directo por WhatsApp',
+    result: 'Sitio en producción, Lighthouse 95-98, sin cuota mensual de plataforma',
+    imageUrl: '/portfolio/celesse-jewel.jpg',
+    liveUrl: 'https://stackly-joyeria-539.netlify.app',
   },
   {
     id: '2',
-    company: 'FinanceApp',
-    industry: 'SaaS',
-    problem: 'Perdían leads en el proceso de signup',
-    solution: 'Rediseñamos el flujo y dashboard',
-    result: 'El proceso ahora es claro y retienen usuarios',
-    imageUrl: 'https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=600',
+    company: 'Barbería El Patrón',
+    industry: 'Barbería',
+    problem: 'Agendaba por teléfono y perdía turnos en el camino',
+    solution: 'Wizard de reserva en 3 pasos — servicio, barbero y hora — que arma el mensaje de WhatsApp solo',
+    result: 'Cero llamadas, cero cuota mensual (Booksy cobra US$30/mes por lo mismo)',
+    imageUrl: '/portfolio/barberia-el-patron.jpg',
+    liveUrl: 'https://stackly-barberia-185.netlify.app',
   },
   {
     id: '3',
-    company: 'Restaurant Pro',
-    industry: 'Gastronomía',
-    problem: 'Reservas solo por teléfono, mucho trabajo manual',
-    solution: 'Sistema de reservas online automatizado',
-    result: 'Reciben reservas 24/7 sin intervención',
-    imageUrl: 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=600',
+    company: 'La Terraza Cocina Local',
+    industry: 'Restaurante',
+    problem: 'Menú solo en PDF, invisible para Google, pedidos que se iban a apps con comisión',
+    solution: 'Menú digital indexable (nunca PDF) + canal de pedidos propio por WhatsApp',
+    result: 'Recupera el 25-30% de margen que se queda en las apps de domicilio',
+    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=80',
+    liveUrl: 'https://stackly-restaurante-183.netlify.app',
   },
 ];
 
@@ -108,13 +111,21 @@ export default function Portfolio() {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-border-color">
+                  <div className="mt-8 pt-6 border-t border-border-color flex flex-wrap items-center gap-x-6 gap-y-3">
                     <a
                       href="#contacto"
                       className="inline-flex items-center gap-2 text-brand-primary font-bold hover:gap-3 transition-all text-sm group/link"
                     >
                       Quiero un caso similar
                       <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                    </a>
+                    <a
+                      href={study.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-text-secondary font-medium text-sm hover:text-text-primary transition-colors underline underline-offset-4"
+                    >
+                      Ver el sitio en vivo
                     </a>
                   </div>
                 </div>
