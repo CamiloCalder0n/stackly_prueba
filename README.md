@@ -1,6 +1,6 @@
 # Stackly
 
-Repositorio de Stackly: la [landing propia](landing) (ticket **SCRUM-54**) y las plantillas reutilizables para arrancar proyectos de clientes sin empezar de cero (ticket **SCRUM-43**). Cada plantilla de nicho nace de una [investigación de mercado](https://app.notion.com/p/3a23a1de538681828ba2e16a8a327e96) (Notion) y comparte un mismo sistema técnico; la landing es un proyecto aparte, con su propio stack.
+Repositorio de Stackly, con tres cosas distintas dentro: la [landing propia](landing) (ticket **SCRUM-54**), las plantillas reutilizables para arrancar proyectos sin empezar de cero (ticket **SCRUM-43**), y los sitios de [clientes reales](clientes) (proyecto **CL** en Jira). Cada plantilla de nicho nace de una [investigación de mercado](https://app.notion.com/p/3a23a1de538681828ba2e16a8a327e96) (Notion) y comparte un mismo sistema técnico; la landing y los sitios de cliente son proyectos aparte, cada uno con su stack.
 
 ## `landing/` — sitio propio de Stackly (SCRUM-54)
 
@@ -12,6 +12,16 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # genera dist/
 ```
+
+## `clientes/` — sitios de clientes reales (proyecto CL)
+
+Un directorio por cliente. No son plantillas ni comparten stack con `templates/`: cada uno llega con lo que el cliente ya tenga y se integra tal cual.
+
+| Cliente | Ticket | Estado |
+|---|---|---|
+| [`cafe-nativo/`](clientes/cafe-nativo) | **CL-11** | Concepto integrado y sano técnicamente, **bloqueado para publicar** hasta recibir datos y fotos del cliente (**CL-12**) |
+
+Cada uno trae su README con lo que falta confirmar. En Café Nativo eso incluye bloqueantes legales: las imágenes del concepto son de banco, una con marca de agua visible y tres con logos de marcas de café ajenas.
 
 ## Plantillas de nicho (`templates/`)
 
@@ -58,6 +68,8 @@ pnpm build          # genera dist/ listo para Netlify / Cloudflare Pages
 
 ```
 landing/          Sitio propio de Stackly (SCRUM-54) — Vite + React + TS, stack aparte
+clientes/
+└── cafe-nativo/   Cliente CL-11 — HTML estático autocontenido, sin build
 templates/
 ├── _base/         Sistema compartido: tokens, componentes, animaciones data-*, Decap, SEO local
 ├── joyeria/       Vitrina + catálogo con filtros + ficha + guía de tallas + encargos

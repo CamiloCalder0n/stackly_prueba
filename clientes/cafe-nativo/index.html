@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Café Nativo — De la planta a tu taza</title>
+<meta name="description" content="Tostaduría y barra de café de especialidad. Tres orígenes trazables hasta la finca, tostado cada semana y preparado taza por taza. Abierto todos los días desde las 7:30." />
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PENDIENTE CL-12 — el dominio real todavía no existe. Todo lo que
+     aparece abajo como https://www.cafenativo.com.co/ es un marcador:
+     hay que sustituirlo en `link[rel=canonical]`, en `og:url`,
+     en `og:image` y en el JSON-LD antes de publicar. Ver README.md.
+     ═══════════════════════════════════════════════════════════════ -->
+<link rel="canonical" href="https://www.cafenativo.com.co/" />
+
+<meta property="og:type" content="business.business" />
+<meta property="og:site_name" content="Café Nativo" />
+<meta property="og:locale" content="es_CO" />
+<meta property="og:title" content="Café Nativo — De la planta a tu taza" />
+<meta property="og:description" content="Tostaduría y barra de café de especialidad. Tres orígenes trazables hasta la finca, tostado cada semana y preparado taza por taza." />
+<meta property="og:url" content="https://www.cafenativo.com.co/" />
+<meta property="og:image" content="https://www.cafenativo.com.co/assets/img/terraza.jpg" />
+<meta property="og:image:width" content="750" />
+<meta property="og:image:height" content="486" />
+<meta property="og:image:alt" content="La terraza de Café Nativo entre árboles y ladrillo." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Café Nativo — De la planta a tu taza" />
+<meta name="twitter:description" content="Tostaduría y barra de café de especialidad. Tres orígenes trazables hasta la finca, tostado cada semana y preparado taza por taza." />
+<meta name="twitter:image" content="https://www.cafenativo.com.co/assets/img/terraza.jpg" />
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#e6dcbc" />
+
+<!-- El sistema de diseño se enlaza, no se inyecta con JS: antes lo montaba
+     `ds-base.js` en runtime y con JavaScript desactivado la página se
+     quedaba literalmente sin una sola regla de estilo. Ver README.md. -->
+<link rel="preload" href="assets/fonts/source-serif-4-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/source-serif-4-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/source-serif-4-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="assets/ds/broadsheet.css" />
+
+<!-- Marca el documento como "con JS" para que el menú móvil sólo aparezca
+     cuando puede funcionar; sin JS la barra se envuelve y los enlaces
+     siguen siendo alcanzables. Inline y en el <head> a propósito: si
+     esperara al final del body habría un parpadeo del botón. -->
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Café Nativo v2 — versión expresiva: tipografía enorme, tinta de proceso a
+   toda página, bandas en movimiento y revelados al hacer scroll.
+   El color sigue saliendo de los tokens de Broadsheet (amarillo de proceso,
+   magenta y cian), sólo que usado en grande en vez de en pequeño. */
+:root {
+  --leading: 28px;
+  --half: 14px;
+  --edge: clamp(18px, 4.5vw, 72px);
+
+  /* papel de lino tostado: el blanco del sistema pasado por el amarillo de
+     proceso y bajado un punto con la tinta cálida — tono tierra, no crema */
+  --paper: color-mix(in srgb, color-mix(in srgb, var(--color-bg) 82%, var(--color-process-yellow)) 94%, var(--ink));
+  --paper-deep: color-mix(in srgb, color-mix(in srgb, var(--color-bg) 68%, var(--color-process-yellow)) 90%, var(--ink));
+  --ink: color-mix(in srgb, var(--color-text) 86%, var(--color-accent-2-900));
+  --ink-70: color-mix(in srgb, var(--ink) 72%, transparent);
+  --ink-55: color-mix(in srgb, var(--ink) 55%, transparent);
+  --hair: color-mix(in srgb, var(--ink) 20%, transparent);
+  --spot: var(--color-accent-2-700);   /* magenta de proceso */
+  --spot-2: var(--color-accent-700);   /* cian de proceso */
+}
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); text-wrap: pretty; overflow-x: clip; }
+::selection { background: color-mix(in srgb, var(--color-process-yellow) 55%, transparent); }
+a { color: var(--spot-2); }
+a:hover { color: var(--color-accent-800); }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--edge); }
+
+/* — revelados — */
+.rise { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1); }
+.rise.in { opacity: 1; transform: none; }
+.rise.d1 { transition-delay: .09s } .rise.d2 { transition-delay: .18s } .rise.d3 { transition-delay: .27s }
+/* Los .rise arrancan en opacity:0 y sólo se encienden cuando el
+   IntersectionObserver les pone .in. Sin JavaScript ese observador no corre
+   nunca y el sitio se quedaba con TODO el texto invisible: titular, párrafos,
+   menú y horarios. Con la clase `js` del <head> el revelado se aplica sólo
+   cuando puede completarse; sin JS el contenido sale ya visible. Con
+   JavaScript activo esta regla no cambia absolutamente nada. */
+html:not(.js) .rise { opacity: 1; transform: none; transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { opacity: 1; transform: none; transition: none; }
+  .marquee-track, .bean, .steam span { animation: none !important; }
+}
+
+/* — nav — */
+.nav { background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--hair);
+  position: sticky; top: 0; z-index: 20;
+  padding-inline: max(var(--edge), calc((100% - 1280px) / 2 + var(--edge))); }
+.nav a { color: var(--ink-70); text-decoration: none; white-space: nowrap; }
+.nav a:hover { color: var(--spot); }
+.nav .btn-primary { background: var(--spot); color: var(--paper); }
+.nav .btn-primary:hover { background: var(--color-accent-2-800); }
+@media (max-width: 620px) { .nav a:not(.keep) { display: none; } }
+
+/* — menú móvil —
+   A ≤620px la regla de arriba escondía los enlaces del nav sin poner nada
+   en su lugar: desde un celular no se podía llegar a ninguna sección. El
+   botón es puramente tipográfico ("Menú" / "Cerrar", sin icono) para no
+   meter vocabulario visual ajeno a Broadsheet, y el panel reutiliza el
+   mismo papel, la misma hairline y la misma tipografía de la barra. */
+.nav-toggle {
+  display: none; align-items: center; background: none; border: 0;
+  padding: 4px 0; cursor: pointer; font-family: var(--font-body);
+  font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-70); white-space: nowrap;
+}
+.nav-toggle:hover { color: var(--spot); }
+.nav-panel {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--paper); border-bottom: 1px solid var(--hair);
+  box-shadow: var(--shadow-md);
+  padding: 0 max(var(--edge), calc((100% - 1280px) / 2 + var(--edge))) var(--space-3);
+}
+.nav-panel[hidden] { display: none; }
+/* Selector por id (1,0,1) para ganarle a `.nav a:not(.keep)` (0,2,1) sin
+   recurrir a !important. */
+#nav-movil a {
+  display: block; padding: var(--space-3) 0; font-size: 17px;
+  color: var(--ink-70); text-decoration: none;
+  border-bottom: 1px solid var(--hair);
+}
+#nav-movil a:last-child { border-bottom: 0; }
+#nav-movil a:hover { color: var(--spot); }
+@media (min-width: 621px) { .nav-panel { display: none; } }
+@media (max-width: 620px) {
+  .nav { gap: var(--space-2); }
+  .js .nav-toggle { display: inline-flex; }
+  /* Sin JS el botón no sirve de nada, así que la barra se envuelve en dos
+     líneas y los enlaces vuelven a estar a la vista. */
+  html:not(.js) .nav { flex-wrap: wrap; }
+  html:not(.js) .nav a:not(.keep) { display: inline-flex; }
+}
+
+/* — hero — */
+.hero { position: relative; padding: calc(2.5 * var(--leading)) 0 0; overflow: clip; }
+.hero-grid { position: relative; z-index: 2; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 var(--leading);
+  font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--spot); }
+.eyebrow::before { content: ""; width: 44px; height: 2px; background: var(--spot); }
+.display { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(56px, 12.5vw, 190px); line-height: 0.87; letter-spacing: -0.045em;
+  margin: 0 0 0 -0.05em; }
+.display .line { display: block; }
+.display em { font-style: italic; font-weight: 400; color: var(--spot); letter-spacing: -0.03em; }
+.display .out { -webkit-text-stroke: 2px var(--ink); color: transparent; }
+.hero-foot { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: var(--leading) clamp(28px, 5vw, 80px); align-items: end; margin-top: calc(1.5 * var(--leading)); }
+.hero-foot p { font-size: clamp(17px, 1.35vw, 20px); line-height: var(--leading); margin: 0; max-width: 44ch; }
+.hero .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
+.btn-primary { background: var(--spot); color: var(--paper); }
+.btn-primary:hover { background: var(--color-accent-2-800); }
+.btn-secondary { border-color: var(--ink); }
+.hero-side { font-size: 15px; line-height: var(--leading); color: var(--ink-70); }
+.hero-side strong { display: block; font-size: 19px; color: var(--ink); }
+
+.hero-photo { margin: calc(1.5 * var(--leading)) 0 0; position: relative; z-index: 2; }
+.hero-photo .print { aspect-ratio: 21 / 8; }
+.hero-photo figcaption { color: var(--ink-55); font-size: 12.5px; }
+
+/* granos flotando: cada uno es un hueco de imagen recortado en círculo */
+.bean { position: absolute; z-index: 1; pointer-events: none; margin: 0;
+  filter: drop-shadow(0 14px 22px color-mix(in srgb, var(--ink) 28%, transparent));
+  animation: float 11s ease-in-out infinite; }
+.bean img { width: 100%; height: auto; display: block; }
+.bean.b1 { right: 4%; top: 6%; width: clamp(96px, 12vw, 190px); animation-delay: -1s }
+.bean.b2 { right: 19%; top: 33%; width: clamp(70px, 8.5vw, 132px); animation-delay: -4.5s }
+.bean.b3 { right: 2%; top: 46%; width: clamp(58px, 6.5vw, 104px); animation-delay: -7.5s; transform: rotate(12deg) }
+.bean.b4 { left: 2%; top: 62%; width: clamp(90px, 10vw, 160px); animation-delay: -2.5s; transform: rotate(-8deg) }
+@keyframes float { 0%,100% { transform: translateY(0) rotate(-4deg) } 50% { transform: translateY(-22px) rotate(5deg) } }
+@media (max-width: 900px) { .bean { display: none } }
+
+/* — banda en movimiento — */
+.marquee { background: var(--ink); color: var(--paper); overflow: hidden;
+  padding: var(--space-3) 0; margin-top: calc(2 * var(--leading)); }
+.marquee-track { display: flex; gap: clamp(28px, 4vw, 64px); width: max-content;
+  animation: slide 34s linear infinite; }
+.marquee span { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(20px, 2.2vw, 30px); letter-spacing: -0.01em; white-space: nowrap;
+  display: flex; align-items: center; gap: clamp(28px, 4vw, 64px); }
+.marquee span::after { content: "◆"; font-size: 0.5em; color: var(--color-process-yellow); }
+@keyframes slide { to { transform: translateX(-50%) } }
+
+/* — cifras — */
+.figures { display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: calc(1.5 * var(--leading)) clamp(24px, 4vw, 56px); padding: calc(2.5 * var(--leading)) 0; }
+.fig-num { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(48px, 6vw, 86px); line-height: .92; letter-spacing: -0.045em;
+  font-feature-settings: "pnum" 1; color: var(--spot); }
+.figures div:nth-child(2) .fig-num, .figures div:nth-child(4) .fig-num { color: var(--spot-2); }
+.fig-num .unit { font-size: .36em; letter-spacing: 0; margin-left: .1em; color: var(--ink); }
+.figures p { font-size: 15px; line-height: var(--half); color: var(--ink-70); margin: var(--half) 0 0; max-width: 22ch; }
+
+/* — secciones — */
+.section { padding: calc(3 * var(--leading)) 0; }
+.kicker { display: block; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--spot); margin: 0 0 var(--leading); }
+.section-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(36px, 5.4vw, 76px); line-height: 1.0; letter-spacing: -0.035em;
+  margin: 0; max-width: 18ch; }
+.section-title em { font-style: italic; font-weight: 400; color: var(--spot); }
+.section-lede { font-size: 17.5px; line-height: var(--leading); color: var(--ink-70);
+  max-width: 56ch; margin: calc(1.25 * var(--leading)) 0 0; }
+
+/* — orígenes como fichas grandes — */
+.origins { display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(20px, 2.6vw, 34px); margin-top: calc(2 * var(--leading)); }
+.origin { background: var(--paper-deep); padding: var(--leading); border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; gap: var(--half);
+  transition: transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s ease; }
+.origin:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+.origin .print { aspect-ratio: 4 / 3; border-radius: var(--radius-md); overflow: hidden; }
+.origin h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 27px; line-height: 1.1; letter-spacing: -0.02em; margin: var(--space-2) 0 0; }
+.origin .who { font-size: 14.5px; color: var(--ink-55); margin: 0; }
+.origin dl { display: grid; grid-template-columns: auto 1fr; gap: 4px var(--space-3);
+  margin: var(--space-2) 0 0; font-size: 15px; line-height: var(--leading); }
+.origin dt { font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-55);
+  align-self: baseline; }
+.origin dd { margin: 0; }
+.origin .notes { font-style: italic; font-size: 17px; line-height: var(--leading);
+  color: var(--ink); margin: var(--space-2) 0 0; padding-top: var(--space-2);
+  border-top: 1px solid var(--hair); }
+
+/* — proceso: pasos numerados en grande — */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: calc(1.5 * var(--leading)) clamp(28px, 4vw, 64px); margin-top: calc(2 * var(--leading)); }
+.step-n { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: clamp(56px, 7vw, 96px); line-height: .9; letter-spacing: -0.05em;
+  -webkit-text-stroke: 2px var(--spot); color: transparent; margin-bottom: var(--space-2); }
+.steps h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 25px; line-height: var(--leading); margin: 0; letter-spacing: -0.015em; }
+.steps p { font-size: 15.5px; line-height: var(--leading); color: var(--ink-70); margin: var(--space-2) 0 0; }
+
+/* — foto + copy — */
+.split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+  gap: calc(1.5 * var(--leading)) clamp(28px, 5vw, 92px); align-items: center; }
+.split.flip .split-copy { order: 2; }
+.split-figure .print { aspect-ratio: 4 / 3; }
+.steam { position: absolute; inset: auto 0 100% 0; display: flex; justify-content: center; gap: 14px; height: 60px; }
+.steam span { width: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 18%, transparent);
+  animation: steam 3.6s ease-in-out infinite; transform-origin: bottom; }
+.steam span:nth-child(2) { animation-delay: .5s } .steam span:nth-child(3) { animation-delay: 1s }
+@keyframes steam { 0%,100% { height: 18px; opacity: .25 } 50% { height: 52px; opacity: .6 } }
+
+/* — galería del espacio — */
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.8vw, 24px);
+  margin-top: calc(2 * var(--leading)); }
+.gallery figure { margin: 0; overflow: hidden; border-radius: var(--radius-md); }
+.gallery .print { aspect-ratio: 1 / 1; transition: transform .5s cubic-bezier(.2,.7,.3,1); }
+.gallery figure:hover .print { transform: scale(1.04); }
+.gallery figure:nth-child(1) { grid-column: span 2; }
+.gallery figure:nth-child(1) .print { aspect-ratio: 2 / 1; }
+.gallery figure:nth-child(4) { grid-column: span 2; }
+.gallery figure:nth-child(4) .print { aspect-ratio: 2 / 1; }
+
+/* — menú — */
+.menu-cols { display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: calc(2 * var(--leading)) clamp(28px, 4vw, 64px); margin-top: calc(2 * var(--leading)); }
+.menu-cols h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 22px; margin: 0 0 var(--space-2); padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--spot); letter-spacing: -0.015em; }
+.ix { display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: var(--leading);
+  padding: 2px 6px; margin-inline: -6px; border-radius: var(--radius-sm); transition: background .25s ease; }
+.ix:hover { background: color-mix(in srgb, var(--color-process-yellow) 30%, transparent); }
+.ix .name em { font-style: italic; color: var(--ink-55); }
+.ix-leader { flex: 1; min-width: 20px; align-self: flex-end; margin-bottom: .34em;
+  border-bottom: 1px dotted var(--hair); }
+.ix-num { font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-feature-settings: "tnum" 1; }
+.menu-more { margin: calc(1.75 * var(--leading)) 0 0; font-size: 16.5px; line-height: var(--leading);
+  color: var(--ink-70); max-width: 60ch; }
+
+/* — cita a página completa — */
+.quote { background: var(--ink); color: var(--paper); padding: calc(4 * var(--leading)) 0; }
+.quote blockquote { font-family: var(--font-heading); font-style: italic; font-weight: 400;
+  font-size: clamp(30px, 4.6vw, 68px); line-height: 1.14; letter-spacing: -0.03em;
+  max-width: 20ch; margin: 0; text-indent: -0.42em; }
+.quote figcaption { font-size: 16px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--paper) 65%, transparent); margin: calc(1.75 * var(--leading)) 0 0; }
+@media (max-width: 720px) { .quote blockquote { text-indent: 0 } }
+
+/* — visita — */
+.visit { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: calc(1.5 * var(--leading)) clamp(28px, 5vw, 92px); align-items: start;
+  margin-top: calc(2 * var(--leading)); }
+.hours .ix { font-feature-settings: "tnum" 1; }
+.visit .addr { font-size: 17px; line-height: var(--leading); margin: calc(1.5 * var(--leading)) 0 0; }
+.visit .row { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--leading); }
+.map-figure .print { aspect-ratio: 16 / 10; }
+
+footer { border-top: 1px solid var(--hair); margin-top: calc(2 * var(--leading));
+  padding: calc(1.5 * var(--leading)) 0 calc(2 * var(--leading)); font-size: 13.5px;
+  line-height: var(--leading); color: var(--ink-55); display: flex; flex-wrap: wrap;
+  justify-content: space-between; gap: var(--half) var(--leading); }
+
+@media (max-width: 1000px) {
+  .figures { grid-template-columns: repeat(2, 1fr); }
+  .origins, .steps, .menu-cols { grid-template-columns: 1fr 1fr; }
+  .origins > :last-child, .steps > :last-child, .menu-cols > :last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .hero-foot, .split, .visit { grid-template-columns: 1fr; }
+  .split.flip .split-copy { order: 0; }
+  .figures, .origins, .steps, .menu-cols { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: 1fr 1fr; }
+  .gallery figure:nth-child(1) { grid-column: span 2; grid-row: auto; }
+  .hero-photo .print { aspect-ratio: 3 / 2; }
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">Café&nbsp;Nativo</span>
+  <a href="#origen">Origen</a>
+  <a href="#oficio">Oficio</a>
+  <a href="#menu">Menú</a>
+  <a href="#espacio">El espacio</a>
+  <a class="btn btn-primary keep" href="#visita">Cómo llegar</a>
+  <button class="nav-toggle keep" type="button" id="nav-toggle" aria-expanded="false" aria-controls="nav-movil">Menú</button>
+  <div class="nav-panel" id="nav-movil" hidden>
+    <a href="#origen">Origen</a>
+    <a href="#oficio">Oficio</a>
+    <a href="#menu">Menú</a>
+    <a href="#espacio">El espacio</a>
+    <a href="#visita">Cómo llegar</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <p class="eyebrow rise">Tostaduría y barra de especialidad</p>
+    <h1 class="display">
+      <span class="line rise">De la planta</span>
+      <span class="line rise d1"><em>a tu taza</em></span>
+      <span class="line out rise d2">sin atajos</span>
+    </h1>
+    <div class="hero-foot">
+      <div class="rise d2">
+        <p>Cultivado en ladera, recogido a mano, tostado cada semana y preparado taza por taza. Lo demás lo pone el lugar: luz, plantas, madera y todo el tiempo del mundo.</p>
+        <div class="row">
+          <a class="btn btn-primary" href="#visita">Cómo llegar</a>
+          <a class="btn btn-secondary" href="#menu">Ver el menú</a>
+        </div>
+      </div>
+      <p class="hero-side rise d3"><strong>Abierto todos los días, 7:30</strong>Barrio Centro — a dos calles del parque.</p>
+    </div>
+  </div>
+  <figure class="bean b1"><img src="assets/img/granos-cafe.png" alt="" width="360" height="360" /></figure>
+  <figure class="bean b2"><img src="assets/img/granos-hojas.webp" alt="" width="388" height="350" /></figure>
+  <figure class="bean b3"><img src="assets/img/granos-cafe.png" alt="" width="360" height="360" /></figure>
+  <figure class="bean b4"><img src="assets/img/granos-cafe.png" alt="" width="360" height="360" style="transform:scaleX(-1)" /></figure>
+  <div class="wrap">
+    <figure class="hero-photo rise d3">
+      <div class="print halftone"><img src="assets/img/terraza.jpg" alt="La terraza de Café Nativo entre árboles" width="750" height="486" fetchpriority="high" style="width:100%;height:100%;object-fit:cover;display:block" /></div>
+      <figcaption>La terraza, entre árboles y ladrillo.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Comercio directo</span><span>Tostado cada semana</span><span>Molido al momento</span><span>Cosecha de altura</span>
+    <span>Comercio directo</span><span>Tostado cada semana</span><span>Molido al momento</span><span>Cosecha de altura</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="figures" aria-label="Café Nativo en cifras">
+    <div class="rise"><div class="fig-num">7:30</div><p>Abrimos todos los días, festivos incluidos.</p></div>
+    <div class="rise d1"><div class="fig-num">3</div><p>Orígenes en barra, rotando por temporada.</p></div>
+    <div class="rise d2"><div class="fig-num">14<span class="unit">días</span></div><p>Máximo del tueste a tu taza. Nunca más.</p></div>
+    <div class="rise d3"><div class="fig-num">1650<span class="unit">m</span></div><p>Altura media de las fincas con las que trabajamos.</p></div>
+  </section>
+
+  <section class="section" id="origen">
+    <span class="kicker rise">El origen · trazable hasta la mata</span>
+    <h2 class="section-title rise">Tres fincas, tres <em>maneras</em> de saber a café</h2>
+    <p class="section-lede rise d1">No compramos lotes anónimos. Viajamos a la finca, pagamos por encima del precio de mercado y volvemos a la misma cosecha cada año. Esto es lo que hay hoy en barra.</p>
+    <div class="origins">
+      <article class="origin rise">
+        <div class="print halftone"><img src="assets/img/saco-la-esperanza.png" alt="Sacos de café verde de La Esperanza" width="245" height="196" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block" /></div>
+        <h3>La Esperanza</h3>
+        <p class="who">Familia Restrepo · ladera del volcán</p>
+        <dl><dt>Altura</dt><dd>1 780 m</dd><dt>Proceso</dt><dd>Lavado</dd><dt>Variedad</dt><dd>Caturra</dd></dl>
+        <p class="notes">Panela, mandarina, cacao con leche.</p>
+      </article>
+      <article class="origin rise d1">
+        <div class="print halftone"><img src="assets/img/saco-el-zapote.webp" alt="Saco de café de El Zapote" width="480" height="479" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block" /></div>
+        <h3>El Zapote</h3>
+        <p class="who">Doña Amparo Ruiz · valle alto</p>
+        <dl><dt>Altura</dt><dd>1 520 m</dd><dt>Proceso</dt><dd>Honey</dd><dt>Variedad</dt><dd>Bourbon</dd></dl>
+        <p class="notes">Durazno, miel de caña, nuez.</p>
+      </article>
+      <article class="origin rise d2">
+        <div class="print halftone"><img src="assets/img/saco-monte-nativo.webp" alt="Saco de café verde de Monte Nativo" width="700" height="700" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block" /></div>
+        <h3>Monte Nativo</h3>
+        <p class="who">Cooperativa de mujeres · bosque de niebla</p>
+        <dl><dt>Altura</dt><dd>1 650 m</dd><dt>Proceso</dt><dd>Natural</dd><dt>Variedad</dt><dd>Típica</dd></dl>
+        <p class="notes">Fresa madura, flor de azahar.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section split" id="oficio">
+    <div class="split-copy">
+      <span class="kicker rise">El oficio</span>
+      <h2 class="section-title rise">Pesar, moler, <em>verter</em>, esperar</h2>
+      <p class="section-lede rise d1">Cinco métodos en barra y una sola regla: nada se prepara antes de que lo pidas. Pesamos el café, molemos al momento y controlamos el agua al grado. Si tu taza tarda un minuto de más, es porque ese minuto se nota.</p>
+    </div>
+    <figure class="split-figure rise d1" style="position:relative">
+      <div class="steam" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="print halftone"><img src="assets/img/taza-latte.jpg" alt="Taza de café con arte latte al sol" width="365" height="547" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div>
+    </figure>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="steps">
+      <div class="rise"><div class="step-n">01</div><h3>La cosecha</h3><p>Recogido a mano, grano a grano, sólo cuando la cereza está en su punto. Fincas pequeñas donde quien cosecha decide cuándo hacerlo.</p></div>
+      <div class="rise d1"><div class="step-n">02</div><h3>El tueste</h3><p>Lotes cortos cada semana, con un perfil por origen: ni tan claro que se esconda, ni tan oscuro que borre la finca. Fecha siempre visible.</p></div>
+      <div class="rise d2"><div class="step-n">03</div><h3>La barra</h3><p>Espresso, V60, Chemex, prensa y barra fría. Pregunta por el origen de la semana y te lo preparamos como mejor se exprese.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="espacio">
+    <span class="kicker rise">El espacio</span>
+    <h2 class="section-title rise">Verde dentro, calma <em>fuera</em> del reloj</h2>
+    <p class="section-lede rise d1">Por la mañana es la oficina de medio barrio: wifi estable, enchufes donde hacen falta y música baja. Por la tarde cambia de turno y se llena de conversación. Plantas por todas partes, porque el café también es una planta.</p>
+    <div class="gallery">
+      <figure class="rise"><div class="print halftone"><img src="assets/img/salon-principal.jpg" alt="Salón principal con mesa larga y ventanal" width="750" height="485" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div></figure>
+      <figure class="rise d1"><div class="print halftone"><img src="assets/img/zona-mesas.jpg" alt="Zona de mesas entre plantas" width="750" height="536" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div></figure>
+      <figure class="rise d1"><div class="print halftone"><img src="assets/img/sala-interior.jpg" alt="Sala interior con plantas y luz cenital" width="750" height="500" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div></figure>
+      <figure class="rise d2"><div class="print halftone"><img src="assets/img/terraza-noche.jpg" alt="Terraza con guirnaldas de luces al atardecer" width="596" height="360" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div></figure>
+    </div>
+  </section>
+
+  <section class="section" id="menu">
+    <span class="kicker rise">Menú · cambia con la temporada</span>
+    <h2 class="section-title rise">Lo que hay <em>hoy</em> en barra</h2>
+    <div class="menu-cols">
+      <div class="rise">
+        <h3>Espresso y con leche</h3>
+        <p class="ix"><span class="name">Espresso</span><span class="ix-leader"></span><span class="ix-num">2,50</span></p>
+        <p class="ix"><span class="name">Cortado</span><span class="ix-leader"></span><span class="ix-num">3,00</span></p>
+        <p class="ix"><span class="name">Flat white</span><span class="ix-leader"></span><span class="ix-num">3,80</span></p>
+        <p class="ix"><span class="name">Capuchino</span><span class="ix-leader"></span><span class="ix-num">3,80</span></p>
+        <p class="ix"><span class="name">Latte de la casa <em>con canela</em></span><span class="ix-leader"></span><span class="ix-num">4,20</span></p>
+      </div>
+      <div class="rise d1">
+        <h3>Filtrados y barra fría</h3>
+        <p class="ix"><span class="name">V60 <em>origen de la semana</em></span><span class="ix-leader"></span><span class="ix-num">4,50</span></p>
+        <p class="ix"><span class="name">Chemex <em>para dos</em></span><span class="ix-leader"></span><span class="ix-num">7,00</span></p>
+        <p class="ix"><span class="name">Cold brew de la casa</span><span class="ix-leader"></span><span class="ix-num">4,00</span></p>
+        <p class="ix"><span class="name">Espresso tonic</span><span class="ix-leader"></span><span class="ix-num">4,50</span></p>
+        <p class="ix"><span class="name">Cascarilla <em>infusión de café</em></span><span class="ix-leader"></span><span class="ix-num">3,20</span></p>
+      </div>
+      <div class="rise d2">
+        <h3>De la panadería</h3>
+        <p class="ix"><span class="name">Croissant de mantequilla</span><span class="ix-leader"></span><span class="ix-num">2,80</span></p>
+        <p class="ix"><span class="name">Tarta de queso al horno</span><span class="ix-leader"></span><span class="ix-num">4,20</span></p>
+        <p class="ix"><span class="name">Pan de banano y nuez</span><span class="ix-leader"></span><span class="ix-num">3,50</span></p>
+        <p class="ix"><span class="name">Galleta de avena y cacao</span><span class="ix-leader"></span><span class="ix-num">2,20</span></p>
+        <p class="ix"><span class="name">Café en grano <em>250 g</em></span><span class="ix-leader"></span><span class="ix-num">12,00</span></p>
+      </div>
+    </div>
+    <p class="menu-more rise">Todo se hornea aquí cada mañana y se acaba cuando se acaba. Leche de avena sin recargo y opciones sin gluten a diario — <a href="#visita">pregunta en barra</a>.</p>
+  </section>
+</div>
+
+<section class="quote">
+  <div class="wrap">
+    <figure>
+      <blockquote class="rise">“Vine por el café y me quedé por la mesa junto a la ventana.”</blockquote>
+      <figcaption class="rise d1">— Clienta habitual, todos los sábados desde hace tres años</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="section split flip">
+    <div class="split-copy">
+      <span class="kicker rise">Llévatelo a casa</span>
+      <h2 class="section-title rise">El mismo grano, <em>en tu cocina</em></h2>
+      <p class="section-lede rise d1">Bolsas de 250 g de cualquiera de los tres orígenes, molidas a tu método delante de ti. Si vuelves con la bolsa de la vez anterior, te descontamos la próxima.</p>
+    </div>
+    <figure class="split-figure rise d1" style="text-align:center">
+      <img src="assets/img/bolsa-cafe.png" alt="Bolsas de café en grano de Café Nativo" width="1040" height="1040" loading="lazy" decoding="async" style="width:100%;max-width:520px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 18px 30px color-mix(in srgb, var(--ink) 22%, transparent))" />
+    </figure>
+  </section>
+
+  <section class="section" id="visita">
+    <span class="kicker rise">Visítanos</span>
+    <h2 class="section-title rise">Te esperamos con la <em>barra encendida</em></h2>
+    <div class="visit">
+      <div class="rise d1">
+        <div class="hours">
+          <p class="ix"><span class="name">Lunes a viernes</span><span class="ix-leader"></span><span class="ix-num">7:30 – 20:00</span></p>
+          <p class="ix"><span class="name">Sábados</span><span class="ix-leader"></span><span class="ix-num">8:30 – 21:00</span></p>
+          <p class="ix"><span class="name">Domingos</span><span class="ix-leader"></span><span class="ix-num">8:30 – 18:00</span></p>
+        </div>
+        <p class="addr">Calle por confirmar 123, Barrio Centro<br /><a href="mailto:hola@cafenativo.com">hola@cafenativo.com</a> · @cafenativo</p>
+        <p style="font-size:15px;line-height:var(--leading);color:var(--ink-70);margin-top:var(--half)">Sin reserva para barra y mesas. Para grupos de seis o más, escríbenos y te guardamos la mesa larga.</p>
+        <div class="row">
+          <!-- ══ PENDIENTE CL-12 — enlace a Maps ══
+               En el concepto este botón apuntaba a href="#visita", es decir,
+               a la propia sección donde ya está: no abría ningún mapa. No se
+               le puede poner un destino real porque todavía no hay dirección
+               (el copy de abajo dice literalmente "Calle por confirmar 123").
+               Se deja sin href y marcado aria-disabled: se ve exactamente
+               igual que antes pero ya no promete algo que no cumple.
+               PARA ACTIVARLO, en cuanto CL-12 traiga la dirección, esta línea
+               pasa a ser (y se borran aria-disabled y title):
+               <a class="btn btn-primary" href="https://maps.app.goo.gl/XXXX" target="_blank" rel="noopener">Abrir en Maps</a>
+          ══════════════════════════════════════ -->
+          <a class="btn btn-primary" aria-disabled="true" title="Disponible en cuanto confirmemos la dirección">Abrir en Maps</a>
+          <a class="btn btn-secondary" href="mailto:hola@cafenativo.com">Escribir para reservar</a>
+        </div>
+      </div>
+      <figure class="map-figure rise d2">
+        <!-- OJO CL-12: esta es la MISMA foto que la del hero, reutilizada aquí
+             como "fachada". Cuando lleguen las fotos propias del cliente hay
+             que separar las dos: una terraza y una fachada de verdad. -->
+        <div class="print halftone"><img src="assets/img/terraza.jpg" alt="Fachada de Café Nativo" width="750" height="486" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" /></div>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <span>Café Nativo — de la planta a tu taza.</span>
+    <span>Origen · Oficio · Menú · El espacio · Visítanos</span>
+    <span>© 2026 Café Nativo</span>
+  </footer>
+</div>
+
+<!-- Datos estructurados. Sólo se declara lo que consta en el copy y es
+     verificable: nombre, horarios y correo. La dirección, el teléfono y las
+     redes van comentados a propósito — publicar en schema.org una dirección
+     que dice "Calle por confirmar" es peor que no publicar ninguna, porque
+     Google la indexa y luego cuesta corregirla. Descomentar en CL-12. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CafeOrCoffeeShop",
+  "name": "Café Nativo",
+  "description": "Tostaduría y barra de café de especialidad. Tres orígenes trazables hasta la finca, tostado cada semana y preparado taza por taza.",
+  "url": "https://www.cafenativo.com.co/",
+  "image": "https://www.cafenativo.com.co/assets/img/terraza.jpg",
+  "email": "hola@cafenativo.com",
+  "servesCuisine": "Café de especialidad",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "07:30",
+      "closes": "20:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Saturday",
+      "opens": "08:30",
+      "closes": "21:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "08:30",
+      "closes": "18:00"
+    }
+  ]
+}
+</script>
+<!-- PENDIENTE CL-12 — añadir al JSON-LD de arriba en cuanto haya datos reales:
+  "telephone": "+57 ...",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "...",
+    "addressLocality": "...",
+    "addressRegion": "...",
+    "postalCode": "...",
+    "addressCountry": "CO"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 0, "longitude": 0 },
+  "hasMap": "https://maps.app.goo.gl/...",
+  "priceRange": "$$",
+  "sameAs": ["https://www.instagram.com/cafenativo"]
+-->
+
+<script>
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  document.querySelectorAll('.rise').forEach(el => io.observe(el));
+
+  /* — menú móvil —
+     El panel vive dentro del <nav> sticky, así que sube y baja con él. El
+     botón cambia de texto además de aria-expanded para que el estado se
+     entienda mirando y con lector de pantalla. */
+  const navToggle = document.getElementById('nav-toggle');
+  const navPanel = document.getElementById('nav-movil');
+
+  const setNav = (abierto) => {
+    navToggle.setAttribute('aria-expanded', String(abierto));
+    navPanel.hidden = !abierto;
+    navToggle.textContent = abierto ? 'Cerrar' : 'Menú';
+  };
+
+  navToggle.addEventListener('click', () => {
+    setNav(navToggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  /* Al tocar un enlace el scroll suave lleva a la sección: el panel se cierra
+     solo para no tapar el destino. */
+  navPanel.addEventListener('click', (e) => {
+    if (e.target.closest('a')) setNav(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+      setNav(false);
+      navToggle.focus();
+    }
+  });
+
+  /* Clic fuera del nav: cerrar. */
+  document.addEventListener('click', (e) => {
+    if (navToggle.getAttribute('aria-expanded') === 'true' && !e.target.closest('.nav')) {
+      setNav(false);
+    }
+  });
+
+  /* Si la ventana crece por encima del breakpoint el botón desaparece; hay
+     que dejar el estado limpio para cuando se vuelva a encoger. */
+  const bp = window.matchMedia('(min-width: 621px)');
+  bp.addEventListener('change', (e) => { if (e.matches) setNav(false); });
+</script>
+</body>
+</html>
