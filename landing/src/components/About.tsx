@@ -1,4 +1,5 @@
 import { Award, Lightbulb, Users, Zap } from 'lucide-react';
+import { scrollToSection } from '../lib/scroll';
 
 const values = [
   {
@@ -26,7 +27,7 @@ const values = [
 const stats = [
   { number: '$0/mes', label: 'Sin cuotas ni comisiones' },
   { number: '100%', label: 'Dominio, código y datos tuyos' },
-  { number: 'Sin candados', label: 'Astro + WhatsApp nativo, sin SaaS' },
+  { number: 'Sin candados', label: 'Las plantillas que entregamos no dependen de ningún SaaS' },
 ];
 
 export default function About() {
@@ -84,10 +85,12 @@ export default function About() {
             ))}
             <div className="col-span-full card rounded-2xl p-8 text-center bg-brand-light border-brand-primary/20 hover:border-brand-primary/40 transition-all duration-300">
               <div className="text-2xl md:text-3xl font-black text-text-primary mb-2">
-                Siempre disponibles
+                Sin comisión por venta
               </div>
               <p className="text-text-secondary text-sm">
-                Respuesta rápida, comunicación clara, entrega a tiempo.
+                Rappi retiene entre 25% y 30% de cada pedido; los SaaS de reservas cobran
+                US$19-30 al mes de por vida. Un pedido o una reserva que entra por tu propio
+                sitio no le paga nada a nadie.
               </p>
             </div>
           </div>
@@ -126,15 +129,15 @@ export default function About() {
         {/* Bottom CTA */}
         <div className="mt-16 text-center max-w-2xl mx-auto">
           <p className="text-lg text-text-secondary leading-relaxed mb-6">
-            Trabajamos solo con clientes que valoran calidad y resultados.
-            Si tu negocio necesita escalar, estamos listos.
+            Cuéntanos qué vende tu negocio y cómo cierra hoy sus ventas. Te decimos qué
+            plantilla aplica, qué contenido tendrías que reunir y qué costaría —
+            y si no somos la opción adecuada, también te lo decimos.
           </p>
           <a
             href="#contacto"
             onClick={(e) => {
               e.preventDefault();
-              const el = document.querySelector('#contacto');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
+              scrollToSection('#contacto');
             }}
             className="btn-primary inline-flex"
           >

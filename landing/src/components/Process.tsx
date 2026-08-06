@@ -74,12 +74,13 @@ export default function Process() {
         {/* Timeline Info */}
         <div className="card rounded-2xl p-10 md:p-12 bg-brand-light border-brand-primary/20 text-center max-w-2xl mx-auto">
           <p className="text-text-primary mb-2">
-            <span className="font-black text-xl text-brand-primary">3-4 semanas</span>
+            Un proyecto típico suele tomar
             {' '}
-            de proyecto típico
+            <span className="font-black text-xl text-brand-primary">3 a 4 semanas</span>
           </p>
           <p className="text-text-secondary text-sm">
-            Comunicación semanal garantizada. Ajustes rápidos en cada fase.
+            El plazo depende del alcance y de qué tan rápido llegue tu contenido —
+            fotos, textos y precios. Te reportamos avances cada semana y ajustamos en cada fase.
           </p>
         </div>
       </div>

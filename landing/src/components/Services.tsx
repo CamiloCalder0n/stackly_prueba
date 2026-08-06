@@ -1,4 +1,4 @@
-import { AlertCircle, TrendingDown, Clock, Zap, Gauge, Users } from 'lucide-react';
+import { AlertCircle, TrendingDown, Clock, Zap, Search, LayoutList, MessageCircle } from 'lucide-react';
 
 export default function Services() {
   return (
@@ -60,17 +60,33 @@ export default function Services() {
               Tecnología que vende
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed">
-              Webs automatizadas, veloces y optimizadas para convertir.
-              Cada elemento diseñado con propósito de negocio.
+              Nadie puede prometerte un puesto en Google ni un porcentaje de ventas.
+              Lo que sí podemos comprometer es cómo está construido tu sitio.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Zap, label: 'Ultra rápido', desc: '< 1.2s de carga' },
-              { icon: Gauge, label: 'Automatizado', desc: 'Procesos sin intervención' },
-              { icon: Users, label: 'SEO nativo', desc: 'Top 3 en Google' },
-              { icon: Zap, label: 'High conversion', desc: '50%+ más leads' },
+              {
+                icon: Zap,
+                label: 'Sitio estático',
+                desc: 'HTML pre-generado y servido desde CDN. Sin servidor ni base de datos que se caigan.',
+              },
+              {
+                icon: Search,
+                label: 'Datos estructurados',
+                desc: 'Marcado schema.org en cada página para que los buscadores entiendan tu negocio.',
+              },
+              {
+                icon: LayoutList,
+                label: 'Catálogo indexable',
+                desc: 'Menú y productos en HTML real, no encerrados en un PDF o un iframe de terceros.',
+              },
+              {
+                icon: MessageCircle,
+                label: 'Conversión por WhatsApp',
+                desc: 'Mensaje prellenado con lo que el cliente eligió. Sin backend y sin cuota mensual.',
+              },
             ].map((item, i) => (
               <div key={i} className="card-hover p-6">
                 <div className="w-10 h-10 rounded-lg bg-brand-light flex items-center justify-center mb-4">

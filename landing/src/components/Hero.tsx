@@ -1,9 +1,23 @@
-import { ArrowRight, BarChart3, Users, Zap } from 'lucide-react';
+import { ArrowRight, MessageCircle, Zap } from 'lucide-react';
+import { scrollToSection } from '../lib/scroll';
+
+/* Lo que sí podemos sostener del stack, sin métricas inventadas. */
+const highlights = [
+  {
+    icon: Zap,
+    title: 'Sitio estático',
+    desc: 'HTML servido desde CDN: sin servidor ni base de datos que mantener.',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Cero cuotas',
+    desc: 'Contacto y pedidos por WhatsApp, sin mensualidad ni comisión por venta.',
+  },
+];
 
 export default function Hero() {
   const handleScroll = (href: string) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    scrollToSection(href);
   };
 
   return (
@@ -39,123 +53,49 @@ export default function Hero() {
             </div>
 
             <p className="text-sm text-text-muted pt-6">
-              Trabajamos con empresas que quieren crecer de verdad.
-              <span className="text-brand-primary font-semibold"> Desde startups hasta marcas establecidas.</span>
+              Plantillas propias para joyerías, barberías y restaurantes.
+              <span className="text-brand-primary font-semibold"> El dominio, el código y los datos quedan a tu nombre.</span>
             </p>
           </div>
 
-          {/* Right Column - Dashboard Mockup */}
-          <div className="hidden lg:flex items-center justify-center">
-            <div className="w-full max-w-sm relative">
-              {/* Main Dashboard Card */}
-              <div className="card rounded-2xl p-6 space-y-5 shadow-lg">
-                {/* Browser Header */}
-                <div className="flex items-center gap-2 pb-4 border-b border-border-color">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-amber-400" />
-                    <div className="w-3 h-3 rounded-full bg-brand-primary" />
+          {/* Columna derecha: una plantilla real que ya entregamos.
+              Una sola fuente de verdad, responsive — sin variante móvil aparte
+              y sin métricas de mentira. */}
+          <div className="flex items-center justify-center">
+            <div className="w-full max-w-md lg:max-w-sm space-y-6">
+              <figure className="card rounded-2xl p-3 shadow-lg">
+                <div className="flex items-center gap-2 px-1 pb-3">
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
                   </div>
-                  <span className="text-xs text-text-muted ml-3 font-mono">stackly.dashboard</span>
+                  <span className="ml-2 flex-1 truncate rounded-md bg-bg-main px-3 py-1 text-xs text-text-muted">
+                    Plantilla de joyería
+                  </span>
                 </div>
+                <img
+                  src="/portfolio/joyeria-portada.jpg"
+                  alt="Portada del sitio de joyería construido con la plantilla de Stackly"
+                  width={1400}
+                  height={875}
+                  className="w-full rounded-xl border border-border-color"
+                />
+              </figure>
 
-                {/* Dashboard Content */}
-                <div className="space-y-4">
-                  {/* Top Metrics Row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { icon: Users, label: 'Clientes', color: 'bg-blue-50 text-blue-600' },
-                      { icon: BarChart3, label: 'Conversión', color: 'bg-green-50 text-brand-primary' },
-                      { icon: Zap, label: 'Velocidad', color: 'bg-purple-50 text-purple-600' },
-                    ].map((item, i) => (
-                      <div key={i} className="p-3 rounded-lg bg-bg-main">
-                        <div className={`w-6 h-6 rounded-md ${item.color} flex items-center justify-center mb-2`}>
-                          <item.icon size={14} />
-                        </div>
-                        <span className="text-xs text-text-muted">{item.label}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {highlights.map((item) => (
+                  <div key={item.title} className="card rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-brand-light flex items-center justify-center flex-shrink-0">
+                        <item.icon size={16} className="text-brand-primary" />
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Chart/Graph Area */}
-                  <div className="p-4 bg-bg-main rounded-lg">
-                    <div className="flex items-end justify-between gap-2 h-24">
-                      {[40, 55, 48, 72, 65, 80, 70].map((height, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 bg-brand-primary rounded-t-sm transition-all"
-                          style={{ height: `${height}%`, opacity: 0.6 + (i * 0.05) }}
-                        />
-                      ))}
+                      <span className="text-sm font-bold text-text-primary">{item.title}</span>
                     </div>
-                    <p className="text-xs text-text-muted mt-3 text-center">Últimas 7 semanas</p>
+                    <p className="text-xs text-text-secondary leading-relaxed">{item.desc}</p>
                   </div>
-
-                  {/* Status Pill */}
-                  <div className="p-3 rounded-lg bg-green-50 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse" />
-                    <span className="text-xs text-green-700 font-semibold">Todos los sistemas activos</span>
-                  </div>
-                </div>
+                ))}
               </div>
-
-              {/* Floating Feature Card 1 */}
-              <div className="absolute -bottom-6 -right-6 card rounded-xl p-4 shadow-md w-44 bg-white border border-brand-primary/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-brand-light flex items-center justify-center">
-                    <Zap size={16} className="text-brand-primary" />
-                  </div>
-                  <span className="text-sm font-bold text-text-primary">Performance</span>
-                </div>
-                <p className="text-xs text-text-secondary">
-                  Optimizado para velocidad y SEO
-                </p>
-              </div>
-
-              {/* Floating Feature Card 2 */}
-              <div className="absolute -top-4 -left-8 card rounded-xl p-4 shadow-md w-44 bg-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <Users size={16} className="text-blue-600" />
-                  </div>
-                  <span className="text-sm font-bold text-text-primary">Analytics</span>
-                </div>
-                <p className="text-xs text-text-secondary">
-                  Seguimiento completo de conversiones
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile-only simplified dashboard */}
-        <div className="lg:hidden mt-12">
-          <div className="card rounded-2xl p-4 space-y-3">
-            <div className="flex items-center gap-2 pb-3 border-b border-border-color">
-              <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-400" />
-                <div className="w-2 h-2 rounded-full bg-amber-400" />
-                <div className="w-2 h-2 rounded-full bg-brand-primary" />
-              </div>
-              <span className="text-xs text-text-muted ml-2 font-mono">dashboard</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: 'Clientes', value: '↑ 42%' },
-                { label: 'Conversión', value: '8.2%' },
-                { label: 'Velocidad', value: '0.9s' },
-              ].map((item, i) => (
-                <div key={i} className="p-2 bg-bg-main rounded">
-                  <p className="text-xs text-text-muted">{item.label}</p>
-                  <p className="text-sm font-bold text-brand-primary">{item.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-3 bg-green-50 rounded-lg flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-600" />
-              <span className="text-xs text-green-700 font-semibold">Sistema activo</span>
             </div>
           </div>
         </div>

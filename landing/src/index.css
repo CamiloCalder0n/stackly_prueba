@@ -4,10 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Los colores NO se escriben a mano en este archivo: se leen con
+   `theme()` desde tailwind.config.js, que es la única fuente de verdad
+   de la paleta (y donde está anotado el ratio de contraste de cada
+   token). Cambiar el verde ahí lo cambia aquí sin tocar nada. */
+
 @layer base {
   body {
-    background-color: #f5f7f4;
-    color: #111827;
+    background-color: theme('colors.bg-main');
+    color: theme('colors.text-primary');
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -16,12 +21,20 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Quien pide menos movimiento en su sistema operativo no debería
+     recibir un scroll animado: en algunos vestibulares provoca mareo. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }
 
 @layer components {
   .card {
     background: #ffffff;
-    border: 1px solid #dfe7df;
+    border: 1px solid theme('colors.border-color');
     border-radius: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
@@ -31,7 +44,7 @@
   }
 
   .btn-primary {
-    background-color: #2f9e44;
+    background-color: theme('colors.brand-primary');
     color: #ffffff;
     font-weight: 600;
     padding: 0.875rem 1.75rem;
@@ -45,14 +58,14 @@
   }
 
   .btn-primary:hover {
-    background-color: #1f5130;
+    background-color: theme('colors.brand-dark');
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(47, 158, 68, 0.15);
+    box-shadow: 0 4px 12px theme('colors.brand-primary / 15%');
   }
 
   .btn-secondary {
-    background-color: #f5f7f4;
-    color: #2f9e44;
+    background-color: theme('colors.bg-main');
+    color: theme('colors.brand-primary');
     font-weight: 600;
     padding: 0.875rem 1.75rem;
     border-radius: 0.625rem;
@@ -60,32 +73,35 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    border: 1.5px solid #2f9e44;
+    border: 1.5px solid theme('colors.brand-primary');
     cursor: pointer;
   }
 
   .btn-secondary:hover {
-    background-color: #e7f5e9;
+    background-color: theme('colors.brand-light');
   }
 
-  .btn-ghost {
-    background: transparent;
-    color: #111827;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
+  /* Foco de teclado explícito. El anillo por defecto del navegador es
+     casi invisible sobre el verde del CTA, así que se dibuja uno propio
+     en brand-dark (9.22:1 sobre blanco) separado del botón para que se
+     lea tanto sobre el relleno verde como sobre la superficie clara.
+     Los inputs del formulario ya traen su propio anillo: no se tocan. */
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible {
+    outline: 2px solid theme('colors.brand-dark');
+    outline-offset: 3px;
     border-radius: 0.625rem;
-    border: 1px solid #dfe7df;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
   }
 
-  .btn-ghost:hover {
-    background-color: #f5f7f4;
-    border-color: #2f9e44;
-    color: #2f9e44;
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary,
+    .btn-secondary {
+      transition: none;
+    }
+
+    .btn-primary:hover {
+      transform: none;
+    }
   }
 
   .section-wrapper {
@@ -96,19 +112,14 @@
     padding-right: 2rem;
   }
 
+  /* Sin `font-size` ni `line-height` a propósito: las cinco llamadas
+     traen su propia escala (`text-5xl`) y, al vivir esa utilidad en una
+     capa posterior, siempre ganaba. Declararlos aquí solo simulaba
+     controlar el tamaño. Esta clase aporta peso, tracking y color. */
   .section-title {
-    font-size: 2.5rem;
     font-weight: 800;
-    line-height: 1.2;
     letter-spacing: -0.02em;
-    color: #111827;
-  }
-
-  .section-subtitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    line-height: 1.4;
-    color: #111827;
+    color: theme('colors.text-primary');
   }
 
   .badge {
@@ -116,38 +127,10 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background-color: #e7f5e9;
-    color: #1f5130;
+    background-color: theme('colors.brand-light');
+    color: theme('colors.brand-dark');
     font-size: 0.875rem;
     font-weight: 600;
     border-radius: 0.5rem;
-  }
-
-  .badge-dark {
-    background-color: #1f5130;
-    color: #ffffff;
-  }
-
-  .divider {
-    height: 1px;
-    background-color: #dfe7df;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .space-y-section {
-    margin-top: 6rem;
-    margin-bottom: 6rem;
-  }
-
-  @media (max-width: 768px) {
-    .space-y-section {
-      margin-top: 3rem;
-      margin-bottom: 3rem;
-    }
   }
 }
