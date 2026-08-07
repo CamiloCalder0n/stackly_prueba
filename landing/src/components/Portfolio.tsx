@@ -40,11 +40,12 @@ type Caso = {
   capturas: Captura[];
 };
 
-/* Las capturas de escritorio son 1400x875; las que terminan en `-m` son la
-   versión móvil, 240x520. Se declaran los tamaños reales para que el
-   navegador reserve el hueco antes de descargar la imagen. */
-const ESCRITORIO = { width: 1400, height: 875 };
-const MOVIL = { width: 240, height: 520 };
+/* Todas las capturas son de escritorio, 1600x1000. Se quitaron las versiones
+   móviles: una captura de 390px de ancho metida en un marco apaisado dejaba
+   franjas blancas a los lados y se leía como un error, no como una demo.
+   Los tamaños se declaran para que el navegador reserve el hueco antes de
+   descargar la imagen. */
+const ESCRITORIO = { width: 1600, height: 1000 };
 
 const casos: Caso[] = [
   {
@@ -62,27 +63,33 @@ const casos: Caso[] = [
     capturas: [
       {
         src: '/portfolio/joyeria-catalogo.jpg',
-        alt: 'Catálogo de Celesse Jewel: panel de filtros por categoría, precio y disponibilidad a la izquierda, contador de 12 productos, selector de orden alfabético y una grilla de anillos y aretes sobre fondo blanco.',
+        alt: 'Catálogo de Celesse Jewel: panel de filtros por categoría, precio y disponibilidad a la izquierda, contador de 12 productos y una grilla de anillos y aretes sobre fondo blanco.',
         titulo: 'Catálogo con filtros',
         ...ESCRITORIO,
       },
       {
         src: '/portfolio/joyeria-pieza.jpg',
-        alt: 'Ficha del Anillo Alba: foto grande del anillo en su estuche de madera, precio de $1.950.000, marca verde de disponible con dos piezas restantes, y tres bloques de confianza — garantía escrita de un año, primer ajuste de talla sin costo y certificado de materiales — sobre una fila de medios de pago.',
+        alt: 'Ficha del Anillo Alba: foto grande del anillo en su estuche, precio, marca de disponibilidad y los bloques de garantía escrita, ajuste de talla y certificado de materiales.',
         titulo: 'Ficha de pieza',
         ...ESCRITORIO,
       },
       {
         src: '/portfolio/joyeria-encargos.jpg',
-        alt: 'Cotizador de encargos en el paso 1 de 6: la pregunta "¿Qué quieres encargar?" con seis opciones de tipo de pieza —anillo, collar, aretes, pulsera, argollas de matrimonio y otro— y un botón dorado de Continuar.',
+        alt: 'Cotizador de encargos a medida en su primer paso, con las seis opciones de tipo de pieza y el botón de continuar.',
         titulo: 'Encargos a medida',
         ...ESCRITORIO,
       },
       {
-        src: '/portfolio/joyeria-catalogo-m.jpg',
-        alt: 'El mismo catálogo en pantalla de móvil: los filtros se pliegan sobre la grilla de piezas, que pasa a una sola columna.',
-        titulo: 'Catálogo en móvil',
-        ...MOVIL,
+        src: '/portfolio/joyeria-tallas.jpg',
+        alt: 'Guía de tallas de anillos, con la tabla de equivalencias y las instrucciones para medir el dedo en casa.',
+        titulo: 'Guía de tallas',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/joyeria-portada.jpg',
+        alt: 'Portada de Celesse Jewel: foto a pantalla completa de una modelo con aretes de oro y el titular «Oro que trasciende tendencias».',
+        titulo: 'Portada',
+        ...ESCRITORIO,
       },
     ],
   },
@@ -102,21 +109,33 @@ const casos: Caso[] = [
     capturas: [
       {
         src: '/portfolio/barberia-reserva.jpg',
-        alt: 'Wizard de reserva de Barbería El Patrón sobre fondo negro: título "Tu cita en 3 pasos", una barra de progreso con servicio, barbero y fecha y hora, y en el paso 1 las tarjetas de servicio con precio y duración — corte clásico $35.000 en 45 minutos, corte más barba $55.000 en 75 minutos.',
+        alt: 'Wizard de reserva sobre fondo negro: «Tu cita en 3 pasos», la barra de progreso con servicio, barbero y hora, y las tarjetas de servicio con precio y duración.',
         titulo: 'Wizard de reserva',
         ...ESCRITORIO,
       },
       {
         src: '/portfolio/barberia-servicios.jpg',
-        alt: 'Lista de precios titulada "Precios claros, sin sorpresas": corte clásico $35.000, corte más barba $55.000 y arreglo de barba $25.000, cada uno con su duración y un botón Reservar al lado.',
+        alt: 'Lista de precios en formato de carta impresa: cada servicio con su duración, su precio y un botón para reservarlo directamente.',
         titulo: 'Precios',
         ...ESCRITORIO,
       },
       {
-        src: '/portfolio/barberia-reserva-m.jpg',
-        alt: 'El wizard de reserva en pantalla de móvil: los tres pasos se reducen a círculos numerados y las tarjetas de servicio quedan una debajo de otra.',
-        titulo: 'Reserva en móvil',
-        ...MOVIL,
+        src: '/portfolio/barberia-equipo.jpg',
+        alt: 'Fichas del equipo de barberos, cada una con su foto, su especialidad y los años de oficio.',
+        titulo: 'El equipo',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/barberia-galeria.jpg',
+        alt: 'Galería de cortes etiquetada por servicio y barbero: cada foto es un botón que preselecciona ese servicio en el wizard.',
+        titulo: 'Galería de cortes',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/barberia-portada.jpg',
+        alt: 'Portada de Barbería El Patrón: foto del local en penumbra con el titular «Tu corte, tu barbero, tu hora» en amarillo ámbar.',
+        titulo: 'Portada',
+        ...ESCRITORIO,
       },
     ],
   },
@@ -136,21 +155,39 @@ const casos: Caso[] = [
     capturas: [
       {
         src: '/portfolio/restaurante-menu.jpg',
-        alt: 'Menú digital de La Terraza: encabezado "El menú" con el aviso de abierto ahora y hora de cierre, pestañas de entradas, platos fuertes, parrilla, bebidas y postres, y las entradas listadas con foto y precio — chorizo santandereano con arepa $15.000, empanadas santandereanas $12.000.',
+        alt: 'Menú digital con el aviso de abierto ahora, las pestañas por categoría y los platos listados con foto y precio.',
         titulo: 'Menú digital',
         ...ESCRITORIO,
       },
       {
-        src: '/portfolio/restaurante-portada.jpg',
-        alt: 'Portada del restaurante: foto a pantalla completa de un plato de carne a la parrilla, el titular "El sabor de Santander, servido en la terraza", el indicador verde de abierto ahora y los botones Ver el menú y Reservar mesa.',
-        titulo: 'Portada',
+        src: '/portfolio/restaurante-destacados.jpg',
+        alt: 'Platos destacados de la carta, cada uno con su foto, su descripción y su precio.',
+        titulo: 'Destacados',
         ...ESCRITORIO,
       },
       {
-        src: '/portfolio/restaurante-portada-m.jpg',
-        alt: 'La misma portada en pantalla de móvil: el titular se parte en tres líneas y los botones de menú y reserva quedan apilados sobre la foto del plato.',
-        titulo: 'Portada en móvil',
-        ...MOVIL,
+        src: '/portfolio/restaurante-galeria.jpg',
+        alt: 'Galería «Platos y ambiente»: un mosaico con la cocina, la parrilla, el salón y la terraza.',
+        titulo: 'Galería',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/restaurante-reservas.jpg',
+        alt: 'Formulario de reserva de mesa con fecha, hora y número de personas, que termina en un mensaje de WhatsApp.',
+        titulo: 'Reservas',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/restaurante-nosotros.jpg',
+        alt: 'Sección de historia del restaurante, con la foto del local y el relato de la cocina santandereana.',
+        titulo: 'La historia',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/restaurante-portada.jpg',
+        alt: 'Portada del restaurante: foto de un plato a la parrilla, el indicador de abierto ahora y los botones de menú y reserva.',
+        titulo: 'Portada',
+        ...ESCRITORIO,
       },
     ],
   },
@@ -169,19 +206,31 @@ const casos: Caso[] = [
     capturas: [
       {
         src: '/portfolio/cafe-origen.jpg',
-        alt: 'Página de origen de Café Nativo sobre fondo beige: titular "Tres fincas, tres maneras de saber a café" y tres tarjetas con el saco de cada lote — La Esperanza de la familia Restrepo en ladera del volcán, El Zapote de doña Amparo Ruiz en valle alto y Monte Nativo de una cooperativa de mujeres en bosque de niebla.',
-        titulo: 'Trazabilidad de fincas',
+        alt: 'Sección de orígenes: las tres fincas con su productor, altura, proceso y notas de cata, cada una con la foto de su saco.',
+        titulo: 'Origen trazable',
         ...ESCRITORIO,
       },
       {
         src: '/portfolio/cafe-menu.jpg',
-        alt: 'Menú de barra "Lo que hay hoy en barra" en tres columnas con precios: espresso y con leche, filtrados y barra fría, y panadería, más una nota de que todo se hornea cada mañana.',
-        titulo: 'Menú de barra',
+        alt: 'Carta del café en tres columnas —espresso, filtrados y panadería— con los precios alineados a la derecha.',
+        titulo: 'La carta',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/cafe-oficio.jpg',
+        alt: 'Sección de oficio: los tres pasos del proceso, de la cosecha al tueste y a la barra.',
+        titulo: 'El oficio',
+        ...ESCRITORIO,
+      },
+      {
+        src: '/portfolio/cafe-espacio.jpg',
+        alt: 'Galería del local, con las mesas, la barra y la terraza entre plantas.',
+        titulo: 'El espacio',
         ...ESCRITORIO,
       },
       {
         src: '/portfolio/cafe-portada.jpg',
-        alt: 'Portada de Café Nativo: titular tipográfico "De la planta a tu taza sin atajos" con la última línea en contorno, granos de café flotando a la derecha y los botones Cómo llegar y Ver el menú junto al horario de apertura.',
+        alt: 'Portada de Café Nativo: titular tipográfico «De la planta a tu taza, sin atajos» en serif editorial sobre papel crudo, con granos de café flotando.',
         titulo: 'Portada',
         ...ESCRITORIO,
       },
