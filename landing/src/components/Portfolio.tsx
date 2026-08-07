@@ -140,58 +140,6 @@ const casos: Caso[] = [
     ],
   },
   {
-    id: 'restaurante',
-    negocio: 'La Terraza Cocina Local',
-    sector: 'Restaurante',
-    problema:
-      'El menú solo existía en PDF —invisible para Google— y los pedidos se iban a las apps de domicilio.',
-    solucion:
-      'Menú digital indexable, nunca un PDF: platos por categoría con foto y precio al día, y canal de pedidos propio por WhatsApp, a domicilio o para recoger.',
-    resultado:
-      'Las apps de domicilio se quedan con un 25-30% de comisión por pedido. Cada pedido que entra por el canal propio no paga esa comisión.',
-    resultadoEtiqueta: 'Dato del sector',
-    resultadoFuente:
-      'Rango de comisión habitual en el sector según nuestra investigación de mercado, no una cifra medida en este cliente.',
-    capturas: [
-      {
-        src: '/portfolio/restaurante-menu.jpg',
-        alt: 'Menú digital con el aviso de abierto ahora, las pestañas por categoría y los platos listados con foto y precio.',
-        titulo: 'Menú digital',
-        ...ESCRITORIO,
-      },
-      {
-        src: '/portfolio/restaurante-destacados.jpg',
-        alt: 'Platos destacados de la carta, cada uno con su foto, su descripción y su precio.',
-        titulo: 'Destacados',
-        ...ESCRITORIO,
-      },
-      {
-        src: '/portfolio/restaurante-galeria.jpg',
-        alt: 'Galería «Platos y ambiente»: un mosaico con la cocina, la parrilla, el salón y la terraza.',
-        titulo: 'Galería',
-        ...ESCRITORIO,
-      },
-      {
-        src: '/portfolio/restaurante-reservas.jpg',
-        alt: 'Formulario de reserva de mesa con fecha, hora y número de personas, que termina en un mensaje de WhatsApp.',
-        titulo: 'Reservas',
-        ...ESCRITORIO,
-      },
-      {
-        src: '/portfolio/restaurante-nosotros.jpg',
-        alt: 'Sección de historia del restaurante, con la foto del local y el relato de la cocina santandereana.',
-        titulo: 'La historia',
-        ...ESCRITORIO,
-      },
-      {
-        src: '/portfolio/restaurante-portada.jpg',
-        alt: 'Portada del restaurante: foto de un plato a la parrilla, el indicador de abierto ahora y los botones de menú y reserva.',
-        titulo: 'Portada',
-        ...ESCRITORIO,
-      },
-    ],
-  },
-  {
     id: 'cafe',
     negocio: 'Café Nativo',
     sector: 'Tostaduría de especialidad',
@@ -325,7 +273,7 @@ export default function Portfolio() {
             <span className="text-xs uppercase font-bold tracking-wide">Nuestro trabajo</span>
           </div>
           <h2 className="section-title text-3xl sm:text-4xl md:text-5xl mb-6">
-            Cuatro negocios, cuatro sitios propios
+            Tres negocios, tres sitios propios
           </h2>
           <p className="text-lg text-text-secondary leading-relaxed">
             Capturas reales de lo que hemos construido. Haz clic en cualquiera para verla en grande.

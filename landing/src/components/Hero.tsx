@@ -63,26 +63,6 @@ export default function Hero() {
               y sin métricas de mentira. */}
           <div className="flex items-center justify-center">
             <div className="w-full max-w-md lg:max-w-sm space-y-6">
-              <figure className="card rounded-2xl p-3 shadow-lg">
-                <div className="flex items-center gap-2 px-1 pb-3">
-                  <div className="flex gap-1.5 flex-shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
-                  </div>
-                  <span className="ml-2 flex-1 truncate rounded-md bg-bg-main px-3 py-1 text-xs text-text-muted">
-                    Plantilla de joyería
-                  </span>
-                </div>
-                <img
-                  src="/portfolio/joyeria-portada.jpg"
-                  alt="Portada del sitio de joyería construido con la plantilla de Stackly"
-                  width={1400}
-                  height={875}
-                  className="w-full rounded-xl border border-border-color"
-                />
-              </figure>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {highlights.map((item) => (
                   <div key={item.title} className="card rounded-xl p-4">
