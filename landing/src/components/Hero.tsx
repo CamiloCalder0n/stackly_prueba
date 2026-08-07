@@ -27,7 +27,7 @@ export default function Hero() {
           {/* Left Column - Copy */}
           <div className="space-y-10 max-w-xl">
             <div className="space-y-6">
-              <h1 className="text-6xl md:text-7xl lg:text-7xl font-black leading-[1.1] text-text-primary">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.1] text-text-primary">
                 Diseño que vende. Tecnología que crece.
               </h1>
               <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-light">

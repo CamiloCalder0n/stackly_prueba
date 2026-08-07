@@ -1,0 +1,11 @@
+# Stackly — landing
+# Las plantillas de templates/ generan el suyo con @astrojs/sitemap; esta
+# landing es un proyecto Vite y lo lleva a mano.
+
+User-agent: *
+Allow: /
+
+# Ojo: la URL es el subdominio de Vercel porque Stackly todavía no tiene
+# dominio propio. Al comprarlo hay que cambiarla aquí y en las URLs absolutas
+# de index.html (canonical, og:url, og:image y las tres del JSON-LD).
+Sitemap: https://landing-eta-henna-tskpy72wa0.vercel.app/sitemap.xml

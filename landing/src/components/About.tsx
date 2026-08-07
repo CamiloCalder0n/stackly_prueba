@@ -15,7 +15,7 @@ const values = [
   {
     icon: Users,
     title: 'Verdadero Partner',
-    description: 'No desaparecemos después del lanzamiento. Crecemos contigo.',
+    description: 'Te entregamos el sitio funcionando y te explicamos cómo mantenerlo.',
   },
   {
     icon: Award,
@@ -41,23 +41,29 @@ export default function About() {
               <div className="badge mb-4">
                 <span className="text-xs uppercase font-bold tracking-wide">Sobre nosotros</span>
               </div>
-              <h2 className="section-title text-5xl md:text-5xl">
+              <h2 className="section-title text-3xl sm:text-4xl md:text-5xl">
                 Somos desarrolladores que entienden negocio.
               </h2>
             </div>
 
+            {/* Decía "resultados medibles: más conversiones", que contradecía
+                de frente a la sección de servicios ("nadie puede prometerte un
+                puesto en Google ni un porcentaje de ventas"). Se queda la
+                versión honesta. Tampoco se promete automatización: no aparece
+                en ningún servicio ni en ninguno de los cuatro casos. */}
             <p className="text-lg text-text-secondary leading-relaxed">
-              No creemos en webs bonitas pero inútiles. Construimos soluciones digitales que generan
-              resultados medibles: más conversiones, mejor UX, código escalable.
+              No creemos en webs bonitas pero inútiles. Cada sitio que entregamos tiene un
+              canal de venta claro —catálogo, menú o reserva— que termina en una conversación
+              por WhatsApp, y queda a nombre del cliente.
             </p>
 
             <div className="space-y-4">
               {[
-                'Especialistas en automatización y estrategia',
+                'Un canal de venta claro, no solo una web bonita',
                 'Código moderno, limpio y mantenible',
-                'Diseño centrado en conversión',
+                'Contenido indexable: catálogo y menú en HTML, nunca en PDF',
                 'Transparencia total en cada etapa',
-                'Soporte post-lanzamiento incluido',
+                'Te entregamos el código y te explicamos cómo editarlo',
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-brand-light flex items-center justify-center flex-shrink-0 mt-1">

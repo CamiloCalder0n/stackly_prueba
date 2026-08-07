@@ -4,7 +4,7 @@ const steps = [
   {
     step: 1,
     title: 'Descubrimiento',
-    description: 'Entendemos tu visión, audiencia y objetivos. Realizamos research y definimos la estrategia juntos.',
+    description: 'Entendemos tu negocio, tu clientela y cómo cierras ventas hoy. Miramos qué hace tu competencia y definimos el enfoque juntos.',
     icon: Search,
   },
   {
@@ -16,7 +16,7 @@ const steps = [
   {
     step: 3,
     title: 'Lanzamiento',
-    description: 'Deploying, testing, optimización y soporte post-lanzamiento. Tu proyecto está en buenas manos.',
+    description: 'Publicamos el sitio, lo probamos en móvil y escritorio, y te entregamos el acceso y el código.',
     icon: CheckCircle2,
   },
 ];
@@ -29,7 +29,7 @@ export default function Process() {
           <div className="badge justify-center mb-4">
             <span className="text-xs uppercase font-bold tracking-wide">Proceso</span>
           </div>
-          <h2 className="section-title text-5xl md:text-5xl mb-6">
+          <h2 className="section-title text-3xl sm:text-4xl md:text-5xl mb-6">
             3 pasos. Cero fricción.
           </h2>
           <p className="text-lg text-text-secondary leading-relaxed">

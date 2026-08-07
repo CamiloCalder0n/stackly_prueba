@@ -20,6 +20,11 @@
 
   html {
     scroll-behavior: smooth;
+    /* Sin esto, quien abre un enlace compartido con #contacto aterriza con la
+       sección tapada por el header fijo (64px en móvil, 80px desde `lg`).
+       Los enlaces internos lo compensan por JS en lib/scroll.ts; esto cubre
+       la navegación que no pasa por ahí. */
+    scroll-padding-top: 5rem;
   }
 
   /* Quien pide menos movimiento en su sistema operativo no debería
@@ -117,8 +122,10 @@
     max-width: 1280px;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    /* Era 2rem fijo, sin punto de corte: en una pantalla de 320px se comía
+       64 de los 320 disponibles y los titulares se salían por el borde. */
+    padding-left: clamp(1rem, 4vw, 2rem);
+    padding-right: clamp(1rem, 4vw, 2rem);
   }
 
   /* Ritmo vertical de sección. Hoy las seis secciones escriben

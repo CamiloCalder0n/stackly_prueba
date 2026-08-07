@@ -10,7 +10,7 @@ export default function Services() {
             <div className="badge justify-center mb-4">
               <span className="text-xs uppercase font-bold tracking-wide">El Problema</span>
             </div>
-            <h2 className="section-title text-5xl md:text-5xl mb-6">
+            <h2 className="section-title text-3xl sm:text-4xl md:text-5xl mb-6">
               Webs sin conversiones
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed">
@@ -56,7 +56,7 @@ export default function Services() {
             <div className="badge justify-center mb-4">
               <span className="text-xs uppercase font-bold tracking-wide">La Solución</span>
             </div>
-            <h2 className="section-title text-5xl md:text-5xl mb-6">
+            <h2 className="section-title text-3xl sm:text-4xl md:text-5xl mb-6">
               Tecnología que vende
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed">

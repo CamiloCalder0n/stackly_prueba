@@ -1,5 +1,6 @@
 import { Leaf, Mail, MapPin, ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from '../hooks/useScrollSpy';
+import { NEGOCIO, HAY_CONTACTO_DIRECTO, mailtoLink } from '../data/negocio';
 
 const quickLinks = [
   { label: 'Inicio', href: '#inicio' },
@@ -12,6 +13,10 @@ const quickLinks = [
 
 export default function Footer() {
   const year = new Date().getFullYear();
+
+  /* `null` mientras no haya correo: entonces el enlace no se renderiza en vez
+     de apuntar a una dirección que rebota. Ver src/data/negocio.ts. */
+  const enlaceCorreo = mailtoLink('Consulta desde la web de Stackly');
 
   return (
     <footer className="bg-text-primary text-white py-16 relative">
@@ -59,17 +64,28 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-white mb-4">Contacto</h4>
             <div className="space-y-3 mb-6">
-              <a
-                href="mailto:hola@stackly.dev"
-                className="flex items-center gap-2 text-brand-on-dark hover:text-brand-light transition-colors"
-              >
-                <Mail size={16} aria-hidden="true" />
-                <span className="text-sm">hola@stackly.dev</span>
-              </a>
+              {enlaceCorreo && (
+                <a
+                  href={enlaceCorreo}
+                  className="flex items-center gap-2 text-brand-on-dark hover:text-brand-light transition-colors"
+                >
+                  <Mail size={16} aria-hidden="true" />
+                  <span className="text-sm">{NEGOCIO.correo}</span>
+                </a>
+              )}
               <p className="flex items-center gap-2 text-white/60 text-sm">
                 <MapPin size={16} aria-hidden="true" />
-                Bucaramanga, Colombia
+                {NEGOCIO.ciudad}, {NEGOCIO.pais}
               </p>
+              {/* Sin correo ni WhatsApp el bloque se quedaría en una ciudad
+                  suelta. En vez de rellenarlo con un dato inventado, se dice
+                  cuál es el canal que SÍ funciona hoy: el formulario. */}
+              {!HAY_CONTACTO_DIRECTO && (
+                <p className="text-white/60 text-sm leading-relaxed">
+                  El formulario de esta página es nuestro canal de contacto. Escríbenos ahí y
+                  te respondemos al correo que nos dejes.
+                </p>
+              )}
             </div>
             <a
               href="#contacto"
@@ -79,7 +95,7 @@ export default function Footer() {
               }}
               className="inline-flex items-center gap-2 text-brand-on-dark font-semibold hover:gap-3 transition-all text-sm"
             >
-              Solicitar presupuesto
+              {HAY_CONTACTO_DIRECTO ? 'Solicitar presupuesto' : 'Ir al formulario de contacto'}
               <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>

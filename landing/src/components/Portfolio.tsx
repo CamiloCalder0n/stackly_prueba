@@ -275,7 +275,7 @@ export default function Portfolio() {
           <div className="badge justify-center mb-4">
             <span className="text-xs uppercase font-bold tracking-wide">Nuestro trabajo</span>
           </div>
-          <h2 className="section-title text-5xl md:text-5xl mb-6">
+          <h2 className="section-title text-3xl sm:text-4xl md:text-5xl mb-6">
             Cuatro negocios, cuatro sitios propios
           </h2>
           <p className="text-lg text-text-secondary leading-relaxed">
@@ -382,8 +382,16 @@ export default function Portfolio() {
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-border-color">
+                      {/* Sin el manejador, este enlace dejaba la sección de
+                          contacto tapada por el header fijo, escribía en el
+                          historial y se saltaba `prefers-reduced-motion`.
+                          `scrollToSection` resuelve las tres cosas. */}
                       <a
                         href="#contacto"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          scrollToSection('#contacto');
+                        }}
                         className="inline-flex items-center gap-2 text-brand-primary font-bold hover:gap-3 transition-all text-sm group/link"
                       >
                         Quiero un caso similar

@@ -44,13 +44,17 @@
     />
     <meta name="twitter:image" content="https://landing-eta-henna-tskpy72wa0.vercel.app/portfolio/joyeria-portada.jpg" />
 
+    <!-- Sin `email` ni `contactPoint` a propósito: el correo que había aquí
+         rebotaba (dominio sin registros MX, y además de otra empresa), y un
+         correo muerto en datos estructurados es peor que ninguno porque Google
+         lo indexa y se lo ofrece a la gente. Al tener buzón propio, añadir
+         "email" y un contactPoint de tipo "sales". -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Stackly",
         "url": "https://landing-eta-henna-tskpy72wa0.vercel.app/",
-        "email": "hola@stackly.dev",
         "description": "Agencia colombiana de diseño y desarrollo web para negocios locales: sitios estáticos rápidos, catálogo o menú indexable en HTML y conversión por WhatsApp, sin cuota mensual.",
         "logo": "https://landing-eta-henna-tskpy72wa0.vercel.app/favicon.svg",
         "image": "https://landing-eta-henna-tskpy72wa0.vercel.app/portfolio/joyeria-portada.jpg",
@@ -58,20 +62,32 @@
         "areaServed": [
           { "@type": "Country", "name": "Colombia" },
           { "@type": "City", "name": "Bucaramanga" }
-        ],
-        "contactPoint": [
-          {
-            "@type": "ContactPoint",
-            "contactType": "sales",
-            "email": "hola@stackly.dev",
-            "availableLanguage": "Spanish",
-            "areaServed": "CO"
-          }
         ]
       }
     </script>
   </head>
   <body>
+    <!-- Todo el contenido vive en el bundle de React. Si no carga —proxy
+         corporativo, extensión, CDN caído— el visitante veía una página en
+         blanco, sin siquiera el nombre de la empresa. Esto es el mínimo para
+         que sepa quién somos y cómo escribirnos. -->
+    <noscript>
+      <div style="max-width:34rem;margin:0 auto;padding:3rem 1.5rem;font-family:system-ui,sans-serif;color:#111827;line-height:1.6">
+        <h1 style="font-size:1.6rem;margin:0 0 .75rem">Stackly</h1>
+        <p style="margin:0 0 1rem">
+          Diseñamos y desarrollamos sitios web para negocios locales en Colombia:
+          catálogo o menú indexable, contacto por WhatsApp y sin cuota mensual.
+          El dominio, el código y los datos quedan a tu nombre.
+        </p>
+        <p style="margin:0 0 1rem">
+          Esta página necesita JavaScript para mostrarse completa. Si no puedes
+          activarlo, escríbenos y te respondemos igual.
+        </p>
+        <p style="margin:0">
+          <a href="/privacidad.html" style="color:#257c35">Política de privacidad</a>
+        </p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

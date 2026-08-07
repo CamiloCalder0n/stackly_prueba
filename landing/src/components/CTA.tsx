@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Mail, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { NEGOCIO, mailtoLink } from '../data/negocio';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -27,18 +28,28 @@ const TIEMPO_MINIMO_MS = 3000;
 /** Si Supabase no responde en este tiempo, abortamos en vez de girar para siempre. */
 const TIMEOUT_MS = 15000;
 
+/* Los mensajes de error ofrecían escribir a `hola@stackly.dev`. Ese buzón no
+   existe —el dominio no tiene registros MX y además es de otra empresa—, así
+   que mandaban al visitante a un callejón sin salida justo cuando el
+   formulario ya le había fallado. Mientras no haya correo propio, la única
+   alternativa honesta es reintentar; el día que lo haya, `alternativa()` la
+   ofrece sola sin tocar este archivo. */
+function alternativa(): string {
+  return NEGOCIO.correo ? ` También puedes escribirnos a ${NEGOCIO.correo}.` : '';
+}
+
 const MENSAJES = {
   sinConfigurar:
-    'El formulario aún no está configurado. Escríbenos directo a hola@stackly.dev.',
+    'El formulario no está disponible en este momento. Vuelve a intentarlo en un rato.' + alternativa(),
   demasiadoRapido:
-    'Tómate un momento para revisar tus datos y vuelve a enviar el mensaje.',
+    'El envío se detuvo por seguridad. Vuelve a pulsar Enviar y saldrá.',
   validacion: 'Revisa los campos marcados antes de enviar.',
   servidor:
-    'El servidor rechazó el mensaje. Revisa los datos e intenta de nuevo, o escríbenos a hola@stackly.dev.',
+    'El servidor rechazó el mensaje. Revisa los datos e intenta de nuevo.' + alternativa(),
   red:
-    'No pudimos conectarnos. Revisa tu conexión a internet e intenta de nuevo, o escríbenos a hola@stackly.dev.',
+    'No pudimos conectarnos. Revisa tu conexión a internet e intenta de nuevo.' + alternativa(),
   timeout:
-    'El envío tardó demasiado y se canceló. Intenta de nuevo o escríbenos a hola@stackly.dev.',
+    'El envío tardó demasiado y se canceló. Intenta de nuevo.' + alternativa(),
 } as const;
 
 function validar(name: string, email: string, message: string): FieldErrors {
@@ -66,6 +77,10 @@ function validar(name: string, email: string, message: string): FieldErrors {
 }
 
 export default function CTA() {
+  /* `null` mientras no haya correo propio: el enlace no se renderiza en vez de
+     apuntar a un buzón que rebota. Ver src/data/negocio.ts. */
+  const enlaceCorreo = mailtoLink('Consulta desde la web de Stackly');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -83,11 +98,19 @@ export default function CTA() {
   const messageRef = useRef<HTMLTextAreaElement>(null);
   // Se enciende al volver del estado de éxito: el form aún no está montado ahí.
   const enfocarAlVolver = useRef(false);
+  const exitoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (status === 'idle' && enfocarAlVolver.current) {
       enfocarAlVolver.current = false;
       nameRef.current?.focus();
+    }
+    /* Al enviar, el formulario se desmonta y el foco caía al `<body>`: quien
+       navega con teclado volvía al principio del documento y tenía que tabular
+       la página entera. El camino de vuelta ya estaba resuelto (arriba); esto
+       es lo simétrico a la ida. */
+    if (status === 'success') {
+      exitoRef.current?.focus();
     }
   }, [status]);
 
@@ -229,7 +252,7 @@ export default function CTA() {
                 <div className="w-2 h-2 rounded-full bg-white" />
                 Próximo Paso
               </div>
-              <h2 className="text-4xl md:text-5xl font-black leading-tight mb-6 text-white">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-6 text-white">
                 ¿Listo para escalar?
               </h2>
               <p className="text-lg leading-relaxed mb-8 text-white/90">
@@ -237,32 +260,40 @@ export default function CTA() {
                 de tu negocio.
               </p>
               <div className="flex flex-wrap gap-4 text-sm text-white/80 mb-8">
-                {['✓ Te escribimos por correo', '✓ Consulta gratuita', '✓ Sin obligación'].map(
-                  (item) => (
-                    <span key={item}>{item}</span>
-                  )
-                )}
+                {['✓ Consulta gratuita', '✓ Sin obligación'].map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
               </div>
-              <a
-                href="mailto:hola@stackly.dev"
-                className="inline-flex items-center gap-2 text-white font-semibold hover:text-white/80 transition-colors"
-              >
-                <Mail size={18} />
-                o escríbenos directo a hola@stackly.dev
-              </a>
+              {/* El enlace de correo solo aparece cuando hay un buzón que de
+                  verdad reciba. Ver src/data/negocio.ts. */}
+              {enlaceCorreo && (
+                <a
+                  href={enlaceCorreo}
+                  className="inline-flex items-center gap-2 text-white font-semibold hover:text-white/80 transition-colors"
+                >
+                  <Mail size={18} aria-hidden="true" />
+                  o escríbenos directo a {NEGOCIO.correo}
+                </a>
+              )}
             </div>
 
             <div className="bg-white rounded-xl p-6 md:p-8">
               {status === 'success' ? (
                 <div
+                  ref={exitoRef}
+                  tabIndex={-1}
                   role="status"
                   aria-live="polite"
-                  className="flex flex-col items-center text-center py-10 gap-3"
+                  className="flex flex-col items-center text-center py-10 gap-3 focus:outline-none"
                 >
                   <CheckCircle2 size={40} className="text-brand-primary" />
                   <p className="font-bold text-text-primary text-lg">¡Mensaje enviado!</p>
                   <p className="text-text-secondary text-sm">
-                    Ya tenemos tu mensaje. Te escribiremos al correo que nos dejaste.
+                    {/* No prometemos plazo ni medio: nadie recibe aviso
+                        automático de los envíos todavía, y no hay un buzón
+                        propio desde el que responder. Decir "te escribimos en
+                        24h" sería una promesa sin mecanismo detrás. */}
+                    Ya quedó guardado. Lo leemos y te contactamos al correo que nos dejaste.
                   </p>
                   <button
                     type="button"
