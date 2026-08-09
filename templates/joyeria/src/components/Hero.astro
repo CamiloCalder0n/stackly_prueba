@@ -1,116 +1,105 @@
 ---
-import { waLink, NEGOCIO } from '../scripts/site';
+// Hero de portada (Figma 1:21). Banda a sangre de 1400×712 —proporción casi
+// 2:1, mucho más baja que una portada a pantalla completa— con la modelo a
+// la derecha y el bloque de texto sobre el fondo liso de la propia foto.
+//
+// Tratamiento de la imagen: el molde NO lleva velo. En el Figma la foto va
+// limpia, a color pleno, y el texto se apoya en el barrido beige del propio
+// fondo del estudio. La versión anterior superponía un degradado de `paper`
+// al 85% MÁS una sombra oscura al pie: eso era exactamente el "lavado" que
+// se veía. Aquí no queda ningún velo claro.
+//
+// La foto disponible (`lifestyle-argollas-oro`) es de clave tonal baja: no
+// hay en la biblioteca ninguna imagen con el fondo beige de estudio del
+// mockup, y esta es la única con modelo a la derecha + espacio negativo a
+// la izquierda, que es la composición que pide el molde. Trabajar con la
+// foto tal como es —en vez de intentar aclararla con un velo— da el
+// resultado que pedía el encargo: la imagen a color pleno, sin lavar.
+//
+// Y tiene una ventaja: sobre esa zona casi negra el oro literal del Figma
+// (#d4af37 = accent-500) rinde ~9:1, así que aquí sí se puede usar el tono
+// exacto del molde en el titular, sin la corrección de contraste que hace
+// falta cuando el oro va sobre blanco.
+//
+// Tipografía del titular: las DOS líneas van en oro en el Figma (nodo 1:26
+// declara #d4af37 y ambos párrafos lo heredan), no una en tinta y otra en
+// oro. Y la segunda línea no es cursiva: es la misma Playfair Regular a la
+// mitad de cuerpo (96px → 48px).
+import Foto from './Foto.astro';
 
 interface Props {
-  eyebrow?: string;
+  /** Foto de fondo a sangre — es la imagen LCP de la página. */
+  imagen: ImageMetadata;
+  imagenAlt?: string;
+  /** Primera línea del titular, a cuerpo completo. */
   titulo: string;
-  /** Segunda línea del título, en cursiva: el acento editorial. */
+  /** Segunda línea, a la mitad de cuerpo. Mismo oro, misma cara. */
   acento?: string;
   subtitulo?: string;
-  /** Imagen de fondo (usa /public o URL de Unsplash con ?w=1600&q=80). */
-  imagen?: string;
   ctaTexto?: string;
-  ctaMensaje?: string;
-  ctaSecundario?: { label: string; href: string };
-  /** Tarjeta de pieza superpuesta que rompe la simetría del hero. */
-  destacado?: { imagen: string; etiqueta: string; titulo: string; href: string };
+  ctaHref?: string;
 }
 
 const {
-  eyebrow,
+  imagen,
+  imagenAlt = '',
   titulo,
   acento,
   subtitulo,
-  imagen,
-  ctaTexto = 'Contáctanos por WhatsApp',
-  ctaMensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
-  ctaSecundario,
-  destacado,
+  ctaTexto = 'Explorar colección',
+  ctaHref = '/catalogo',
 } = Astro.props;
 ---
 
-<section class="relative flex min-h-[92vh] items-center overflow-hidden bg-brand-950">
-  {imagen && (
-    <div class="absolute inset-0" data-parallax="0.14">
-      <img
-        src={imagen}
-        alt=""
-        class="h-[118%] w-full object-cover opacity-45"
-        loading="eager"
-        fetchpriority="high"
-      />
-    </div>
-  )}
-  <!-- Degradados sofisticados: base profunda + viñeta lateral para legibilidad -->
-  <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/55 to-brand-950/25"></div>
-  <div class="absolute inset-0 bg-gradient-to-r from-brand-950/85 via-brand-950/25 to-transparent"></div>
-
-  <div class="container-wide relative w-full py-28 md:py-36">
-    <div class="grid items-end gap-14 lg:grid-cols-12">
-      <!-- Bloque tipográfico: 7 de 12 columnas (asimetría editorial) -->
-      <div class="lg:col-span-7" data-hero-title>
-        {eyebrow && (
-          <div class="flex items-center gap-4">
-            <span class="h-px w-10 bg-accent-400/70" aria-hidden="true"></span>
-            <span class="micro text-accent-300">{eyebrow}</span>
-          </div>
-        )}
-
-        <h1 class="type-hero mt-7 text-white">
-          {titulo}
-          {acento && (
-            <>
-              <br />
-              <em class="font-normal text-accent-200 italic">{acento}</em>
-            </>
-          )}
-        </h1>
-
-        {subtitulo && (
-          <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-200">
-            {subtitulo}
-          </p>
-        )}
-
-        <div class="mt-11 flex flex-wrap items-center gap-x-8 gap-y-4">
-          <a href={waLink(ctaMensaje)} target="_blank" rel="noopener" class="btn btn-whatsapp">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.668-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-            {ctaTexto}
-          </a>
-          {ctaSecundario && (
-            <a href={ctaSecundario.href} class="micro link-rule text-white/85 transition-colors hover:text-accent-200">
-              {ctaSecundario.label}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-          )}
-        </div>
-      </div>
-
-      <!-- Pieza superpuesta: capa que da profundidad y rompe la simetría -->
-      {destacado && (
-        <a href={destacado.href} class="group relative hidden lg:col-span-4 lg:col-start-9 lg:block">
-          <div class="relative overflow-hidden border border-white/15">
-            <img
-              src={destacado.imagen}
-              alt={destacado.titulo}
-              class="aspect-[3/4] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
-              loading="eager"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/10 to-transparent"></div>
-            <div class="absolute inset-x-0 bottom-0 p-6">
-              <span class="micro-sm text-accent-300">{destacado.etiqueta}</span>
-              <p class="mt-2 font-display text-2xl font-light text-white">{destacado.titulo}</p>
-              <span class="micro-sm mt-3 inline-flex items-center gap-2 text-white/70 transition-colors duration-500 group-hover:text-accent-200">
-                Ver pieza
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-              </span>
-            </div>
-          </div>
-        </a>
-      )}
+<section class="relative overflow-hidden bg-noche" aria-label="Presentación">
+  <div class="absolute inset-0">
+    <Foto
+      src={imagen}
+      alt={imagenAlt}
+      widths={[900, 1300, 1800, 2200]}
+      sizes="100vw"
+      prioridad
+      class="h-full object-cover object-[55%_32%]"
+    />
+    <!-- Único velo que queda, y va en la MISMA dirección tonal que la foto:
+         profundiza el negro que ya existe a la izquierda en vez de aclararlo.
+         Sobre la modelo se apaga por completo, así que ella llega intacta.
+         Nada de degradado claro encima ni sombra al pie. -->
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-noche/75 via-noche/25 to-transparent md:from-noche/70 md:via-noche/10"
+    >
     </div>
   </div>
 
-  <!-- Hairline inferior: cierre de vitrina -->
-  <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/40 to-transparent" aria-hidden="true"></div>
+  <!-- Proporción del molde (1400×712 ≈ 1.97:1) en vez de min-h-[88vh]: el
+       hero del Figma es una banda ancha y baja, no una portada a pantalla
+       completa. En móvil se le da altura mínima para que quepa el texto. -->
+  <div
+    class="container-wide relative flex min-h-[32rem] items-center py-20 md:min-h-[clamp(30rem,50vw,44.5rem)] md:py-0"
+  >
+    <div class="max-w-xl">
+      <!-- Oro literal del Figma (#d4af37): sobre esta zona casi negra da
+           ~9:1, de sobra para AA. La segunda línea es la misma cara y el
+           mismo tono a la mitad de cuerpo (96px → 48px en el molde), no una
+           cursiva en otro color. -->
+      <h1 class="type-hero text-accent-500" data-split="hero">
+        {titulo}
+        {/* `block` ya hace el salto de línea: un <br /> extra le daría a
+            SplitText una línea vacía que animar. */}
+        {acento && <span class="block text-[0.5em] leading-[1.15]">{acento}</span>}
+      </h1>
+
+      {subtitulo && (
+        <p class="mt-5 max-w-md font-display text-lg text-brand-100" data-reveal>
+          {subtitulo}
+        </p>
+      )}
+
+      <!-- Bloque dorado macizo con la tinta encima y sin ícono: así es el
+           CTA del Figma (nodo 1:30). La flecha era un añadido nuestro. -->
+      <div class="mt-9" data-reveal>
+        <a href={ctaHref} class="btn btn-primary">{ctaTexto}</a>
+      </div>
+    </div>
+  </div>
 </section>

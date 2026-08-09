@@ -1,0 +1,37 @@
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Variables de entorno: nunca se suben, salvo el ejemplo vacío
+# que le dice al siguiente qué hay que llenar.
+.env*
+!.env.example
+
+# Enlaces con los hostings. El que manda es Vercel; .netlify/ es
+# residuo de un intento anterior. Ninguno de los dos se sube.
+.vercel
+.netlify
+
+# Andamiaje de Bolt.new (config y prompt del generador original).
+# Ya no describe este proyecto: el portafolio, el contenido, la
+# accesibilidad y el SEO se rehicieron a mano después.
+.bolt/

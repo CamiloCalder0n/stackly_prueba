@@ -1,0 +1,60 @@
+---
+// Galería "Esenciales de Instagram" (Figma 1:170): cinco cuadrados exactos
+// de 241×241 en fila, separados por ~38px, con el glifo de Instagram sobre
+// la foto central. Todas enlazan al perfil real del negocio.
+//
+// El rótulo del molde es Playfair 20px en tinta, alineado a la izquierda y
+// terminado en punto ("Esenciales De Instagram."). Aquí venía como
+// versalita dorada con un filete delante: un gesto que el Figma no usa en
+// ninguna sección.
+import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { NEGOCIO } from '../scripts/site';
+
+interface Props {
+  /** Cinco fotos lifestyle/producto. */
+  fotos: { src: ImageMetadata; alt: string }[];
+}
+
+const { fotos } = Astro.props;
+const centro = Math.floor(fotos.length / 2);
+---
+
+<section class="bg-surface pt-4 pb-16 md:pt-8 md:pb-24" aria-label="Instagram">
+  <div class="container-wide">
+    <h2 class="type-rotulo text-brand-950">Esenciales de Instagram.</h2>
+
+    <div class="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-5 md:gap-8" data-reveal-group>
+      {fotos.map((f, i) => (
+        <a
+          href={NEGOCIO.instagram}
+          target="_blank"
+          rel="noopener"
+          aria-label="Ver en Instagram"
+          class={`group relative block overflow-hidden bg-brand-200 ${
+            i === fotos.length - 1 ? 'col-span-2 sm:col-span-1' : ''
+          }`}
+        >
+          <Foto
+            src={f.src}
+            alt={f.alt}
+            ratio="1/1"
+            sizes="(max-width: 640px) 50vw, 20vw"
+            class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06]"
+          />
+          <div class="absolute inset-0 flex items-center justify-center transition-colors duration-500 group-hover:bg-noche/25">
+            {i === centro ? (
+              <span class="text-white drop-shadow-[0_2px_8px_rgba(10,9,8,0.45)]">
+                <Icono nombre="instagram" tamano={30} />
+              </span>
+            ) : (
+              <span class="text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <Icono nombre="instagram" tamano={22} />
+              </span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

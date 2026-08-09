@@ -1,60 +1,108 @@
 ---
 import { NEGOCIO } from '../scripts/site';
+import Icono from './Icono.astro';
 
 interface Props {
   links?: { label: string; href: string }[];
 }
 const { links = [] } = Astro.props;
 const year = new Date().getFullYear();
+const telLimpio = NEGOCIO.telefono.replace(/\s/g, '');
 ---
 
-<footer class="bg-brand-950 text-brand-300">
-  <div class="container-site grid gap-10 py-14 md:grid-cols-3">
-    <div>
-      <p class="font-display text-lg font-bold text-white">{NEGOCIO.nombre}</p>
-      <p class="mt-2 max-w-xs text-sm leading-relaxed">{NEGOCIO.eslogan}</p>
-      <div class="mt-4 flex gap-4">
+<footer class="border-t border-brand-200 bg-paper">
+  <div class="container-wide grid gap-14 py-20 md:grid-cols-12 md:py-24">
+    <div class="md:col-span-5">
+      <p
+        class="font-display text-2xl tracking-[0.14em] text-brand-950 uppercase"
+      >
+        {NEGOCIO.nombre}
+      </p>
+      <p class="mt-5 max-w-xs text-[0.88rem] leading-[1.9] font-light text-brand-600">
+        {NEGOCIO.eslogan}. En {NEGOCIO.ciudad} desde {NEGOCIO.anoFundacion}.
+      </p>
+      <div class="mt-8 flex gap-4">
         {NEGOCIO.instagram && (
-          <a href={NEGOCIO.instagram} target="_blank" rel="noopener" aria-label="Instagram" class="transition-colors hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a
+            href={NEGOCIO.instagram}
+            target="_blank"
+            rel="noopener"
+            aria-label="Instagram"
+            class="flex h-10 w-10 items-center justify-center border border-brand-300 text-brand-700 transition-colors duration-500 hover:border-brand-950 hover:bg-brand-950 hover:text-white"
+          >
+            <Icono nombre="instagram" tamano={17} />
           </a>
         )}
         {NEGOCIO.facebook && (
-          <a href={NEGOCIO.facebook} target="_blank" rel="noopener" aria-label="Facebook" class="transition-colors hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <a
+            href={NEGOCIO.facebook}
+            target="_blank"
+            rel="noopener"
+            aria-label="Facebook"
+            class="flex h-10 w-10 items-center justify-center border border-brand-300 text-brand-700 transition-colors duration-500 hover:border-brand-950 hover:bg-brand-950 hover:text-white"
+          >
+            <Icono nombre="facebook" tamano={17} />
           </a>
         )}
       </div>
     </div>
 
     {links.length > 0 && (
-      <nav aria-label="Enlaces del pie de página">
-        <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">Enlaces</p>
-        <ul class="mt-3 space-y-2">
+      <nav class="md:col-span-3" aria-label="Enlaces del pie de página">
+        <p class="micro-sm text-brand-500">Explorar</p>
+        <ul class="mt-6 space-y-3.5">
           {links.map((l) => (
             <li>
-              <a href={l.href} class="text-sm transition-colors hover:text-white">{l.label}</a>
+              <a
+                href={l.href}
+                class="text-[0.88rem] font-light text-brand-700 transition-colors duration-500 hover:text-accent-700"
+              >
+                {l.label}
+              </a>
             </li>
           ))}
         </ul>
       </nav>
     )}
 
-    <div>
-      <p class="text-xs font-bold tracking-widest text-brand-400 uppercase">Contacto</p>
-      <ul class="mt-3 space-y-2 text-sm">
+    <div class="md:col-span-4">
+      <p class="micro-sm text-brand-500">Visítanos</p>
+      <ul class="mt-6 space-y-3.5 text-[0.88rem] font-light text-brand-700">
         <li>{NEGOCIO.direccion}, {NEGOCIO.ciudad}</li>
         <li>{NEGOCIO.horario}</li>
-        <li><a href={`tel:${NEGOCIO.telefono.replace(/\s/g, '')}`} class="transition-colors hover:text-white">{NEGOCIO.telefono}</a></li>
-        <li><a href={`mailto:${NEGOCIO.correo}`} class="transition-colors hover:text-white">{NEGOCIO.correo}</a></li>
+        <li>
+          <a href={`tel:${telLimpio}`} class="transition-colors duration-500 hover:text-accent-700">
+            {NEGOCIO.telefono}
+          </a>
+        </li>
+        <li>
+          <a
+            href={`mailto:${NEGOCIO.correo}`}
+            class="transition-colors duration-500 hover:text-accent-700"
+          >
+            {NEGOCIO.correo}
+          </a>
+        </li>
       </ul>
     </div>
   </div>
 
-  <div class="border-t border-white/10">
-    <div class="container-site flex flex-col items-center justify-between gap-2 py-5 text-xs text-brand-400 sm:flex-row">
+  <div class="border-t border-brand-200">
+    <div
+      class="container-wide flex flex-col items-center justify-between gap-2 py-6 text-[0.72rem] font-light text-brand-500 sm:flex-row"
+    >
       <p>© {year} {NEGOCIO.nombre}. Todos los derechos reservados.</p>
-      <p>Hecho por <a href="https://stackly.co" class="font-semibold transition-colors hover:text-white">Stackly</a></p>
+      <p>
+        Hecho por
+        <!-- Subrayado permanente: dentro de un párrafo, distinguir el enlace
+             solo por color deja fuera a quien no percibe ese contraste. -->
+        <a
+          href="https://stackly.co"
+          class="text-brand-800 underline underline-offset-2 transition-colors duration-500 hover:text-accent-700"
+        >
+          Stackly
+        </a>
+      </p>
     </div>
   </div>
 </footer>

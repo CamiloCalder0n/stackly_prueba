@@ -9,6 +9,7 @@
  * especialidad como micro-label espaciado.
  */
 import { getCollection } from 'astro:content';
+import Foto from './Foto.astro';
 
 const barberos = (await getCollection('barberos'))
   .filter((e) => e.data.activo)
@@ -40,11 +41,11 @@ const barberos = (await getCollection('barberos'))
       {barberos.map((b, i) => (
         <article class="foto-bn-hover group">
           <div class="relative overflow-hidden bg-brand-900">
-            <img
+            <Foto
               src={b.foto}
               alt={`${b.nombre}, barbero de Barbería El Patrón`}
-              class="foto-bn aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-              loading="lazy"
+              ratio="3/4"
+              class="foto-bn transition-transform duration-500 group-hover:scale-[1.04]"
             />
             <!-- Degradado inferior para asentar el número y el borde -->
             <div
@@ -73,6 +74,13 @@ const barberos = (await getCollection('barberos'))
             </h3>
             <p class="mt-2 text-[0.68rem] font-semibold tracking-[0.2em] text-accent-500/90 uppercase">
               {b.especialidad}
+            </p>
+            <!-- Antigüedad: es la señal de confianza que solo 1/13 competidores
+                 publica. Reservar con un barbero específico + saber su
+                 trayectoria es lo que baja el no-show. -->
+            <p class="mt-1.5 flex items-center gap-1.5 text-[0.72rem] font-medium text-brand-400">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-accent-500" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {b.aniosOficio} años de oficio
             </p>
 
             <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3.5">

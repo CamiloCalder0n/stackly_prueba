@@ -18,6 +18,10 @@ import Footer from '../components/Footer.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import StickyReserva from '../components/StickyReserva.astro';
 
+import heroImg from '../assets/fotos/hero-interior.jpg';
+import ctaImg from '../assets/fotos/cta-afeitado-navaja.jpg';
+import testimoniosImg from '../assets/fotos/testimonios-navaja-bn.jpg';
+
 const navLinks = [
   { label: 'Servicios', href: '#servicios' },
   { label: 'Equipo', href: '#equipo' },
@@ -26,19 +30,25 @@ const navLinks = [
   { label: 'Contacto', href: '#contacto' },
 ];
 
+// Nombre + ciudad es la señal de confianza que ningún competidor del
+// benchmark (0 de 13) publica en sus testimonios. Ciudades del área
+// metropolitana de Bucaramanga, coherentes con la sede del negocio.
 const testimonios = [
   {
     nombre: 'Daniel Cáceres',
+    ciudad: 'Bucaramanga',
     texto: 'Reservé por WhatsApp en un minuto: llegué, mi barbero ya sabía qué quería y salí en 45 minutos exactos. Cero filas.',
     detalle: 'Cliente desde 2023',
   },
   {
     nombre: 'Óscar Villamizar',
+    ciudad: 'Floridablanca',
     texto: 'El Ritual El Patrón es otra cosa: toalla caliente, navaja y masaje. Vale cada peso y el precio está publicado, sin sorpresas.',
     detalle: 'Fan del ritual completo',
   },
   {
     nombre: 'Julián Pinto',
+    ciudad: 'Girón',
     texto: 'Llevo a mi hijo cada mes. Poder elegir barbero y hora desde el celular me soluciona la agenda.',
     detalle: 'Papá de un patroncito',
   },
@@ -79,41 +89,44 @@ const faqSchema = {
 };
 ---
 
-<BaseLayout image="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80">
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+<BaseLayout image={heroImg.src}>
+  <script type="application/ld+json" slot="head" is:inline set:html={JSON.stringify(faqSchema)} />
 
   <Header links={navLinks} />
 
-  <Hero
-    eyebrow="Barbería en Bucaramanga · Cabecera"
-    titulo="Tu corte, tu barbero, tu hora"
-    subtitulo="Reserva en menos de un minuto por WhatsApp: eliges el servicio, el barbero y la hora, y llegas directo a la silla. Sin filas y sin esperas."
-    imagen="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80"
-    ctaTexto="Reserva tu cita"
-    ctaHref="#reservar"
-    ctaSecundario={{ label: 'Ver servicios y precios', href: '#servicios' }}
-  />
+  <main id="contenido">
+    <Hero
+      eyebrow="Barbería en Bucaramanga · Cabecera"
+      titulo="Tu corte, tu barbero, tu hora"
+      subtitulo="Reserva en menos de un minuto por WhatsApp: eliges el servicio, el barbero y la hora, y llegas directo a la silla. Sin filas y sin esperas."
+      imagen={heroImg}
+      ctaTexto="Reserva tu cita"
+      ctaHref="#reservar"
+      ctaSecundario={{ label: 'Ver servicios y precios', href: '#servicios' }}
+    />
 
-  <!-- Franja en movimiento: corta el ritmo entre el hero y la carta -->
-  <Marquesina />
+    <!-- Franja en movimiento: corta el ritmo entre el hero y la carta -->
+    <Marquesina />
 
-  <Servicios />
-  <Equipo />
-  <Galeria />
+    <Servicios />
+    <Equipo />
+    <Galeria />
 
-  <Testimonios items={testimonios} />
+    <Testimonios items={testimonios} imagen={testimoniosImg} />
 
-  <ReservaWizard />
+    <ReservaWizard />
 
-  <Contacto />
-  <FAQ items={faqItems} />
+    <Contacto />
+    <FAQ items={faqItems} />
 
-  <CTA
-    titulo="La silla te espera"
-    descripcion="¿Dudas antes de reservar? Escríbenos por WhatsApp y te respondemos en minutos."
-    botonTexto="Hablar por WhatsApp"
-    mensaje="Hola, quiero reservar una cita en Barbería El Patrón."
-  />
+    <CTA
+      titulo="La silla te espera"
+      descripcion="¿Dudas antes de reservar? Escríbenos por WhatsApp y te respondemos en minutos."
+      botonTexto="Hablar por WhatsApp"
+      mensaje="Hola, quiero reservar una cita en Barbería El Patrón."
+      imagen={ctaImg}
+    />
+  </main>
 
   <Footer links={navLinks} />
   <WhatsAppFlotante mensaje="Hola, quiero reservar una cita en Barbería El Patrón." />

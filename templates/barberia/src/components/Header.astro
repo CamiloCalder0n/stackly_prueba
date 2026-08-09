@@ -15,7 +15,12 @@ interface Props {
   desde?: string;
 }
 
-const { links, cta = 'Reserva tu cita', ctaHref = '#reservar', desde = '2015' } = Astro.props;
+const {
+  links,
+  cta = 'Reserva tu cita',
+  ctaHref = '#reservar',
+  desde = String(NEGOCIO.anoFundacion),
+} = Astro.props;
 
 // Monograma a partir de las iniciales del negocio (ej. "Barbería El Patrón" → "BP")
 const monograma = NEGOCIO.nombre
@@ -115,39 +120,43 @@ const monograma = NEGOCIO.nombre
 </header>
 
 <script>
-  const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('menu-movil');
-  const iconOpen = document.getElementById('icon-open');
-  const iconClose = document.getElementById('icon-close');
+  /* Los scripts de componente NO se vuelven a ejecutar tras una navegación
+     del ClientRouter, así que el montaje se cuelga de `astro:page-load`,
+     que sí dispara en la carga inicial y en cada navegación. */
+  function montarHeader(): void {
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu-movil');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
 
-  toggle?.addEventListener('click', () => {
-    const abierto = menu?.classList.toggle('hidden') === false;
-    toggle.setAttribute('aria-expanded', String(abierto));
-    iconOpen?.classList.toggle('hidden', abierto);
-    iconClose?.classList.toggle('hidden', !abierto);
-  });
+    const alternar = (abierto: boolean) => {
+      menu?.classList.toggle('hidden', !abierto);
+      toggle?.setAttribute('aria-expanded', String(abierto));
+      iconOpen?.classList.toggle('hidden', abierto);
+      iconClose?.classList.toggle('hidden', !abierto);
+    };
 
-  // Cierra el menú al navegar
-  menu?.querySelectorAll('a').forEach((a) =>
-    a.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      toggle?.setAttribute('aria-expanded', 'false');
-      iconOpen?.classList.remove('hidden');
-      iconClose?.classList.add('hidden');
-    }),
-  );
+    toggle?.addEventListener('click', () => {
+      alternar(menu?.classList.contains('hidden') ?? false);
+    });
 
-  // Estado sólido del header al salir del hero (transparente arriba del todo)
-  const barra = document.getElementById('site-header-barra');
-  const solido = ['bg-noche/92', 'backdrop-blur-md', '!border-white/10'];
+    // Cierra el menú al navegar
+    menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => alternar(false)));
 
-  function actualizarHeader() {
-    if (!barra) return;
-    barra.classList.toggle(solido[0], window.scrollY > 40);
-    barra.classList.toggle(solido[1], window.scrollY > 40);
-    barra.classList.toggle(solido[2], window.scrollY > 40);
+    // Estado sólido del header al salir del hero (transparente arriba del todo)
+    const barra = document.getElementById('site-header-barra');
+    const solido = ['bg-noche/92', 'backdrop-blur-md', '!border-white/10'];
+
+    function actualizarHeader() {
+      if (!barra) return;
+      barra.classList.toggle(solido[0], window.scrollY > 40);
+      barra.classList.toggle(solido[1], window.scrollY > 40);
+      barra.classList.toggle(solido[2], window.scrollY > 40);
+    }
+
+    actualizarHeader();
+    window.addEventListener('scroll', actualizarHeader, { passive: true });
   }
 
-  actualizarHeader();
-  window.addEventListener('scroll', actualizarHeader, { passive: true });
+  document.addEventListener('astro:page-load', montarHeader);
 </script>

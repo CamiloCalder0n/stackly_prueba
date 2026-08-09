@@ -1,13 +1,20 @@
 ---
-// Ficha de pieza: galería con lightbox, especificaciones, precio y
-// CTA de WhatsApp con mensaje prellenado (nombre + referencia + URL).
+// Ficha de pieza: la pantalla donde se cierra la venta. Galería con lupa y
+// lightbox accesible, columna de compra con confianza explícita junto al
+// precio, ficha técnica ampliada, selector de talla y grabado que se
+// inyectan en el mensaje de WhatsApp, y piezas relacionadas.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import PiezaCard from '../../components/PiezaCard.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppFlotante from '../../components/WhatsAppFlotante.astro';
-import { NEGOCIO, waLink, precioCOP } from '../../scripts/site';
+import Galeria from '../../components/Galeria.astro';
+import BloqueConfianza from '../../components/BloqueConfianza.astro';
+import Icono from '../../components/Icono.astro';
+import Pagos from '../../components/Pagos.astro';
+import { NEGOCIO, waLink, precioCOP, mensajeConsulta, leyLegible } from '../../scripts/site';
+import { NAV } from '../../scripts/navegacion';
 
 export async function getStaticPaths() {
   const piezas = await getCollection('piezas');
@@ -22,40 +29,96 @@ const d = pieza.data;
 
 const disponible = d.disponibilidad === 'disponible';
 const precioVisible = d.precio != null && !d.ocultarPrecio;
+const precioTexto = precioVisible ? precioCOP(d.precio!) : 'Consultar precio';
 const urlPieza = new URL(`/piezas/${d.slug}/`, Astro.site).href;
 
-const mensajeWhatsApp = `Hola, vengo de la página de ${NEGOCIO.nombre}. Me interesa la pieza "${d.nombre}" (Ref. ${d.referencia}): ${urlPieza} — ¿me pueden dar más información?`;
+/**
+ * Disponibilidad honesta: nada de urgencia inventada. Solo dos mensajes
+ * posibles, y ambos son datos reales que ya vienen en el contenido.
+ */
+const disponibilidadTexto = disponible
+  ? d.unidades === 1
+    ? 'Pieza única, queda una en vitrina.'
+    : d.unidades && d.unidades > 1
+      ? `Disponible en tienda · quedan ${d.unidades} piezas.`
+      : 'Disponible en tienda.'
+  : d.diasEncargo
+    ? `Se fabrica por encargo · ${d.diasEncargo} días hábiles.`
+    : 'Se fabrica por encargo.';
 
 const especificaciones = [
   { label: 'Referencia', valor: d.referencia },
-  { label: 'Material', valor: d.material },
+  { label: 'Ley del metal', valor: leyLegible(d.ley) },
   { label: 'Piedras', valor: d.piedras },
+  { label: 'Certificación', valor: d.certificacion },
   { label: 'Peso', valor: d.peso },
+  { label: 'Medidas', valor: d.medidas },
+  { label: 'Acabado', valor: d.acabado },
   { label: 'Tallas', valor: d.tallas },
 ].filter((e) => e.valor);
+
+/**
+ * `tallas` es texto libre en el modelo de contenido (lo escribe el joyero
+ * en Decap), no un array. Aquí solo se convierte en selector cuando es un
+ * rango numérico ("5 a 9") o una lista corta ("16,5 y 17,5 cm"): si es una
+ * única descripción ("Cadena de 42 cm") no hay nada que elegir, y forzar un
+ * selector de una sola opción sería ruido — esa descripción ya queda en la
+ * ficha técnica de arriba.
+ */
+function parseTallas(texto: string): string[] | null {
+  const limpio = texto.trim();
+
+  const rango = limpio.match(/^(\d+)\s*a\s*(\d+)$/i);
+  if (rango) {
+    const inicio = Number(rango[1]);
+    const fin = Number(rango[2]);
+    if (fin > inicio && fin - inicio <= 20) {
+      return Array.from({ length: fin - inicio + 1 }, (_, i) => String(inicio + i));
+    }
+  }
+
+  if (/\by\b/i.test(limpio)) {
+    const unidad = limpio.match(/\b(cm|mm)\s*$/i)?.[1];
+    const sinUnidad = limpio.replace(/\s*(cm|mm)\s*$/i, '');
+    const partes = sinUnidad
+      .split(/\s*,\s*|\s+y\s+/i)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (partes.length > 1) return partes.map((p) => (unidad ? `${p} ${unidad}` : p));
+  }
+
+  return null;
+}
+
+const opcionesTalla = d.tallas ? parseTallas(d.tallas) : null;
+
+// Mensaje inicial (sin talla ni grabado, que se eligen en el navegador): es
+// el `href` que ya funciona si por algo el script del CTA no llega a montar.
+const mensajeInicial = mensajeConsulta({ pieza: d.nombre, referencia: d.referencia, url: urlPieza });
 
 const relacionadas = todas
   .filter((p) => p.data.slug !== d.slug && p.data.categoria === d.categoria)
   .slice(0, 3);
 
-const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Catálogo', href: '/catalogo' },
-  { label: 'FAQ', href: '/#faq' },
-  { label: 'Contacto', href: '/#contacto' },
-];
 
-// Datos estructurados del producto (schema.org/Product)
+// ── Datos estructurados: Product enriquecido + BreadcrumbList ──
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: d.nombre,
   sku: d.referencia,
-  image: d.fotos,
+  image: d.fotos.map((f) => new URL(f.src, Astro.site).href),
   description: d.descripcion,
   material: d.material,
   url: urlPieza,
   brand: { '@type': 'Brand', name: NEGOCIO.nombre },
+  ...(d.certificacion && {
+    additionalProperty: {
+      '@type': 'PropertyValue',
+      name: 'Certificación',
+      value: d.certificacion,
+    },
+  }),
   ...(precioVisible && {
     offers: {
       '@type': 'Offer',
@@ -66,108 +129,140 @@ const jsonLd = {
     },
   }),
 };
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Catálogo', item: new URL('/catalogo', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: d.nombre, item: urlPieza },
+  ],
+};
 ---
 
-<BaseLayout title={d.nombre} description={d.descripcion} image={d.fotos[0]}>
-  <!-- JSON-LD del producto (válido dentro de <body>) -->
+<BaseLayout title={d.nombre} description={d.descripcion} image={d.fotos[0].src}>
+  <!-- JSON-LD del producto y las migas de pan (válidos dentro de <body>) -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
-  <Header links={navLinks} cta="Consultar" />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} is:inline />
+  <Header links={NAV} />
 
+
+  <main id="contenido">
   <section class="py-10 md:py-16">
     <div class="container-wide">
       <a href="/catalogo" class="micro-sm inline-flex items-center gap-2.5 text-brand-500 transition-colors duration-500 hover:text-accent-700">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <Icono nombre="flecha-izq" tamano={14} />
         Volver al catálogo
       </a>
 
       <div class="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-16">
         <!-- ── Galería: protagonista, ratio vertical editorial ── -->
-        <div class="lg:col-span-7" id="galeria" data-fotos={JSON.stringify(d.fotos)}>
-          <button
-            type="button"
-            id="galeria-abrir"
-            class="group relative block w-full cursor-zoom-in overflow-hidden bg-brand-100"
-            aria-label={`Ampliar foto de ${d.nombre}`}
-          >
-            <img
-              id="galeria-principal"
-              src={d.fotos[0]}
-              alt={d.nombre}
-              class="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
-              loading="eager"
-              fetchpriority="high"
-            />
-            <span class="micro-sm absolute right-5 bottom-5 inline-flex items-center gap-2 bg-brand-950/70 px-3 py-2 text-white opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:opacity-100">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-              Ampliar
-            </span>
-          </button>
-
-          {d.fotos.length > 1 && (
-            <div class="mt-4 grid grid-cols-5 gap-4">
-              {d.fotos.map((foto, i) => (
-                <button
-                  type="button"
-                  class="galeria-miniatura overflow-hidden border transition-all duration-500 ease-[cubic-bezier(.22,.61,.36,1)] data-[activa=true]:border-accent-500 data-[activa=false]:border-brand-200 data-[activa=false]:opacity-55 hover:opacity-100"
-                  data-index={i}
-                  data-activa={i === 0 ? 'true' : 'false'}
-                  aria-label={`Ver foto ${i + 1} de ${d.nombre}`}
-                >
-                  <img src={foto} alt="" class="aspect-[4/5] w-full object-cover" loading="lazy" />
-                </button>
-              ))}
-            </div>
-          )}
+        <div class="lg:col-span-7">
+          <Galeria fotos={d.fotos} nombre={d.nombre} slug={d.slug} />
         </div>
 
-        <!-- ── Información: columna estrecha, sticky, jerarquía marcada ── -->
+        <!-- ── Información: columna estrecha, pegajosa, jerarquía marcada ── -->
         <div class="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
-          <div class="flex items-center gap-4">
+          <div class="flex flex-wrap items-center gap-3">
             <span class="micro text-accent-700">{d.categoria} · {d.material}</span>
-            <span class="h-px flex-1 bg-brand-200" aria-hidden="true"></span>
+            <span class="badge-ley">{leyLegible(d.ley)}</span>
           </div>
 
           <h1 class="type-section mt-6 text-brand-950">{d.nombre}</h1>
 
-          <!-- Precio: la cifra manda, el estado la acompaña en micro -->
-          <div class="mt-9 flex flex-wrap items-baseline gap-x-6 gap-y-3 border-y border-brand-200 py-7">
-            <p class="precio font-display text-4xl font-light text-brand-950">
-              {precioVisible ? precioCOP(d.precio!) : 'Consultar precio'}
-            </p>
-            <span class="micro-sm inline-flex items-center gap-2 text-brand-500">
-              <span
-                class={`h-1.5 w-1.5 rounded-full ${disponible ? 'bg-green-600' : 'bg-accent-500'}`}
-                aria-hidden="true"
-              ></span>
-              {disponible ? 'Disponible' : 'Por encargo'}
-            </span>
+          <!-- Precio: la cifra manda, el estado y la disponibilidad honesta la acompañan -->
+          <div class="mt-9 border-y border-brand-200 py-7">
+            <div class="flex flex-wrap items-baseline gap-x-6 gap-y-3">
+              <p class="precio font-display text-4xl font-light text-brand-950">{precioTexto}</p>
+              <span class="micro-sm inline-flex items-center gap-2 text-brand-500">
+                <span
+                  class={`h-1.5 w-1.5 rounded-full ${disponible ? 'bg-green-600' : 'bg-accent-500'}`}
+                  aria-hidden="true"
+                ></span>
+                {disponible ? 'Disponible' : 'Por encargo'}
+              </span>
+            </div>
+            <p class="mt-3 text-xs leading-relaxed font-light text-brand-500">{disponibilidadTexto}</p>
+          </div>
+
+          <!-- El bloque de confianza va justo debajo del precio a propósito:
+               es lo que más pesa en la decisión según la investigación. -->
+          <BloqueConfianza />
+
+          <div class="mt-8">
+            <Pagos compacto />
           </div>
 
           <p class="mt-8 text-[0.92rem] leading-[1.9] font-light text-brand-600">{d.descripcion}</p>
 
-          <!-- Especificaciones: tabla de hairlines -->
-          <dl class="mt-10">
+          <!-- Ficha técnica ampliada: sustituye al "poder tocar la joya" -->
+          <dl class="mt-2">
             {especificaciones.map((e) => (
-              <div class="grid grid-cols-[5.5rem_1fr] items-baseline gap-5 border-t border-brand-200 py-4 last:border-b sm:grid-cols-[7rem_1fr] sm:gap-6">
+              <div class="dato-tecnico">
                 <dt class="micro-sm text-brand-500">{e.label}</dt>
                 <dd class="text-[0.88rem] font-light text-brand-800">{e.valor}</dd>
               </div>
             ))}
           </dl>
+          <span class="rule-hair" aria-hidden="true"></span>
 
-          <div class="mt-10 flex flex-col gap-4 sm:flex-row">
-            <a href={waLink(mensajeWhatsApp)} target="_blank" rel="noopener" class="btn btn-whatsapp flex-1">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.668-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          {opcionesTalla && (
+            <fieldset class="mt-10 border-0 p-0">
+              <div class="flex items-baseline justify-between gap-4">
+                <legend class="micro-sm text-brand-500">Talla</legend>
+                <a href="/guia-de-tallas" class="link-rule micro-sm inline-flex items-center gap-1.5 text-accent-700">
+                  <Icono nombre="regla" tamano={13} />
+                  ¿No sabes tu talla?
+                </a>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-2.5" id="grupo-tallas">
+                {opcionesTalla.map((op) => (
+                  <label class="cursor-pointer">
+                    <input type="radio" name="talla" value={op} class="peer sr-only" />
+                    <span class="flex h-11 min-w-11 items-center justify-center border border-brand-300 px-3 text-sm font-light text-brand-700 transition-colors duration-300 peer-checked:border-brand-950 peer-checked:bg-brand-950 peer-checked:text-brand-50 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-600">
+                      {op}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+
+          {d.grabable && (
+            <div class="mt-10">
+              <label for="grabado-input" class="micro-sm text-brand-500">Grabado personalizado (opcional)</label>
+              <input
+                type="text"
+                id="grabado-input"
+                maxlength="20"
+                placeholder="Ej. Con amor, siempre"
+                class="mt-3 w-full border-0 border-b border-brand-300 bg-transparent px-0 py-3 text-sm font-light text-brand-900 outline-none transition-colors duration-500 placeholder:text-brand-400 focus:border-accent-500"
+              />
+              <p id="grabado-contador" class="mt-2 text-right text-[0.7rem] text-brand-500" aria-live="polite">0/20</p>
+            </div>
+          )}
+
+          <div
+            class="mt-10 flex flex-col gap-4 sm:flex-row"
+            id="ficha-cta"
+            data-pieza={d.nombre}
+            data-referencia={d.referencia}
+            data-url={urlPieza}
+          >
+            <a id="cta-whatsapp" href={waLink(mensajeInicial)} target="_blank" rel="noopener" class="btn btn-whatsapp flex-1">
+              <Icono nombre="whatsapp" tamano={18} />
               Consultar por WhatsApp
             </a>
-            <a href="/catalogo" class="btn btn-outline">Seguir viendo</a>
+            <a href="/#contacto" class="btn btn-outline">Verla en tienda</a>
           </div>
 
           <p class="mt-6 text-xs leading-[1.8] font-light text-brand-500">
-            Al escribirnos se abre WhatsApp con la referencia de esta pieza lista para enviar.
+            Al escribirnos se abre WhatsApp con la referencia de esta pieza lista para enviar
+            {opcionesTalla && ', junto con la talla que elijas'}{d.grabable && ' y el grabado si lo pides'}.
             {disponible
-              ? 'Te confirmamos talla, precio final y entrega en minutos.'
-              : 'Las piezas por encargo tardan entre 2 y 4 semanas; te confirmamos tiempos y cotización.'}
+              ? ' Te confirmamos disponibilidad y forma de pago en minutos.'
+              : ' Te confirmamos tiempos exactos de fabricación y cotización.'}
           </p>
         </div>
       </div>
@@ -185,88 +280,51 @@ const jsonLd = {
           También <em class="font-normal text-accent-600 italic">te puede gustar</em>
         </h2>
         <div class="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
-          {relacionadas.map((p) => <PiezaCard pieza={p} />)}
+          {relacionadas.map((p) => <PiezaCard pieza={p} variante="normal" />)}
         </div>
       </div>
     </section>
   )}
+  </main>
 
-  <!-- ── Lightbox ── -->
-  <div
-    id="lightbox"
-    class="fixed inset-0 z-[60] hidden items-center justify-center bg-brand-950/95 p-4"
-    role="dialog"
-    aria-modal="true"
-    aria-label={`Fotos de ${d.nombre}`}
-  >
-    <button type="button" id="lightbox-cerrar" class="absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Cerrar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <button type="button" id="lightbox-prev" class="absolute left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:left-6" aria-label="Foto anterior">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <img id="lightbox-img" src={d.fotos[0]} alt={d.nombre} class="max-h-[85vh] max-w-full object-contain" />
-    <button type="button" id="lightbox-next" class="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-500 hover:bg-white/20 md:right-6" aria-label="Foto siguiente">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-    <p id="lightbox-contador" class="micro-sm absolute bottom-6 text-white/60"></p>
-  </div>
 
-  <Footer links={navLinks} />
-  <WhatsAppFlotante mensaje={mensajeWhatsApp} />
+  <Footer />
+  <WhatsAppFlotante mensaje={mensajeInicial} />
 </BaseLayout>
 
 <script>
-  // ── Galería + lightbox (vanilla, sin dependencias) ──
-  const galeria = document.getElementById('galeria');
-  const fotos: string[] = galeria ? JSON.parse(galeria.dataset.fotos || '[]') : [];
-  const principal = document.getElementById('galeria-principal') as HTMLImageElement | null;
-  const miniaturas = Array.from(document.querySelectorAll<HTMLButtonElement>('.galeria-miniatura'));
+  // ── CTA de WhatsApp: recalcula el mensaje al elegir talla o escribir el
+  // grabado. Ambos se eligen en el navegador, así que el enlace tiene que
+  // recomponerse en cliente — no basta con el href que trae el HTML.
+  import { waLink, mensajeConsulta } from '../../scripts/site';
 
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
-  const lightboxContador = document.getElementById('lightbox-contador');
+  function montarFichaCTA(): void {
+    const contenedor = document.getElementById('ficha-cta');
+    const enlace = document.getElementById('cta-whatsapp') as HTMLAnchorElement | null;
+    if (!contenedor || !enlace) return;
 
-  let actual = 0;
+    const pieza = contenedor.dataset.pieza || '';
+    const referencia = contenedor.dataset.referencia || '';
+    const url = contenedor.dataset.url || '';
 
-  function mostrar(indice: number): void {
-    actual = (indice + fotos.length) % fotos.length;
-    if (principal) principal.src = fotos[actual];
-    miniaturas.forEach((m) => m.setAttribute('data-activa', String(Number(m.dataset.index) === actual)));
-    if (lightboxImg) lightboxImg.src = fotos[actual];
-    if (lightboxContador) lightboxContador.textContent = `${actual + 1} / ${fotos.length}`;
+    function recalcular(): void {
+      const talla = document.querySelector<HTMLInputElement>('input[name="talla"]:checked')?.value;
+      const grabadoInput = document.getElementById('grabado-input') as HTMLInputElement | null;
+      const grabado = grabadoInput?.value.trim() || undefined;
+      enlace!.href = waLink(mensajeConsulta({ pieza, referencia, url, talla, grabado }));
+    }
+
+    document.getElementById('grupo-tallas')?.addEventListener('change', recalcular);
+
+    const grabadoInput = document.getElementById('grabado-input') as HTMLInputElement | null;
+    const contador = document.getElementById('grabado-contador');
+    grabadoInput?.addEventListener('input', () => {
+      if (contador) contador.textContent = `${grabadoInput.value.length}/20`;
+      recalcular();
+    });
+
+    recalcular();
   }
 
-  miniaturas.forEach((m) =>
-    m.addEventListener('click', () => mostrar(Number(m.dataset.index))),
-  );
-
-  function abrirLightbox(): void {
-    mostrar(actual);
-    lightbox?.classList.remove('hidden');
-    lightbox?.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function cerrarLightbox(): void {
-    lightbox?.classList.add('hidden');
-    lightbox?.classList.remove('flex');
-    document.body.style.overflow = '';
-  }
-
-  document.getElementById('galeria-abrir')?.addEventListener('click', abrirLightbox);
-  document.getElementById('lightbox-cerrar')?.addEventListener('click', cerrarLightbox);
-  document.getElementById('lightbox-prev')?.addEventListener('click', () => mostrar(actual - 1));
-  document.getElementById('lightbox-next')?.addEventListener('click', () => mostrar(actual + 1));
-
-  lightbox?.addEventListener('click', (e) => {
-    if (e.target === lightbox) cerrarLightbox();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (lightbox?.classList.contains('hidden')) return;
-    if (e.key === 'Escape') cerrarLightbox();
-    if (e.key === 'ArrowLeft') mostrar(actual - 1);
-    if (e.key === 'ArrowRight') mostrar(actual + 1);
-  });
+  document.addEventListener('astro:page-load', montarFichaCTA);
 </script>

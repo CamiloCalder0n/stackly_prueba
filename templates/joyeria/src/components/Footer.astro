@@ -1,60 +1,125 @@
 ---
+// Footer calcado del molde de Figma: cuatro columnas (Contáctanos,
+// Catálogo, Síguenos, Newsletter) sobre fondo blanco. El Figma traía
+// "Clientes" (Catálogos/Tipos de joyas/FAQ) y "Compañía" (Historia/
+// Testimonios/Términos) con enlaces que no existen en este sitio — se
+// reemplazan por rutas y enlaces reales del negocio, conservando el
+// mismo ritmo de cuatro columnas.
 import { NEGOCIO } from '../scripts/site';
+import Icono from './Icono.astro';
 
-interface Props {
-  links?: { label: string; href: string }[];
-}
-const { links = [] } = Astro.props;
 const year = new Date().getFullYear();
+const telLimpio = NEGOCIO.telefono.replace(/\s/g, '');
+
+const catalogo = [
+  { label: 'Ver catálogo', href: '/catalogo' },
+  { label: 'Guía de tallas', href: '/guia-de-tallas' },
+  { label: 'Encargos a la medida', href: '/encargos' },
+];
+
+const redes = [
+  NEGOCIO.instagram && { label: 'Instagram', href: NEGOCIO.instagram },
+  NEGOCIO.facebook && { label: 'Facebook', href: NEGOCIO.facebook },
+  NEGOCIO.googleReviewsUrl && { label: 'Reseñas de Google', href: NEGOCIO.googleReviewsUrl },
+].filter((x): x is { label: string; href: string } => Boolean(x));
 ---
 
-<footer class="bg-brand-950 text-brand-300">
-  <div class="container-wide grid gap-12 py-20 md:grid-cols-3">
+<footer class="border-t border-brand-200 bg-surface">
+  <div class="container-wide grid gap-12 py-20 sm:grid-cols-2 md:py-28 lg:grid-cols-4 lg:gap-10">
+    <!-- Contáctanos -->
     <div>
-      <p class="font-display text-2xl font-normal tracking-[0.08em] text-white">{NEGOCIO.nombre}</p>
-      <p class="mt-4 max-w-xs text-[0.85rem] leading-relaxed font-light">{NEGOCIO.eslogan}</p>
-      <div class="mt-7 flex gap-5">
+      <h3 class="font-display text-xl font-normal text-brand-950">Contáctanos</h3>
+      <ul class="mt-6 space-y-4">
+        <li>
+          <a href={`tel:${telLimpio}`} class="text-[0.9rem] font-light text-brand-700 transition-colors duration-500 hover:text-accent-700">
+            {NEGOCIO.telefono}
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${NEGOCIO.correo}`} class="text-[0.9rem] font-light text-brand-700 transition-colors duration-500 hover:text-accent-700">
+            {NEGOCIO.correo}
+          </a>
+        </li>
+        <li class="text-[0.9rem] font-light text-brand-700">{NEGOCIO.horario}</li>
+      </ul>
+    </div>
+
+    <!-- Catálogo (reemplaza "Clientes" del Figma con rutas reales) -->
+    <div>
+      <h3 class="font-display text-xl font-normal text-brand-950">Catálogo</h3>
+      <ul class="mt-6 space-y-4">
+        {catalogo.map((l) => (
+          <li>
+            <a href={l.href} class="text-[0.9rem] font-light text-brand-700 transition-colors duration-500 hover:text-accent-700">
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Síguenos (reemplaza "Compañía" del Figma con las redes reales) -->
+    <div>
+      <h3 class="font-display text-xl font-normal text-brand-950">Síguenos</h3>
+      <ul class="mt-6 space-y-4">
+        {redes.map((l) => (
+          <li>
+            <a href={l.href} target="_blank" rel="noopener" class="text-[0.9rem] font-light text-brand-700 transition-colors duration-500 hover:text-accent-700">
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-6 flex gap-3">
         {NEGOCIO.instagram && (
-          <a href={NEGOCIO.instagram} target="_blank" rel="noopener" aria-label="Instagram" class="transition-colors hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a href={NEGOCIO.instagram} target="_blank" rel="noopener" aria-label="Instagram"
+            class="flex h-9 w-9 items-center justify-center border border-brand-300 text-brand-700 transition-colors duration-500 hover:border-brand-950 hover:bg-brand-950 hover:text-white">
+            <Icono nombre="instagram" tamano={15} />
           </a>
         )}
         {NEGOCIO.facebook && (
-          <a href={NEGOCIO.facebook} target="_blank" rel="noopener" aria-label="Facebook" class="transition-colors hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <a href={NEGOCIO.facebook} target="_blank" rel="noopener" aria-label="Facebook"
+            class="flex h-9 w-9 items-center justify-center border border-brand-300 text-brand-700 transition-colors duration-500 hover:border-brand-950 hover:bg-brand-950 hover:text-white">
+            <Icono nombre="facebook" tamano={15} />
           </a>
         )}
       </div>
     </div>
 
-    {links.length > 0 && (
-      <nav aria-label="Enlaces del pie de página">
-        <p class="micro-sm text-brand-400">Enlaces</p>
-        <ul class="mt-6 space-y-3.5">
-          {links.map((l) => (
-            <li>
-              <a href={l.href} class="text-[0.85rem] font-light transition-colors duration-500 hover:text-accent-200">{l.label}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    )}
-
+    <!-- Newsletter -->
     <div>
-      <p class="micro-sm text-brand-400">Contacto</p>
-      <ul class="mt-6 space-y-3.5 text-[0.85rem] font-light">
-        <li>{NEGOCIO.direccion}, {NEGOCIO.ciudad}</li>
-        <li>{NEGOCIO.horario}</li>
-        <li><a href={`tel:${NEGOCIO.telefono.replace(/\s/g, '')}`} class="transition-colors duration-500 hover:text-accent-200">{NEGOCIO.telefono}</a></li>
-        <li><a href={`mailto:${NEGOCIO.correo}`} class="transition-colors duration-500 hover:text-accent-200">{NEGOCIO.correo}</a></li>
-      </ul>
+      <h3 class="font-display text-xl font-normal text-brand-950">Mantente actualizado de cualquier descuento</h3>
+      <form name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="mt-6">
+        <input type="hidden" name="form-name" value="newsletter" />
+        <p class="hidden"><label>No llenar: <input name="bot-field" /></label></p>
+        <label for="newsletter-correo" class="sr-only">Correo electrónico</label>
+        <input
+          id="newsletter-correo"
+          name="correo"
+          type="email"
+          required
+          placeholder="Ingresa tu dirección de email"
+          class="w-full border border-brand-300 bg-transparent px-4 py-3.5 text-sm font-light text-brand-900 outline-none transition-colors duration-500 placeholder:text-brand-500 focus:border-accent-500"
+        />
+        <p class="mt-4 text-[0.78rem] leading-relaxed font-light text-brand-500">
+          Por registrarte, estás aceptando nuestros términos de política y privacidad.
+        </p>
+        <button type="submit" class="btn mt-6 bg-brand-950 text-white hover:bg-brand-800">
+          Suscribir
+        </button>
+      </form>
     </div>
   </div>
 
-  <div class="border-t border-white/10">
-    <div class="container-wide flex flex-col items-center justify-between gap-2 py-6 text-[0.75rem] font-light text-brand-400 sm:flex-row">
+  <div class="border-t border-brand-200">
+    <div class="container-wide flex flex-col items-center justify-between gap-2 py-6 text-[0.72rem] font-light text-brand-500 sm:flex-row">
       <p>© {year} {NEGOCIO.nombre}. Todos los derechos reservados.</p>
-      <p>Hecho por <a href="https://stackly.co" class="font-semibold transition-colors hover:text-white">Stackly</a></p>
+      <p>
+        Hecho por
+        <a href="https://stackly.co" class="text-brand-800 underline underline-offset-2 transition-colors duration-500 hover:text-accent-700">
+          Stackly
+        </a>
+      </p>
     </div>
   </div>
 </footer>

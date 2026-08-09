@@ -1,0 +1,21 @@
+# Este archivo viaja con la plantilla: al extraerla con `npx degit`
+# el proyecto del cliente nace ya con sus reglas, sin heredar las
+# del monorepo de Stackly.
+
+# Dependencias y compilados
+node_modules/
+dist/
+.astro/
+
+# Variables de entorno: nunca se suben, salvo el ejemplo vacío
+# que le dice al cliente qué hay que llenar.
+.env*
+!.env.example
+
+# Hostings
+.netlify/
+.vercel
+
+# Sistema y registros
+.DS_Store
+*.log

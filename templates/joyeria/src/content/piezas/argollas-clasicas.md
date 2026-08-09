@@ -1,16 +1,25 @@
 ---
 nombre: Argollas Clásicas
-referencia: AUR-AR-002
+referencia: CJ-AN-004
 slug: argollas-clasicas
 fotos:
-  - https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=1200&q=80
-  - https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=1200&q=80
-categoria: aretes
-material: plata
-peso: 3,2 g el par (diámetro 25 mm)
-precio: 420000
+  - ../../assets/fotos/argollas-oro.jpg
+categoria: anillos
+material: oro
+ley: 18k
+piedras: Sin piedras (opción de tres diamantes en la argolla de ella)
+peso: 4,2 g y 5,6 g
+medidas: 3 mm de ancho · perfil confort redondeado por dentro
+acabado: Media caña pulida
+tallas: 4 a 14
+precio: 3200000
 ocultarPrecio: false
-descripcion: Argollas medianas en plata 950 con acabado pulido a espejo y cierre de clic. El básico que no puede faltar - van con todo, del día a la noche. Disponibles también en 15 mm y 35 mm por encargo.
-disponibilidad: disponible
-destacada: false
+descripcion: El par de argollas de matrimonio que más hacemos, en oro de 18k con perfil confort. Se fabrican a la medida de cada pareja y el precio incluye el grabado interior de nombres y fecha. Si quieren, la argolla de ella lleva tres diamantes engastados al ras.
+disponibilidad: por encargo
+diasEncargo: 15
+ocasion:
+  - matrimonio
+grabable: true
+nuevo: false
+destacada: true
 ---

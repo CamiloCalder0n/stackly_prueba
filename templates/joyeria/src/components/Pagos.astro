@@ -1,0 +1,26 @@
+---
+// Medios de pago: bloque genérico y sin `<section>` propia a propósito,
+// porque se reutiliza dentro de la ficha de pieza junto al precio (ahí
+// no debe abrir una sección nueva ni depender del contexto de la portada).
+import { NEGOCIO } from '../scripts/site';
+
+interface Props {
+  /** Versión reducida para usar junto al precio en la ficha de pieza. */
+  compacto?: boolean;
+}
+const { compacto = false } = Astro.props;
+---
+
+<div class={compacto ? 'flex flex-col gap-3' : 'flex flex-col gap-5'}>
+  <p class="micro-sm text-brand-500">Medios de pago</p>
+  <ul class="flex flex-wrap gap-x-3 gap-y-2" aria-label="Medios de pago aceptados">
+    {NEGOCIO.pagos.map((medio) => (
+      <li class="border border-brand-200 px-3 py-1.5 text-[0.72rem] font-light tracking-wide text-brand-700">
+        {medio}
+      </li>
+    ))}
+  </ul>
+  <p class={`font-light text-brand-500 ${compacto ? 'max-w-sm text-[0.78rem] leading-relaxed' : 'max-w-md text-[0.85rem] leading-[1.8]'}`}>
+    Con Addi y Sistecrédito difieres tu compra a cuotas: la aprobación se hace por WhatsApp y toma minutos.
+  </p>
+</div>

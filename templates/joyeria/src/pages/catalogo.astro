@@ -1,47 +1,30 @@
 ---
-// Catálogo completo con filtros client-side (categoría, material y precio).
-// El filtrado es TS vanilla sobre data-attributes de las cards — sin frameworks.
+// Catálogo reconstruido sobre el molde de Figma: sidebar de filtros con
+// acordeones + top bar (conteo / orden) + grilla de 4 columnas + paginación.
+// El filtrado, el orden y la sincronización con la URL viven en el <script>
+// del final (vanilla TS sobre data-attributes, sin frameworks) — permite
+// compartir por WhatsApp un catálogo ya filtrado.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
-import PiezaCard from '../components/PiezaCard.astro';
-import CTA from '../components/CTA.astro';
 import Footer from '../components/Footer.astro';
+import PiezaCard from '../components/PiezaCard.astro';
+import Filtros from '../components/Filtros.astro';
+import Icono from '../components/Icono.astro';
 import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
-import { NEGOCIO } from '../scripts/site';
+import { NEGOCIO, waLink } from '../scripts/site';
+import { NAV } from '../scripts/navegacion';
 
 const piezas = (await getCollection('piezas')).sort((a, b) =>
   a.data.nombre.localeCompare(b.data.nombre, 'es'),
 );
 
-const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Colecciones', href: '/#colecciones' },
-  { label: 'Nosotros', href: '/#historia' },
-  { label: 'FAQ', href: '/#faq' },
-  { label: 'Contacto', href: '/#contacto' },
-];
-
-/**
- * Pieza que se muestra como mosaico grande en la grilla editorial.
- * Es determinista (no depende del orden tras filtrar): si el filtro la
- * oculta, la grilla simplemente se recompone con `grid-flow-dense`.
- */
-const piezaMosaico = piezas.find((p) => p.data.destacada)?.data.slug;
-
 const categorias = [
   { valor: 'todas', label: 'Todas' },
   { valor: 'anillos', label: 'Anillos' },
-  { valor: 'collares', label: 'Collares' },
+  { valor: 'collares', label: 'Cadenas y collares' },
   { valor: 'aretes', label: 'Aretes' },
   { valor: 'pulseras', label: 'Pulseras' },
-];
-
-const materiales = [
-  { valor: 'todos', label: 'Todos' },
-  { valor: 'oro', label: 'Oro' },
-  { valor: 'plata', label: 'Plata' },
-  { valor: 'oro rosa', label: 'Oro rosa' },
 ];
 
 const precios = [
@@ -50,257 +33,447 @@ const precios = [
   { valor: '800000-2000000', label: '$800.000 a $2.000.000' },
   { valor: '2000000-', label: 'Más de $2.000.000' },
 ];
+
+const disponibilidades = [
+  { valor: 'todas', label: 'Todas' },
+  { valor: 'disponible', label: 'Disponible' },
+  { valor: 'por encargo', label: 'Por encargo' },
+];
+
+const ordenes = [
+  { valor: 'az', label: 'Alfabéticamente, A-Z' },
+  { valor: 'za', label: 'Alfabéticamente, Z-A' },
+  { valor: 'precio-asc', label: 'Precio: menor a mayor' },
+  { valor: 'precio-desc', label: 'Precio: mayor a menor' },
+  { valor: 'destacadas', label: 'Destacadas primero' },
+  { valor: 'novedades', label: 'Novedades primero' },
+];
+
+// Paginación real, dimensionada a la colección real. Con 12 piezas y este
+// tamaño de página cabe una sola página: es lo honesto, nada de "15 páginas"
+// de relleno del mockup. Si el cliente carga más piezas, crece solo.
+const PAGE_SIZE = 12;
+const totalPaginas = Math.ceil(piezas.length / PAGE_SIZE);
 ---
 
 <BaseLayout
   title="Catálogo"
   description={`Catálogo de ${NEGOCIO.nombre}: anillos, collares, aretes y pulseras en oro, plata y oro rosa, con precios visibles. Filtra y consulta por WhatsApp.`}
 >
-  <Header links={navLinks} cta="Consultar" />
+  <Header links={NAV} />
 
-  <!-- ── Encabezado editorial ── -->
-  <section class="relative overflow-hidden bg-brand-950 py-24 md:py-32">
-    <div class="absolute inset-0" data-parallax="0.08">
-      <img
-        src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&q=80"
-        alt=""
-        class="h-[118%] w-full object-cover opacity-20"
-        loading="eager"
-      />
-    </div>
-    <div class="absolute inset-0 bg-gradient-to-b from-brand-950/80 to-brand-950"></div>
-
-    <div class="container-wide relative" data-hero-title>
-      <div class="flex items-center gap-4">
-        <span class="h-px w-10 bg-accent-400/70" aria-hidden="true"></span>
-        <span class="micro text-accent-300">Catálogo</span>
-      </div>
-      <h1 class="type-hero mt-7 text-white">
-        Todas<br /><em class="font-normal text-accent-200 italic">nuestras piezas</em>
-      </h1>
-      <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-200">
-        Filtra por tipo de pieza, material o rango de precio. Cada ficha tiene fotos, especificaciones
-        y un botón para consultar directo por WhatsApp con la referencia lista.
-      </p>
-    </div>
-    <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-500/40 to-transparent" aria-hidden="true"></div>
-  </section>
-
-  <!-- ── Filtros: barra fina y pegajosa, sin botones genéricos ── -->
-  <!-- Se vuelve pegajosa solo en pantallas altas: en móvil ocuparía media pantalla -->
-  <section class="z-30 border-b border-brand-200 bg-surface/95 backdrop-blur-md lg:sticky lg:top-16" id="filtros">
-    <div class="container-wide divide-y divide-brand-100">
-      {[
-        { nombre: 'categoria', label: 'Pieza', opciones: categorias, aria: 'Filtrar por categoría' },
-        { nombre: 'material', label: 'Material', opciones: materiales, aria: 'Filtrar por material' },
-        { nombre: 'precio', label: 'Precio', opciones: precios, aria: 'Filtrar por precio' },
-      ].map((grupo) => (
-        <div
-          class="flex flex-wrap items-center gap-x-7 gap-y-2 py-3.5"
-          data-filtro={grupo.nombre}
-          role="group"
-          aria-label={grupo.aria}
-        >
-          <span class="micro-sm w-16 shrink-0 text-brand-500">{grupo.label}</span>
-          {grupo.opciones.map((o, i) => (
-            <button type="button" class="filtro-btn" data-valor={o.valor} aria-pressed={i === 0 ? 'true' : 'false'}>
-              {o.label}
-            </button>
-          ))}
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- ── Grid editorial: la pieza destacada ocupa un mosaico 2×2 ── -->
-  <section class="py-16 md:py-24">
-    <div class="container-wide">
-      <p class="micro-sm mb-10 text-brand-500" id="contador-resultados" aria-live="polite">
-        Mostrando {piezas.length} piezas
-      </p>
-
-      <div
-        class="grid auto-rows-auto grid-flow-dense gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
-        id="grid-piezas"
-        data-reveal-group
-      >
-        {piezas.map((pieza) => (
-          <PiezaCard
-            pieza={pieza}
-            variante={pieza.data.slug === piezaMosaico ? 'destacada' : 'normal'}
-            class={pieza.data.slug === piezaMosaico ? 'sm:col-span-2 lg:row-span-2' : ''}
-          />
-        ))}
-      </div>
-
-      <!-- Estado vacío -->
-      <div id="sin-resultados" class="hidden border border-brand-200 px-6 py-20 text-center">
-        <p class="type-sub text-brand-950">No encontramos piezas con esos filtros</p>
-        <p class="mx-auto mt-5 max-w-md text-[0.9rem] leading-[1.9] font-light text-brand-500">
-          Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras piezas se hacen por encargo.
+  <main id="contenido">
+    <!-- ── Encabezado editorial (Figma 1:237) ──
+         Franja gris #f5f5f5 con la miga de pan a la izquierda en Playfair
+         18px ("Inicio" al 57% de opacidad, la página actual en tinta) y el
+         título en ORO a 96px CENTRADO, con la frase de apoyo debajo, también
+         centrada y entrecomillada. Antes iba todo alineado a la izquierda,
+         sobre blanco y en tinta. -->
+    <section class="bg-paper pt-8 pb-12 md:pt-10 md:pb-16">
+      <div class="container-wide">
+        <nav class="font-display text-[1.05rem] text-brand-500" aria-label="Ruta de navegación">
+          <a href="/" class="transition-colors duration-500 hover:text-accent-700">Inicio</a>
+          <span class="mx-1.5" aria-hidden="true">/</span>
+          <span class="text-brand-950">Catálogo</span>
+        </nav>
+        <h1 class="type-hero mt-8 text-center text-accent-600" data-split="hero">Catálogo</h1>
+        <p class="mx-auto mt-4 max-w-xl text-center text-[1.05rem] leading-relaxed text-brand-950">
+          “Descubre el arte del oro hecho elegancia.”
         </p>
-        <button type="button" id="limpiar-filtros" class="btn btn-outline mt-10">Limpiar filtros</button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <CTA
-    titulo="¿No encuentras lo que buscas?"
-    descripcion="Muchas piezas se fabrican por encargo. Cuéntanos tu idea y te cotizamos sin compromiso."
-    botonTexto="Pedir una pieza a la medida"
-    mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre}. Quiero cotizar una pieza a la medida.`}
-  />
+    <!-- ── Filtros (sidebar) + resultados ── -->
+    <section class="py-14 md:py-20">
+      <div class="container-wide">
+        <div class="grid gap-x-12 gap-y-8 lg:grid-cols-[15rem_1fr]">
+          <aside>
+            <Filtros categorias={categorias} precios={precios} disponibilidades={disponibilidades} />
+          </aside>
 
-  <Footer links={navLinks} />
+          <div>
+            <!-- Top bar (Figma 1:263/1:264): conteo a la izquierda y orden a
+                 la derecha, ambos en Playfair 18px caja y baja. La etiqueta
+                 "Ordenar por" va atenuada y el valor en tinta, tal cual el
+                 molde. Antes era versalita con tracking abierto. -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-5">
+              <div class="flex items-center gap-4">
+                <p
+                  class="font-display text-[1.05rem] text-brand-950"
+                  id="contador-resultados"
+                  aria-live="polite"
+                >
+                  {piezas.length} Productos
+                </p>
+                <button
+                  type="button"
+                  id="filtros-toggle"
+                  class="flex items-center gap-2 border border-brand-300 px-3 py-1.5 font-display text-[0.9rem] text-brand-900 transition-colors duration-300 hover:border-accent-500 hover:text-accent-700 lg:hidden"
+                  aria-expanded="false"
+                  aria-controls="filtros-cuerpo"
+                >
+                  Filtros
+                  <span
+                    id="filtros-cuenta"
+                    class="hidden min-w-4 bg-accent-500 px-1 text-center text-[0.7rem] text-brand-950"
+                  ></span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <label for="catalogo-orden" class="font-display text-[1.05rem] text-brand-500">
+                  Ordenar por
+                </label>
+                <select
+                  id="catalogo-orden"
+                  class="border-0 bg-transparent py-1 font-display text-[1.05rem] text-brand-950 focus:outline-none"
+                >
+                  {ordenes.map((o) => <option value={o.valor}>{o.label}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <!-- El h1 de arriba encabeza la página; este h2 existe (aunque
+                 oculto) para no saltar de h1 a los h3 de cada tarjeta. -->
+            <h2 class="sr-only">Piezas del catálogo</h2>
+
+            <!-- Grilla del molde (1:265 y siguientes): 4 columnas de fotos
+                 en retrato ≈4/5 (212×261), separación horizontal corta y
+                 vertical amplia. Antes las fotos eran cuadradas: es al revés
+                 que en portada, donde el molde sí las pone casi cuadradas. -->
+            <div
+              class="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4"
+              id="grid-piezas"
+              data-reveal-group
+            >
+              {piezas.map((pieza) => (
+                <PiezaCard pieza={pieza} ratio="4/5" />
+              ))}
+            </div>
+
+            <!-- Estado vacío: con CTA a WhatsApp, porque muchas piezas se hacen por encargo -->
+            <div id="sin-resultados" class="hidden border border-brand-300 px-6 py-20 text-center">
+              <p class="type-sub text-brand-950">No encontramos piezas con esos filtros</p>
+              <p class="mx-auto mt-5 max-w-md text-[0.95rem] leading-[1.7] text-brand-900">
+                Prueba con otra combinación, o cuéntanos qué buscas por WhatsApp: muchas de nuestras
+                piezas se hacen por encargo.
+              </p>
+              <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <button type="button" data-limpiar-filtros class="btn btn-outline">Limpiar filtros</button>
+                <a
+                  href={waLink(
+                    `Hola, vengo del catálogo de ${NEGOCIO.nombre}. Busco una pieza que no encontré filtrando, ¿me ayudan a cotizarla por encargo?`,
+                  )}
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn-whatsapp"
+                >
+                  Cotizar por encargo
+                </a>
+              </div>
+            </div>
+
+            <!-- Paginación real (Figma 1:336-1:351): celdas cuadradas de 57px
+                 pegadas entre sí sobre la franja gris, filete #c8c8c8 y la
+                 página actual con el filete en tinta. Cifras en Playfair. -->
+            {totalPaginas > 1 && (
+              <nav class="mt-14 flex justify-center" aria-label="Paginación">
+                <div class="flex bg-paper">
+                  {Array.from({ length: totalPaginas }).map((_, i) => (
+                    <span
+                      aria-current={i === 0 ? 'page' : undefined}
+                      class={`flex h-14 w-14 items-center justify-center border font-display text-[1.05rem] ${
+                        i === 0
+                          ? 'border-brand-950 text-brand-950'
+                          : '-ml-px border-brand-300 text-brand-700'
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                  ))}
+                  <span
+                    class="-ml-px flex h-14 w-14 items-center justify-center border border-brand-300 text-brand-700"
+                    aria-hidden="true"
+                  >
+                    <Icono nombre="flecha" tamano={15} />
+                  </span>
+                </div>
+              </nav>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
   <WhatsAppFlotante mensaje={`Hola, vengo del catálogo de ${NEGOCIO.nombre} y quiero asesoría para elegir una joya.`} />
 </BaseLayout>
 
-<style>
-  /* Filtros como texto con hairline: lenguaje de vitrina, no de app */
-  .filtro-btn {
-    position: relative;
-    border: 0;
-    padding: 0.35rem 0;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    font-weight: 300;
-    letter-spacing: 0.04em;
-    color: var(--color-brand-500);
-    background: transparent;
-    cursor: pointer;
-    transition: color 0.5s var(--ease-silk);
-  }
-  .filtro-btn::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    height: 1px;
-    background: var(--color-accent-500);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 0.5s var(--ease-silk);
-  }
-  .filtro-btn:hover {
-    color: var(--color-brand-900);
-  }
-  .filtro-btn:hover::after {
-    transform: scaleX(1);
-  }
-  .filtro-btn[aria-pressed='true'] {
-    color: var(--color-brand-950);
-  }
-  .filtro-btn[aria-pressed='true']::after {
-    transform: scaleX(1);
-  }
-</style>
-
 <script>
-  // ── Filtros del catálogo (vanilla TS sobre data-attributes) ──
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-pieza]'));
-  const sinResultados = document.getElementById('sin-resultados');
-  const contador = document.getElementById('contador-resultados');
-  const grupos = Array.from(document.querySelectorAll<HTMLElement>('[data-filtro]'));
+  import { recomponerGrilla } from '../scripts/motion';
 
-  const estado: Record<string, string> = {
+  /** Claves de filtro que se leen/escriben en la URL y sus valores por defecto. */
+  const DEFAULTS = {
     categoria: 'todas',
-    material: 'todos',
     precio: 'todos',
-  };
+    disponibilidad: 'todas',
+    q: '',
+    orden: 'az',
+  } as const;
 
-  function enRango(precio: number, rango: string): boolean {
-    const [min, max] = rango.split('-');
-    return precio >= Number(min || 0) && (max === '' || precio < Number(max));
-  }
+  type Clave = keyof typeof DEFAULTS;
 
-  // Transición suave al filtrar (Web Animations API, sin dependencias).
-  const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ORDENES_VALIDOS = ['az', 'za', 'precio-asc', 'precio-desc', 'destacadas', 'novedades'];
 
-  function animarEntrada(): void {
-    if (menosMovimiento) return;
-    cards
-      .filter((c) => !c.classList.contains('hidden'))
-      .forEach((c, i) => {
-        c.animate(
-          [
-            { opacity: 0, transform: 'translateY(14px)' },
-            { opacity: 1, transform: 'translateY(0)' },
-          ],
-          {
-            duration: 520,
-            delay: Math.min(i * 40, 320),
-            easing: 'cubic-bezier(.22,.61,.36,1)',
-            fill: 'backwards',
-          },
-        );
-      });
-  }
+  function montarCatalogo(): void {
+    const grid = document.getElementById('grid-piezas');
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-pieza]'));
+    const sinResultados = document.getElementById('sin-resultados');
+    const contador = document.getElementById('contador-resultados');
+    const grupos = Array.from(document.querySelectorAll<HTMLElement>('[data-filtro]'));
+    const buscador = document.getElementById('catalogo-buscar') as HTMLInputElement | null;
+    const ordenSelect = document.getElementById('catalogo-orden') as HTMLSelectElement | null;
+    const toggle = document.getElementById('filtros-toggle');
+    const cuerpo = document.getElementById('filtros-cuerpo');
+    if (!grid) return;
 
-  function aplicarFiltros(): void {
-    let visibles = 0;
-    for (const card of cards) {
+    const estado: Record<Clave, string> = { ...DEFAULTS };
+
+    // ── Normaliza texto para el buscador: minúsculas y sin acentos ──
+    function normalizar(t: string): string {
+      return t
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function enRango(precio: number, rango: string): boolean {
+      const [min, max] = rango.split('-');
+      return precio >= Number(min || 0) && (max === '' || precio < Number(max));
+    }
+
+    function calcularVisible(card: HTMLElement): boolean {
       const okCategoria = estado.categoria === 'todas' || card.dataset.categoria === estado.categoria;
-      const okMaterial = estado.material === 'todos' || card.dataset.material === estado.material;
+      const okDisponibilidad =
+        estado.disponibilidad === 'todas' || card.dataset.disponibilidad === estado.disponibilidad;
       let okPrecio = true;
       if (estado.precio !== 'todos') {
-        // Las piezas sin precio publicado ("Consultar precio") solo aparecen con el filtro "Todos".
+        // Las piezas sin precio publicado ("Consultar precio") solo aparecen con "Todos".
         const precio = card.dataset.precio ? Number(card.dataset.precio) : NaN;
         okPrecio = !Number.isNaN(precio) && enRango(precio, estado.precio);
       }
-      const visible = okCategoria && okMaterial && okPrecio;
-      card.classList.toggle('hidden', !visible);
-      if (visible) visibles++;
+      const okBusqueda = !estado.q || (card.dataset.busqueda || '').includes(estado.q);
+      return okCategoria && okDisponibilidad && okPrecio && okBusqueda;
     }
-    sinResultados?.classList.toggle('hidden', visibles > 0);
-    if (contador) {
-      contador.textContent =
-        visibles === 1 ? 'Mostrando 1 pieza' : `Mostrando ${visibles} piezas`;
+
+    // Precio ausente (Consultar precio) siempre al final, sea cual sea la dirección.
+    function precioOrden(card: HTMLElement): number {
+      const v = card.dataset.precio ? Number(card.dataset.precio) : NaN;
+      return Number.isNaN(v) ? Infinity : v;
     }
-  }
 
-  function seleccionar(grupo: HTMLElement, valor: string): void {
-    const nombre = grupo.dataset.filtro!;
-    const botones = grupo.querySelectorAll<HTMLButtonElement>('.filtro-btn');
-    let encontrado = false;
-    botones.forEach((b) => {
-      const activo = b.dataset.valor === valor;
-      b.setAttribute('aria-pressed', String(activo));
-      if (activo) encontrado = true;
-    });
-    if (!encontrado) return; // valor inválido: no cambia el estado
-    estado[nombre] = valor;
-  }
+    function comparador(orden: string): (a: HTMLElement, b: HTMLElement) => number {
+      switch (orden) {
+        // En ambas direcciones de precio hay que atajar dos piezas sin precio:
+        // Infinity - Infinity es NaN, y un comparador que devuelve NaN deja el
+        // orden indefinido.
+        case 'precio-asc':
+          return (a, b) => {
+            const pa = precioOrden(a);
+            const pb = precioOrden(b);
+            if (pa === pb) return 0;
+            return pa - pb;
+          };
+        case 'precio-desc':
+          return (a, b) => {
+            const pa = precioOrden(a);
+            const pb = precioOrden(b);
+            if (pa === pb) return 0;
+            if (pa === Infinity) return 1;
+            if (pb === Infinity) return -1;
+            return pb - pa;
+          };
+        case 'destacadas':
+          return (a, b) =>
+            Number(b.dataset.destacada === 'true') - Number(a.dataset.destacada === 'true');
+        case 'novedades':
+          return (a, b) => Number(b.dataset.nuevo === 'true') - Number(a.dataset.nuevo === 'true');
+        case 'za':
+          return (a, b) => (b.dataset.nombre || '').localeCompare(a.dataset.nombre || '', 'es');
+        default: // 'az'
+          return (a, b) => (a.dataset.nombre || '').localeCompare(b.dataset.nombre || '', 'es');
+      }
+    }
 
-  grupos.forEach((grupo) => {
-    grupo.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.filtro-btn');
-      if (!btn) return;
-      seleccionar(grupo, btn.dataset.valor!);
-      aplicarFiltros();
-      animarEntrada();
-    });
-  });
+    function aplicarFiltros(animado = true): void {
+      const cambiar = () => {
+        let visibles = 0;
+        for (const card of cards) {
+          const visible = calcularVisible(card);
+          card.classList.toggle('hidden', !visible);
+          if (visible) visibles++;
+        }
+        // `cards` conserva siempre el orden alfabético original del servidor,
+        // así que ordenar desde ahí (y no desde el DOM ya reordenado) hace
+        // el resultado determinista sin importar cuántas veces se cambie el orden.
+        [...cards].sort(comparador(estado.orden)).forEach((c) => grid!.appendChild(c));
+        sinResultados?.classList.toggle('hidden', visibles > 0);
+        if (contador) {
+          contador.textContent = visibles === 1 ? '1 Producto' : `${visibles} Productos`;
+        }
+      };
+      if (animado) recomponerGrilla(grid!, cambiar);
+      else cambiar();
+    }
 
-  document.getElementById('limpiar-filtros')?.addEventListener('click', () => {
+    /* Los filtros aplicados se muestran como chips quitables. */
+    const activosCaja = document.getElementById('filtros-activos');
+    const cuentaBadge = document.getElementById('filtros-cuenta');
+
+    function etiquetaDe(clave: Clave, valor: string): string {
+      const grupo = grupos.find((g) => g.dataset.filtro === clave);
+      const boton = grupo?.querySelector<HTMLButtonElement>(
+        `.chip-filtro[data-valor="${CSS.escape(valor)}"]`,
+      );
+      return boton?.textContent?.trim() ?? valor;
+    }
+
+    function pintarActivos(): void {
+      if (!activosCaja) return;
+      const aplicados = (['categoria', 'precio', 'disponibilidad'] as const).filter(
+        (c) => estado[c] !== DEFAULTS[c],
+      );
+      if (estado.q) aplicados.push('q' as never);
+
+      activosCaja.innerHTML = '';
+      for (const clave of aplicados) {
+        const texto =
+          clave === ('q' as string)
+            ? `“${estado.q}”`
+            : etiquetaDe(clave as Clave, estado[clave as Clave]);
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        // Serif en caja y baja, como todo lo demás del molde (nada de versalitas).
+        chip.className =
+          'inline-flex items-center gap-2 border border-accent-500 px-3 py-1.5 font-display text-[0.9rem] text-accent-700 transition-colors duration-300 hover:bg-accent-500 hover:text-brand-950';
+        chip.innerHTML = `${texto}<span aria-hidden="true">×</span>`;
+        chip.setAttribute('aria-label', `Quitar el filtro ${texto}`);
+        chip.addEventListener('click', () => {
+          if (clave === ('q' as string)) {
+            estado.q = '';
+            if (buscador) buscador.value = '';
+          } else {
+            estado[clave as Clave] = DEFAULTS[clave as Clave];
+          }
+          sincronizarControles();
+          aplicarFiltros();
+          escribirURL();
+        });
+        activosCaja.appendChild(chip);
+      }
+      activosCaja.classList.toggle('hidden', aplicados.length === 0);
+      activosCaja.classList.toggle('flex', aplicados.length > 0);
+
+      if (cuentaBadge) {
+        cuentaBadge.textContent = String(aplicados.length);
+        cuentaBadge.classList.toggle('hidden', aplicados.length === 0);
+      }
+    }
+
+    function sincronizarControles(): void {
+      grupos.forEach((grupo) => {
+        const clave = grupo.dataset.filtro as Clave;
+        grupo.querySelectorAll<HTMLButtonElement>('.chip-filtro').forEach((b) => {
+          b.setAttribute('aria-pressed', String(b.dataset.valor === estado[clave]));
+        });
+      });
+      if (buscador) buscador.value = estado.q;
+      if (ordenSelect) ordenSelect.value = estado.orden;
+      pintarActivos();
+    }
+
+    // ── Estado inicial desde la URL: /catalogo?categoria=anillos&precio=0-800000 ──
+    // Se valida contra los botones que existen de verdad, para no aceptar basura.
+    function leerEstadoDesdeURL(): void {
+      const params = new URLSearchParams(window.location.search);
+      for (const grupo of grupos) {
+        const clave = grupo.dataset.filtro as Clave;
+        const valor = params.get(clave);
+        if (!valor) continue;
+        const existe = grupo.querySelector<HTMLButtonElement>(
+          `.chip-filtro[data-valor="${CSS.escape(valor)}"]`,
+        );
+        if (existe) estado[clave] = valor;
+      }
+      const q = params.get('q');
+      if (q) estado.q = normalizar(q).slice(0, 80);
+      const orden = params.get('orden');
+      if (orden && ORDENES_VALIDOS.includes(orden)) estado.orden = orden;
+    }
+
+    function escribirURL(): void {
+      const params = new URLSearchParams();
+      (['categoria', 'precio', 'disponibilidad', 'orden'] as const).forEach((clave) => {
+        if (estado[clave] !== DEFAULTS[clave]) params.set(clave, estado[clave]);
+      });
+      if (estado.q) params.set('q', estado.q);
+      const query = params.toString();
+      const url = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+      // replaceState (no push): filtrar no debe llenar el historial de "atrás",
+      // pero el enlace final SÍ queda en la barra para compartir por WhatsApp.
+      history.replaceState(null, '', url);
+    }
+
+    // ── Interacción ──
     grupos.forEach((grupo) => {
-      const primero = grupo.querySelector<HTMLButtonElement>('.filtro-btn');
-      if (primero) seleccionar(grupo, primero.dataset.valor!);
+      grupo.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip-filtro');
+        if (!btn || !grupo.contains(btn)) return;
+        const clave = grupo.dataset.filtro as Clave;
+        estado[clave] = btn.dataset.valor!;
+        sincronizarControles();
+        aplicarFiltros();
+        escribirURL();
+      });
     });
-    aplicarFiltros();
-    animarEntrada();
-  });
 
-  // Preselección vía URL: /catalogo?categoria=anillos&material=oro
-  const params = new URLSearchParams(window.location.search);
-  let preseleccion = false;
-  for (const nombre of ['categoria', 'material', 'precio']) {
-    const valor = params.get(nombre);
-    if (!valor) continue;
-    const grupo = grupos.find((g) => g.dataset.filtro === nombre);
-    if (grupo) {
-      seleccionar(grupo, valor);
-      preseleccion = true;
-    }
+    let temporizadorBusqueda: ReturnType<typeof setTimeout> | undefined;
+    buscador?.addEventListener('input', () => {
+      clearTimeout(temporizadorBusqueda);
+      temporizadorBusqueda = setTimeout(() => {
+        estado.q = normalizar(buscador.value.trim());
+        aplicarFiltros();
+        escribirURL();
+      }, 150);
+    });
+
+    ordenSelect?.addEventListener('change', () => {
+      estado.orden = ordenSelect.value;
+      aplicarFiltros();
+      escribirURL();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-limpiar-filtros]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        Object.assign(estado, DEFAULTS);
+        sincronizarControles();
+        aplicarFiltros();
+        escribirURL();
+      });
+    });
+
+    // Toggle del sidebar en móvil (en ≥1024px el CSS lo fuerza visible).
+    toggle?.addEventListener('click', () => {
+      const expandido = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expandido));
+      cuerpo?.classList.toggle('hidden', expandido);
+    });
+
+    leerEstadoDesdeURL();
+    sincronizarControles();
+    aplicarFiltros(false); // sin animación: es el estado inicial, no una interacción del usuario
   }
-  if (preseleccion) aplicarFiltros();
+
+  document.addEventListener('astro:page-load', montarCatalogo);
 </script>

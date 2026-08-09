@@ -9,6 +9,12 @@
 #
 # PRODUCCIÓN (Netlify): activa Identity + Git Gateway en el panel
 # de Netlify y elimina la línea local_backend.
+#
+# IMPORTANTE — dónde caen las fotos:
+# Las fotos de barberos van a `src/assets/fotos` (no a `public/`) para que
+# Astro las optimice en el build y las sirva en AVIF con srcset. Por eso
+# `public_folder` es una ruta RELATIVA: es la que el archivo .json necesita
+# para encontrar la foto desde `src/content/barberos/`.
 # ═══════════════════════════════════════════════════════════════
 backend:
   name: git-gateway
@@ -16,8 +22,8 @@ backend:
 
 local_backend: true
 
-media_folder: 'public/images'
-public_folder: '/images'
+media_folder: 'src/assets/fotos'
+public_folder: '../../assets/fotos'
 
 locale: 'es'
 
@@ -80,9 +86,18 @@ collections:
           label: 'Foto',
           name: 'foto',
           widget: 'image',
-          hint: 'Vertical (4:5) funciona mejor. Puedes subir una imagen o pegar una URL.',
+          hint: 'Vertical (3:4) funciona mejor. Sube el archivo aquí (Astro la optimiza en el build); no pegues una URL externa.',
         }
       - { label: 'Especialidad', name: 'especialidad', widget: 'string' }
+      - {
+          label: 'Años de oficio',
+          name: 'aniosOficio',
+          widget: 'number',
+          value_type: 'int',
+          min: 0,
+          max: 60,
+          hint: 'Se muestra en el equipo y en el paso 2 del wizard: es la señal de confianza que casi ningún competidor publica.',
+        }
       - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
       - {
           label: 'Activo',
@@ -109,6 +124,13 @@ collections:
           - { label: 'Dirección', name: 'direccion', widget: 'string' }
           - { label: 'Ciudad', name: 'ciudad', widget: 'string' }
           - { label: 'Horario (texto corto para el pie de página)', name: 'horario', widget: 'string' }
+          - {
+              label: 'Año de fundación',
+              name: 'anoFundacion',
+              widget: 'number',
+              value_type: 'int',
+              hint: 'Alimenta el sello "EST." del header, el hero y el pie de página, y el contador de años de oficio.',
+            }
           - { label: 'Instagram (URL)', name: 'instagram', widget: 'string', required: false }
           - { label: 'Facebook (URL)', name: 'facebook', widget: 'string', required: false }
           - { label: 'Google Maps (URL)', name: 'mapsUrl', widget: 'string', required: false }

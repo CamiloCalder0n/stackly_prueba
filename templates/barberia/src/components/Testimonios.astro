@@ -3,9 +3,15 @@
  * Sección #testimonios — full-bleed oscuro con fotografía de fondo
  * desaturada y viñeteada. Rompe el ritmo de secciones claras y da
  * profundidad: las citas van sobre hairlines, no dentro de cards.
+ *
+ * `ciudad` es señal de confianza: el benchmark de 13 barberías colombianas
+ * no encontró NINGUNA que publicara nombre + ciudad en sus testimonios.
  */
+import Foto from './Foto.astro';
+
 interface Testimonio {
   nombre: string;
+  ciudad: string;
   texto: string;
   detalle?: string;
 }
@@ -14,25 +20,25 @@ interface Props {
   eyebrow?: string;
   items: Testimonio[];
   /** Imagen de fondo de la sección (se desatura y oscurece). */
-  imagen?: string;
+  imagen: ImageMetadata;
 }
 const {
   titulo = 'Lo que dicen nuestros clientes',
   eyebrow = 'Testimonios',
   items,
-  imagen = 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1600&q=80',
+  imagen,
 } = Astro.props;
 ---
 
 <section class="grano vineta relative overflow-hidden bg-noche py-28 md:py-36" id="testimonios">
   <!-- Fondo fotográfico con parallax, en blanco y negro -->
   <div class="absolute inset-0" data-parallax="0.12">
-    <img
+    <Foto
       src={imagen}
       alt=""
-      class="h-[116%] w-full object-cover opacity-35 grayscale contrast-125"
-      loading="lazy"
-      decoding="async"
+      widths={[900, 1300, 1800, 2200]}
+      sizes="100vw"
+      class="h-[116%] object-cover opacity-35 grayscale contrast-125"
     />
   </div>
   <div class="absolute inset-0 bg-noche/62"></div>
@@ -67,11 +73,10 @@ const {
             <p class="font-display text-base font-semibold tracking-wide text-white uppercase">
               {t.nombre}
             </p>
-            {t.detalle && (
-              <p class="mt-1 text-[0.68rem] font-semibold tracking-[0.2em] text-accent-500/80 uppercase">
-                {t.detalle}
-              </p>
-            )}
+            <p class="mt-1 text-[0.68rem] font-semibold tracking-[0.2em] text-accent-500/80 uppercase">
+              {t.ciudad}
+              {t.detalle && <> · {t.detalle}</>}
+            </p>
           </figcaption>
         </figure>
       ))}

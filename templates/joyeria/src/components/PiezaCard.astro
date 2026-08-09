@@ -1,58 +1,128 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { precioCOP } from '../scripts/site';
+import { precioCOP, leyLegible } from '../scripts/site';
+import Foto from './Foto.astro';
 
 interface Props {
   pieza: CollectionEntry<'piezas'>;
   /**
-   * normal    → retrato 4:5 con la ficha debajo (por defecto).
+   * normal    → retrato con la ficha debajo (por defecto), estilo Figma:
+   *             foto + nombre + precio, sin badges superpuestos.
    * destacada → mosaico grande: la foto llena la tarjeta y el texto va encima.
    */
   variante?: 'normal' | 'destacada';
+  /** Muestra el peso junto al nombre (portada sí, catálogo no — como el Figma). */
+  mostrarPeso?: boolean;
+  /** Proporción de la foto en la variante normal. */
+  ratio?: '4/5' | '1/1' | '3/4';
   /** Clases extra para el span en la grilla editorial. */
   class?: string;
 }
 
-const { pieza, variante = 'normal', class: clase = '' } = Astro.props;
+const {
+  pieza,
+  variante = 'normal',
+  mostrarPeso = false,
+  ratio = '4/5',
+  class: clase = '',
+} = Astro.props;
 const d = pieza.data;
 const disponible = d.disponibilidad === 'disponible';
 const precioVisible = d.precio != null && !d.ocultarPrecio;
 const precioTexto = precioVisible ? precioCOP(d.precio!) : 'Consultar precio';
 
+/**
+ * Señal de disponibilidad honesta (requisito de negocio: nada de urgencia
+ * inventada). Solo se muestra en dos casos concretos:
+ *  - Pieza única en vitrina (unidades === 1).
+ *  - Por encargo, con el plazo real de fabricación.
+ * Con varias unidades en stock no se dice nada: no hay nada honesto que urja.
+ */
+const senalDisponibilidad =
+  d.unidades === 1
+    ? 'Pieza única'
+    : d.disponibilidad === 'por encargo' && d.diasEncargo
+      ? `Por encargo · ${d.diasEncargo} días`
+      : null;
+
+/* Texto de búsqueda normalizado (sin acentos) para el buscador del catálogo:
+   nombre + referencia + material + piedras, tal como pide el filtro. */
+const normalizar = (t: string) =>
+  t
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+const busqueda = normalizar([d.nombre, d.referencia, d.material, d.piedras ?? ''].join(' '));
+
 /* IMPORTANTE: los data-* de abajo son el contrato con el filtro del catálogo
-   (src/pages/catalogo.astro). No renombrar ni mover fuera del elemento raíz. */
+   (src/pages/catalogo.astro y Filtros.astro). No renombrar ni mover fuera
+   del elemento raíz. */
+const datos = {
+  'data-pieza': true,
+  'data-categoria': d.categoria,
+  'data-material': d.material,
+  'data-precio': precioVisible ? String(d.precio) : '',
+  'data-ley': d.ley,
+  'data-ocasion': d.ocasion.join(','),
+  'data-nuevo': String(d.nuevo),
+  'data-nombre': d.nombre,
+  'data-referencia': d.referencia,
+  'data-destacada': String(d.destacada),
+  'data-disponibilidad': d.disponibilidad,
+  'data-busqueda': busqueda,
+};
+
+/* `view-transition-name` habilita la transición de elemento compartido
+   entre el catálogo y la ficha de la pieza. Solo se aplica en la variante
+   normal: si la misma pieza llegara a pintarse dos veces en una página
+   (destacada + normal, p. ej. en la portada), poner el nombre en ambas
+   colisionaría — con que una lo lleve alcanza para la transición. */
+const nombreTransicion = `pieza-${d.slug}`;
 ---
 
 {variante === 'destacada' ? (
   <a
     href={`/piezas/${d.slug}/`}
-    class={`group relative block aspect-[4/5] overflow-hidden bg-brand-950 lg:aspect-auto lg:h-full ${clase}`}
-    data-pieza
-    data-categoria={d.categoria}
-    data-material={d.material}
-    data-precio={precioVisible ? String(d.precio) : ''}
+    class={`group relative block aspect-[4/5] overflow-hidden bg-noche lg:aspect-auto lg:h-full ${clase}`}
+    {...datos}
   >
-    <img
+    <Foto
       src={d.fotos[0]}
       alt={d.nombre}
-      class="h-full w-full object-cover opacity-90 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-100"
-      loading="lazy"
+      ratio="4/5"
+      sizes="(max-width: 640px) 100vw, 66vw"
+      class="h-full opacity-90 transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.06] group-hover:opacity-100"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/15 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-noche/90 via-noche/15 to-transparent"></div>
 
-    {!disponible && (
-      <span class="micro-sm absolute top-5 left-5 bg-brand-950/70 px-3 py-1.5 text-accent-200 backdrop-blur-sm">
-        Por encargo
+    <div class="absolute inset-x-5 top-5 flex items-start justify-between gap-2 md:inset-x-7 md:top-7">
+      <div class="flex flex-wrap gap-1.5">
+        {d.nuevo && (
+          <span class="micro-sm bg-accent-500 px-2.5 py-1.5 text-brand-50">Nuevo</span>
+        )}
+        {!disponible && (
+          <span class="micro-sm bg-noche/70 px-2.5 py-1.5 text-accent-700 backdrop-blur-sm">
+            Por encargo
+          </span>
+        )}
+      </div>
+      <span class="micro-sm shrink-0 border border-accent-300/70 bg-noche/70 px-2.5 py-1.5 text-accent-700 backdrop-blur-sm">
+        {leyLegible(d.ley)}
       </span>
-    )}
+    </div>
 
     <div class="absolute inset-x-0 bottom-0 p-7 md:p-9">
-      <span class="micro-sm text-accent-300">{d.categoria} · {d.material}</span>
-      <h3 class="mt-3 font-display text-3xl leading-tight font-light text-white md:text-4xl">
+      <span class="micro-sm text-accent-600">{d.categoria} · {d.material}</span>
+      <h3 class="mt-3 font-display text-3xl leading-tight font-normal text-white md:text-4xl">
         {d.nombre}
       </h3>
       <div class="mt-4 flex items-end justify-between gap-4">
-        <p class="precio text-lg text-accent-200">{precioTexto}</p>
+        <div>
+          <p class="precio text-lg text-accent-700">{precioTexto}</p>
+          {senalDisponibilidad && (
+            <p class="micro-sm mt-1.5 text-brand-700">{senalDisponibilidad}</p>
+          )}
+        </div>
         <span class="micro-sm inline-flex translate-y-1 items-center gap-2 text-white/0 transition-all duration-500 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:translate-y-0 group-hover:text-white/80">
           Ver pieza
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -61,44 +131,39 @@ const precioTexto = precioVisible ? precioCOP(d.precio!) : 'Consultar precio';
     </div>
   </a>
 ) : (
-  <a
-    href={`/piezas/${d.slug}/`}
-    class={`group block ${clase}`}
-    data-pieza
-    data-categoria={d.categoria}
-    data-material={d.material}
-    data-precio={precioVisible ? String(d.precio) : ''}
-  >
-    <div class="relative overflow-hidden bg-brand-100">
-      <img
+  <a href={`/piezas/${d.slug}/`} class={`group block ${clase}`} {...datos}>
+    <!-- Tarjeta calcada del Figma (nodos 1:39/1:46 en portada, 1:265 en
+         catálogo): foto a canto vivo sobre el greige #e6e3dc, sin sombra ni
+         velo, y la ficha inmediatamente debajo. El molde apoya el nombre en
+         Playfair 20px y el precio en Inria Serif a 11px — ese salto de
+         escala tan grande entre uno y otro es intencional. -->
+    <div
+      class="relative overflow-hidden bg-brand-200"
+      style={`view-transition-name: ${nombreTransicion}`}
+    >
+      <Foto
         src={d.fotos[0]}
         alt={d.nombre}
-        class="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
-        loading="lazy"
+        ratio={ratio}
+        class="transition-transform duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.05]"
       />
-      <!-- Velo que aparece lento y revela el CTA -->
-      <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent opacity-0 transition-opacity duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:opacity-100"></div>
-      <span class="micro-sm absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-center gap-2 pb-6 text-white opacity-0 transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:translate-y-0 group-hover:opacity-100">
-        Ver pieza
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </span>
-
-      {!disponible && (
-        <span class="micro-sm absolute top-4 left-4 bg-brand-950/70 px-2.5 py-1.5 text-accent-200 backdrop-blur-sm">
-          Por encargo
-        </span>
-      )}
     </div>
 
-    <div class="pt-5">
-      <span class="micro-sm text-brand-500">{d.categoria} · {d.material}</span>
-      <h3 class="mt-2 font-display text-xl leading-snug font-normal text-brand-950 transition-colors duration-500 group-hover:text-accent-700">
-        {d.nombre}
-      </h3>
-      <div class="mt-3 flex items-center gap-3">
-        <span class="h-px w-5 bg-accent-500/60 transition-all duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:w-9" aria-hidden="true"></span>
-        <p class="precio text-sm text-brand-800">{precioTexto}</p>
+    <div class="flex items-start justify-between gap-4 pt-3">
+      <div>
+        <h3 class="font-display text-xl leading-snug font-normal text-brand-950 transition-colors duration-500 group-hover:text-accent-700">
+          {d.nombre}
+        </h3>
+        <p class="precio mt-0.5 text-[0.8rem] text-brand-900">{precioTexto}</p>
+        {!disponible && (
+          <p class="mt-1 text-[0.78rem] text-accent-700">
+            Por encargo{d.diasEncargo ? ` · ${d.diasEncargo} días` : ''}
+          </p>
+        )}
       </div>
+      {mostrarPeso && d.peso && (
+        <span class="precio shrink-0 pt-2 text-[0.78rem] text-brand-500">{d.peso}</span>
+      )}
     </div>
   </a>
 )}

@@ -1,6 +1,7 @@
 ---
 nombre: Colección Herencia
-descripcion: Oro de 18k y diseños clásicos pensados para durar generaciones. Solitarios, medallones y eslabones que se heredan.
-portada: https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1200&q=80
-orden: 1
+descripcion: >-
+  Los diseños que llevamos tres generaciones haciendo: argollas de matrimonio, sellos y racimos en oro de 18k, grabados a buril en el taller.
+portada: ../../assets/fotos/anillo-terciopelo.jpg
+orden: 2
 ---

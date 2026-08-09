@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import { NEGOCIO } from '../scripts/site';
 
@@ -9,14 +10,37 @@ interface Props {
   image?: string;
 }
 
-const {
-  title = NEGOCIO.nombre,
-  description = NEGOCIO.descripcion,
-  image,
-} = Astro.props;
+const { title = NEGOCIO.nombre, description = NEGOCIO.descripcion, image } = Astro.props;
 
-const fullTitle = title === NEGOCIO.nombre ? `${NEGOCIO.nombre} — ${NEGOCIO.eslogan}` : `${title} | ${NEGOCIO.nombre}`;
+const fullTitle =
+  title === NEGOCIO.nombre
+    ? `${NEGOCIO.nombre} — ${NEGOCIO.eslogan}`
+    : `${title} | ${NEGOCIO.nombre}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+/* Datos estructurados del negocio local. `JewelryStore` es el tipo correcto
+   para una joyería y habilita el panel de conocimiento de Google. */
+const negocioJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'JewelryStore',
+  name: NEGOCIO.nombre,
+  description: NEGOCIO.descripcion,
+  telephone: NEGOCIO.telefono,
+  email: NEGOCIO.correo,
+  url: Astro.site?.href,
+  priceRange: '$$$',
+  foundingDate: String(NEGOCIO.anoFundacion),
+  currenciesAccepted: 'COP',
+  paymentAccepted: NEGOCIO.pagos.join(', '),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: NEGOCIO.direccion,
+    addressLocality: NEGOCIO.ciudad,
+    addressCountry: 'CO',
+  },
+  openingHours: 'Mo-Sa 10:00-19:00',
+  sameAs: [NEGOCIO.instagram, NEGOCIO.facebook].filter(Boolean),
+};
 ---
 
 <!doctype html>
@@ -29,44 +53,36 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#f8f4ec" />
 
     <!-- Open Graph / redes sociales -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={NEGOCIO.nombre} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="es_CO" />
-    {image && <meta property="og:image" content={image} />}
+    {image && <meta property="og:image" content={new URL(image, Astro.site).href} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Tipografías (cámbialas junto con los tokens en global.css) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Las tipografías son variables y self-hosted: se importan desde
+         global.css, sin peticiones bloqueantes a un CDN externo. -->
 
-    <!-- Datos estructurados: joyería (negocio local) -->
     <script
       type="application/ld+json"
-      set:html={JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'JewelryStore',
-        name: NEGOCIO.nombre,
-        description: NEGOCIO.descripcion,
-        telephone: NEGOCIO.telefono,
-        email: NEGOCIO.correo,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: NEGOCIO.direccion,
-          addressLocality: NEGOCIO.ciudad,
-          addressCountry: 'CO',
-        },
-      })}
+      is:inline
+      set:html={JSON.stringify(negocioJsonLd)}
     />
+
+    <ClientRouter />
   </head>
   <body>
+    <a
+      href="#contenido"
+      class="micro-sm sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-brand-950 focus:px-5 focus:py-3 focus:text-white"
+    >
+      Saltar al contenido
+    </a>
     <slot />
     <script src="../scripts/animations.ts"></script>
   </body>

@@ -1,0 +1,508 @@
+---
+// Guía de tallas: la herramienta que ninguna joyería colombiana del
+// benchmark resuelve bien. Método del hilo, conversor interactivo y un
+// medidor imprimible a escala real, con tabla de conversión honesta sobre
+// su margen de error.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Icono from '../components/Icono.astro';
+import { NEGOCIO, waLink } from '../scripts/site';
+import { NAV } from '../scripts/navegacion';
+
+/**
+ * Tabla de tallas de anillo: solo el diámetro interno es el dato "duro"
+ * (tomado de la escala americana estándar, la que en Colombia se usa como
+ * referencia porque no existe una numeración local propia). La
+ * circunferencia se DERIVA con circunferencia = π × diámetro en vez de
+ * copiarse de otra fuente, así el conversor de abajo y esta tabla nunca
+ * se contradicen entre sí.
+ */
+const TABLA_TALLAS = [
+  { us: '3', diametro: 14.1 },
+  { us: '3.5', diametro: 14.5 },
+  { us: '4', diametro: 14.9 },
+  { us: '4.5', diametro: 15.3 },
+  { us: '5', diametro: 15.7 },
+  { us: '5.5', diametro: 16.1 },
+  { us: '6', diametro: 16.5 },
+  { us: '6.5', diametro: 16.9 },
+  { us: '7', diametro: 17.3 },
+  { us: '7.5', diametro: 17.7 },
+  { us: '8', diametro: 18.1 },
+  { us: '8.5', diametro: 18.5 },
+  { us: '9', diametro: 18.9 },
+  { us: '9.5', diametro: 19.3 },
+  { us: '10', diametro: 19.7 },
+  { us: '10.5', diametro: 20.2 },
+  { us: '11', diametro: 20.6 },
+  { us: '11.5', diametro: 21.0 },
+  { us: '12', diametro: 21.4 },
+  { us: '12.5', diametro: 21.8 },
+  { us: '13', diametro: 22.2 },
+].map((t) => ({ ...t, circunferencia: Number((t.diametro * Math.PI).toFixed(1)) }));
+
+const pasosHilo = [
+  {
+    titulo: 'Consigue un hilo',
+    texto: 'Un hilo delgado (no elástico) o una tira angosta de papel. Nada de lana ni cordones gruesos: cambian la medida.',
+  },
+  {
+    titulo: 'Rodea el dedo',
+    texto: 'Enróllalo en la base del dedo donde va el anillo, sin apretar y sin que quede flojo. Debe poder deslizarse por encima del nudillo.',
+  },
+  {
+    titulo: 'Marca el cruce',
+    texto: 'Con un lápiz, marca el punto exacto donde el hilo se encuentra consigo mismo al dar la vuelta completa.',
+  },
+  {
+    titulo: 'Mide en milímetros',
+    texto: 'Estira el hilo sobre una regla y mide esa distancia en mm: esa es tu circunferencia.',
+  },
+  {
+    titulo: 'Divide entre π',
+    texto: 'Circunferencia ÷ 3,1416 = diámetro. O escribe directamente la medida en el conversor de aquí abajo y listo.',
+  },
+];
+
+const advertencias = [
+  {
+    titulo: 'Mide al final del día',
+    texto: 'Los dedos se hinchan un poco con las horas y con el calor. Medir en la mañana suele dar una talla más pequeña de la real.',
+  },
+  {
+    titulo: 'No midas con frío',
+    texto: 'El frío contrae los dedos. Si acabas de salir a la calle o tienes las manos heladas, espera a que vuelvan a su tamaño normal.',
+  },
+  {
+    titulo: 'El nudillo manda',
+    texto: 'Si tu nudillo es más ancho que la base del dedo, el anillo tiene que pasar por ahí sin apretar. Mide también esa zona y prioriza que entre cómodo.',
+  },
+];
+---
+
+<BaseLayout
+  title="Guía de tallas"
+  description={`Mide tu talla de anillo desde casa con el método del hilo, un conversor interactivo o un medidor para imprimir a tamaño real. El primer ajuste de talla va por cuenta de ${NEGOCIO.nombre}.`}
+>
+  <div class="no-imprimir">
+    <Header links={NAV} />
+  </div>
+
+  <main id="contenido">
+
+  <!-- ── Encabezado ── -->
+  <section class="no-imprimir border-b border-brand-200 bg-surface py-24 md:py-32">
+    <div class="container-wide">
+      <div class="flex items-center gap-4">
+        <span class="h-px w-10 bg-accent-500/70" aria-hidden="true"></span>
+        <span class="micro text-accent-700">Guía de tallas</span>
+      </div>
+      <h1 class="type-hero mt-7 max-w-4xl text-brand-950" data-split="hero">
+        Encuentra tu talla<br /><em class="font-normal text-accent-600 italic">sin salir de casa</em>
+      </h1>
+      <p class="mt-8 max-w-lg text-[0.95rem] leading-[1.9] font-light text-brand-600">
+        Dos maneras de medir tu talla de anillo: el método del hilo, de toda la vida, o un medidor
+        para imprimir a tamaño real. Con eso y el conversor de aquí abajo, la mayoría acierta a la
+        primera.
+      </p>
+      <div class="mt-9 inline-flex items-center gap-3 border border-brand-300 px-5 py-3">
+        <Icono nombre="anillo" tamano={18} class="shrink-0 text-accent-600" />
+        <span class="micro-sm text-brand-800">El primer ajuste de talla va por nuestra cuenta</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 01 · Método del hilo ── -->
+  <section class="no-imprimir py-24 md:py-36" id="metodo-hilo">
+    <div class="container-wide">
+      <SectionHeading
+        numero="01"
+        eyebrow="El método de siempre"
+        titulo="El método"
+        acento="del hilo"
+        descripcion="Con un hilo, una regla y cinco minutos mides tu talla en casa. Es el método que usan los joyeros de toda la vida antes de que existiera nada digital."
+      />
+
+      <ol class="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+        {pasosHilo.map((p, i) => (
+          <li class="border-t border-brand-200 pt-6" data-reveal>
+            <span class="paso-num">{String(i + 1).padStart(2, '0')}</span>
+            <p class="type-sub mt-4 text-brand-950">{p.titulo}</p>
+            <p class="mt-3 text-[0.88rem] leading-[1.8] font-light text-brand-600">{p.texto}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="mt-16 grid gap-8 border border-accent-300 bg-accent-50/40 p-8 sm:grid-cols-3 md:p-10" data-reveal>
+        {advertencias.map((a) => (
+          <div>
+            <p class="micro-sm text-accent-700">{a.titulo}</p>
+            <p class="mt-2.5 text-[0.85rem] leading-[1.8] font-light text-brand-700">{a.texto}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 · Conversor interactivo + tabla completa ── -->
+  <section class="no-imprimir bg-paper py-24 md:py-36" id="conversor">
+    <div class="container-wide">
+      <SectionHeading
+        numero="02"
+        eyebrow="Calculadora"
+        titulo="Conversor de"
+        acento="circunferencia a talla"
+        descripcion="Escribe la medida que tomaste con el hilo, en cualquiera de los dos campos. El otro y tu talla se completan solos."
+      />
+
+      <div class="mt-16 grid gap-14 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-6" data-reveal id="caja-conversor" data-tabla={JSON.stringify(TABLA_TALLAS)}>
+          <div class="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label for="input-circunferencia" class="micro-sm mb-2 block text-brand-500">
+                Circunferencia (mm)
+              </label>
+              <input
+                id="input-circunferencia"
+                name="circunferencia"
+                type="number"
+                inputmode="decimal"
+                min="35"
+                max="85"
+                step="0.1"
+                placeholder="Ej. 54,4"
+                class="w-full border-0 border-b border-brand-300 bg-transparent px-0 py-3 text-lg font-light text-brand-900 outline-none transition-colors duration-500 placeholder:text-brand-400 focus:border-accent-500"
+              />
+            </div>
+            <div>
+              <label for="input-diametro" class="micro-sm mb-2 block text-brand-500">
+                Diámetro (mm)
+              </label>
+              <input
+                id="input-diametro"
+                name="diametro"
+                type="number"
+                inputmode="decimal"
+                min="11"
+                max="27"
+                step="0.1"
+                placeholder="Ej. 17,3"
+                class="w-full border-0 border-b border-brand-300 bg-transparent px-0 py-3 text-lg font-light text-brand-900 outline-none transition-colors duration-500 placeholder:text-brand-400 focus:border-accent-500"
+              />
+            </div>
+          </div>
+
+          <div
+            id="resultado-talla"
+            class="mt-8 min-h-[6.5rem] border border-accent-300 bg-surface px-6 py-6"
+            aria-live="polite"
+          >
+            <p class="micro-sm text-brand-500">Escribe una medida para ver tu talla</p>
+          </div>
+
+          <p class="mt-5 text-xs leading-[1.8] font-light text-brand-500">
+            Es una guía, no una medición de precisión: si tu resultado cae entre dos tallas, o
+            tienes dudas, escríbenos por WhatsApp y te ayudamos a decidir. El primer ajuste de
+            talla va por nuestra cuenta.
+          </p>
+        </div>
+
+        <!-- Tabla de conversión completa -->
+        <div class="lg:col-span-6" data-reveal>
+          <p class="micro-sm text-brand-500">Tabla de conversión completa</p>
+          <p class="mt-3 max-w-md text-[0.85rem] leading-[1.8] font-light text-brand-600">
+            Basada en la numeración americana, la que se usa como referencia en la mayoría de
+            joyerías colombianas porque no existe una escala local propia. La circunferencia se
+            calcula como π × diámetro.
+          </p>
+          <div class="mt-6 max-h-[26rem] overflow-y-auto overflow-x-auto border border-brand-200">
+            <table class="w-full min-w-[360px] border-collapse text-left">
+              <thead class="sticky top-0 bg-surface">
+                <tr class="border-b border-brand-300">
+                  <th class="micro-sm px-4 py-3 font-normal text-brand-500">Talla</th>
+                  <th class="micro-sm px-4 py-3 font-normal text-brand-500">Diámetro</th>
+                  <th class="micro-sm px-4 py-3 font-normal text-brand-500">Circunferencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TABLA_TALLAS.map((t) => (
+                  <tr class="border-b border-brand-100 last:border-b-0">
+                    <td class="px-4 py-2.5 font-display text-base font-light text-brand-950">{t.us}</td>
+                    <td class="px-4 py-2.5 text-[0.85rem] font-light text-brand-700">{t.diametro.toFixed(1)} mm</td>
+                    <td class="px-4 py-2.5 text-[0.85rem] font-light text-brand-700">{t.circunferencia.toFixed(1)} mm</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 · Medidor imprimible ── -->
+  <!-- Sin `no-imprimir`: es la ÚNICA sección visible al imprimir (ver <style>). -->
+  <section class="py-24 md:py-36" id="medidor-imprimible">
+    <div class="container-wide">
+      <div class="no-imprimir">
+        <SectionHeading
+          numero="03"
+          eyebrow="Para imprimir"
+          titulo="Medidor a"
+          acento="tamaño real"
+          descripcion="Imprime esta sección, comprueba la calibración y recorta cada círculo. El que entra en tu dedo sin apretar ni quedar flojo es tu talla."
+        />
+      </div>
+
+      <div class="no-imprimir mt-10 flex flex-wrap items-center gap-4" data-reveal>
+        <button type="button" id="boton-imprimir" class="btn btn-primary">
+          Imprimir medidor
+        </button>
+        <p class="max-w-md text-xs leading-[1.8] font-light text-brand-500">
+          En el diálogo de impresión, elige escala <strong class="font-normal text-brand-700">100% / Tamaño real</strong>,
+          nunca "Ajustar a la página": si lo ajustas, los círculos ya no miden lo que dicen.
+        </p>
+      </div>
+
+      <!-- Franja de calibración: si no mide 85,6 × 53,98 mm al imprimir, la escala está mal. -->
+      <div class="calibracion mt-14" data-reveal>
+        <svg
+          width="85.6mm"
+          height="53.98mm"
+          viewBox="0 0 85.6 53.98"
+          role="img"
+          aria-label="Rectángulo de calibración: al imprimir debe medir exactamente 85,6 por 53,98 milímetros, el tamaño de una tarjeta bancaria estándar"
+        >
+          <rect x="0.4" y="0.4" width="84.8" height="53.18" fill="none" stroke="currentColor" stroke-width="0.6"></rect>
+          <text x="42.8" y="24" text-anchor="middle" font-size="3.4" fill="currentColor" opacity="0.7" font-family="sans-serif">Calibración</text>
+          <text x="42.8" y="30" text-anchor="middle" font-size="4.6" fill="currentColor" font-family="sans-serif">85,6 × 53,98 mm</text>
+          <text x="42.8" y="36" text-anchor="middle" font-size="3" fill="currentColor" opacity="0.6" font-family="sans-serif">Compara este recuadro con tu tarjeta bancaria</text>
+        </svg>
+      </div>
+
+      <p class="no-imprimir mt-6 max-w-2xl text-[0.85rem] leading-[1.8] font-light text-brand-600">
+        Pon una tarjeta bancaria real sobre el recuadro de arriba. Si coincide exactamente, tu
+        impresión está a escala real y los círculos de abajo miden lo que dicen. Si el recuadro
+        queda más pequeño o más grande que la tarjeta, corrige la escala de impresión antes de
+        recortar nada.
+      </p>
+
+      <!-- Círculos a escala real: uno por talla. viewBox en milímetros (1 unidad = 1 mm). -->
+      <div class="medidor-grid mt-14" role="list" aria-label="Círculos de tallas de anillo para recortar, dibujados a tamaño real">
+        {TABLA_TALLAS.filter((t) => Number(t.us) % 1 === 0 || Number(t.us) % 0.5 === 0).map((t) => {
+          const lado = t.diametro + 8;
+          return (
+            <figure role="listitem" class="medidor-circulo">
+              <svg width={`${lado}mm`} height={`${lado + 7}mm`} viewBox={`0 0 ${lado} ${lado + 7}`} aria-hidden="true">
+                <circle
+                  cx={lado / 2}
+                  cy={lado / 2}
+                  r={t.diametro / 2}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="0.3"
+                  stroke-dasharray="1.1 0.9"
+                ></circle>
+                <text x={lado / 2} y={lado + 5} text-anchor="middle" font-size="3.2" fill="currentColor" font-family="sans-serif">
+                  {`Talla ${t.us}`}
+                </text>
+              </svg>
+            </figure>
+          );
+        })}
+      </div>
+
+      <p class="no-imprimir mt-10 max-w-2xl text-[0.85rem] leading-[1.8] font-light text-brand-600">
+        Recorta cada círculo por la línea punteada y pruébate el que te parezca más cercano.
+        El que entra sin apretar y sin quedar flojo — pasando por el nudillo — es tu talla.
+      </p>
+
+      <div class="no-imprimir mt-16 flex flex-col gap-4 sm:flex-row" data-reveal>
+        <a
+          href={waLink(`Hola, vengo de la página de ${NEGOCIO.nombre}. Quiero que me envíen gratis un medidor de tallas físico.`)}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-whatsapp"
+        >
+          Pedir un medidor físico por WhatsApp
+        </a>
+        <a href="/catalogo" class="btn btn-outline">Ver el catálogo</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <div class="no-imprimir">
+
+    <Footer />
+  </div>
+  <div class="no-imprimir">
+    <WhatsAppFlotante mensaje={`Hola, vengo de la página de guía de tallas de ${NEGOCIO.nombre} y tengo una duda con mi talla.`} />
+  </div>
+</BaseLayout>
+
+<style>
+  /* El medidor hereda el color por `currentColor`: en pantalla se dibuja
+     claro sobre el fondo oscuro, y al imprimir se fuerza negro sobre blanco,
+     porque el papel siempre es blanco sin importar el tema del sitio. */
+  .calibracion,
+  .medidor-grid {
+    color: var(--color-brand-950);
+  }
+
+  .calibracion {
+    display: block;
+    width: fit-content;
+  }
+  .calibracion svg {
+    display: block;
+  }
+
+  /* Grilla de círculos: en pantalla se acomoda libremente; en impresión se
+     controla con `mm` reales, así que el `gap` también va en mm para que
+     nada se desborde de la hoja al recortar. */
+  .medidor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6mm;
+  }
+  .medidor-circulo {
+    margin: 0;
+  }
+  .medidor-circulo svg {
+    display: block;
+  }
+
+  /* Solo el medidor sobrevive a la impresión: nada de header, footer,
+     botones ni WhatsApp flotante en el papel. */
+  @media print {
+    .no-imprimir {
+      display: none !important;
+    }
+    #medidor-imprimible {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    body {
+      background: #fff;
+      color: #000;
+    }
+    /* En papel el medidor va en negro: no heredar el tema oscuro de pantalla. */
+    .calibracion,
+    .medidor-grid {
+      color: #000 !important;
+    }
+    @page {
+      margin: 10mm;
+    }
+  }
+</style>
+
+<script>
+  interface Talla {
+    us: string;
+    diametro: number;
+    circunferencia: number;
+  }
+
+  /* Los scripts de componente no se re-ejecutan tras una navegación del
+     ClientRouter: todo montaje va colgado de `astro:page-load`. */
+  function montarConversor(): void {
+    const caja = document.getElementById('caja-conversor');
+    const inputCirc = document.getElementById('input-circunferencia') as HTMLInputElement | null;
+    const inputDiam = document.getElementById('input-diametro') as HTMLInputElement | null;
+    const resultado = document.getElementById('resultado-talla');
+    if (!caja || !inputCirc || !inputDiam || !resultado) return;
+    // Alias no-nulo: TS no propaga el `return` de arriba dentro de las
+    // funciones anidadas que capturan `resultado` en su clausura.
+    const resultadoEl = resultado;
+
+    let tabla: Talla[] = [];
+    try {
+      tabla = JSON.parse(caja.dataset.tabla || '[]');
+    } catch {
+      tabla = [];
+    }
+    if (!tabla.length) return;
+
+    const vacio = () => {
+      resultadoEl.innerHTML = '<p class="micro-sm text-brand-500">Escribe una medida para ver tu talla</p>';
+    };
+
+    function tallaMasCercana(diametro: number): Talla {
+      return tabla.reduce((mejor, actual) =>
+        Math.abs(actual.diametro - diametro) < Math.abs(mejor.diametro - diametro) ? actual : mejor,
+      );
+    }
+
+    function mostrarResultado(diametroMedido: number, circunferenciaMedida: number): void {
+      const cercana = tallaMasCercana(diametroMedido);
+      const exacto = Math.abs(cercana.diametro - diametroMedido) < 0.15;
+
+      resultadoEl.innerHTML = '';
+      const linea1 = document.createElement('p');
+      linea1.className = 'font-display text-3xl font-light text-brand-950';
+      linea1.textContent = `Talla ${cercana.us}`;
+
+      const linea2 = document.createElement('p');
+      linea2.className = 'mt-2 text-[0.85rem] font-light text-brand-600';
+      linea2.textContent = exacto
+        ? `Diámetro ${diametroMedido.toFixed(1)} mm · circunferencia ${circunferenciaMedida.toFixed(1)} mm. Es la misma numeración que usamos en Colombia y en la escala americana.`
+        : `Estás entre tallas: la más cercana es la ${cercana.us} (diámetro ${cercana.diametro.toFixed(1)} mm). Cuéntanos por WhatsApp y te ayudamos a decidir — el primer ajuste va por nuestra cuenta.`;
+
+      resultadoEl.append(linea1, linea2);
+    }
+
+    // Bandera para no disparar el listener del campo que se está
+    // actualizando a sí mismo mientras se copia el valor calculado.
+    let actualizando = false;
+
+    function leer(valorTexto: string): number | null {
+      const valor = parseFloat(valorTexto.replace(',', '.'));
+      return Number.isFinite(valor) && valor > 0 ? valor : null;
+    }
+
+    inputCirc.addEventListener('input', () => {
+      if (actualizando) return;
+      const circunferencia = leer(inputCirc.value);
+      if (circunferencia === null) {
+        vacio();
+        return;
+      }
+      const diametro = circunferencia / Math.PI;
+      actualizando = true;
+      inputDiam.value = diametro.toFixed(1);
+      actualizando = false;
+      mostrarResultado(diametro, circunferencia);
+    });
+
+    inputDiam.addEventListener('input', () => {
+      if (actualizando) return;
+      const diametro = leer(inputDiam.value);
+      if (diametro === null) {
+        vacio();
+        return;
+      }
+      const circunferencia = diametro * Math.PI;
+      actualizando = true;
+      inputCirc.value = circunferencia.toFixed(1);
+      actualizando = false;
+      mostrarResultado(diametro, circunferencia);
+    });
+  }
+
+  function montarImpresion(): void {
+    document.getElementById('boton-imprimir')?.addEventListener('click', () => window.print());
+  }
+
+  function montar(): void {
+    montarConversor();
+    montarImpresion();
+  }
+
+  document.addEventListener('astro:page-load', montar);
+</script>

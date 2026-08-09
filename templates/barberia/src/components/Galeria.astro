@@ -1,53 +1,115 @@
 ---
 /**
- * Sección #galeria — mosaico irregular tipo bento (no rejilla uniforme).
- * Fotos demo de Unsplash: reemplázalas por trabajos reales del cliente
- * (es la sección que más vende en una barbería).
+ * Sección #galeria — catálogo visual, no solo mosaico de ambiente.
  *
- * Cada foto declara su propio `span`: con grid-auto-flow dense las piezas
- * se empaquetan solas aunque cambie el número de imágenes.
+ * Hallazgo de mercado (benchmark de 13 barberías colombianas): 10 de 13
+ * muestran fotos de la silla o del local, pero NINGUNA etiqueta esas fotos
+ * con el servicio, precio y barbero que las hizo — el cliente ve un corte
+ * que le gusta y no tiene forma de saber qué pedir ni cuánto cuesta.
+ *
+ * Cada foto de este mosaico declara `servicio` (id de la colección
+ * `servicios`, de donde se leen nombre/precio/duración) y opcionalmente
+ * `barbero` (id de la colección `barberos`). La etiqueta queda siempre
+ * visible sobre un degradado inferior — no solo al hover, que en móvil
+ * nadie dispara — y el tile entero es un botón que preselecciona el
+ * servicio en el wizard (mismo mecanismo que las cards de "La carta").
+ *
+ * Fotos curadas y autohospedadas en src/assets/fotos (nunca hotlinks).
  */
-import { NEGOCIO } from '../scripts/site';
+import { getCollection } from 'astro:content';
+import { precioCOP, NEGOCIO } from '../scripts/site';
+import Foto from './Foto.astro';
 
-const fotos = [
+import interiorEstudio from '../assets/fotos/galeria-interior-estudio.jpg';
+import fadePrecision from '../assets/fotos/galeria-fade-precision.jpg';
+import herramientas from '../assets/fotos/galeria-herramientas.jpg';
+import fadeBarbaBn from '../assets/fotos/galeria-fade-barba-bn.jpg';
+import ritualPompadour from '../assets/fotos/galeria-ritual-pompadour.jpg';
+import resultadoEspejo from '../assets/fotos/galeria-resultado-espejo.jpg';
+import arregloNavaja from '../assets/fotos/galeria-arreglo-navaja.jpg';
+import clipperNuca from '../assets/fotos/galeria-clipper-nuca.jpg';
+import corteTijera from '../assets/fotos/galeria-corte-tijera.jpg';
+import sillonVintage from '../assets/fotos/galeria-sillon-vintage.jpg';
+
+const servicios = await getCollection('servicios');
+const barberosActivos = (await getCollection('barberos')).filter((b) => b.data.activo);
+const servicioPorId = new Map(servicios.map((s) => [s.id, s.data]));
+const barberoPorId = new Map(barberosActivos.map((b) => [b.id, b.data]));
+
+interface FotoCatalogo {
+  src: ImageMetadata;
+  alt: string;
+  /** Id de la colección `servicios`: alimenta la etiqueta y el wizard. */
+  servicio: string;
+  /** Id de la colección `barberos`, si la foto es de un barbero concreto. */
+  barbero?: string;
+  span: string;
+}
+
+const fotos: FotoCatalogo[] = [
   {
-    src: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80',
-    alt: 'Interior de la barbería con sillas clásicas',
+    src: interiorEstudio,
+    alt: 'El estudio: sillones y espejos de la barbería',
+    servicio: 'ritual-el-patron',
     span: 'lg:col-span-2 lg:row-span-2',
   },
   {
-    src: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=80',
-    alt: 'Afeitado clásico con navaja',
+    src: fadePrecision,
+    alt: 'Fade de precisión rematado con peine y navaja',
+    servicio: 'corte-clasico',
+    barbero: 'andres-mejia',
     span: 'lg:col-span-1 lg:row-span-1',
   },
   {
-    src: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=1200&q=80',
-    alt: 'Fade de precisión con máquina',
+    src: herramientas,
+    alt: 'Herramientas del oficio: navaja, tijeras y productos de barba',
+    servicio: 'arreglo-de-barba',
     span: 'lg:col-span-1 lg:row-span-2',
   },
   {
-    src: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1200&q=80',
-    alt: 'Herramientas del oficio: tijeras y navajas',
-    span: 'lg:col-span-1 lg:row-span-1',
+    src: fadeBarbaBn,
+    alt: 'Fade y barba perfilados, retrato en blanco y negro',
+    servicio: 'corte-mas-barba',
+    barbero: 'sebastian-duarte',
+    span: 'lg:col-span-1 lg:row-span-2',
   },
   {
-    src: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=80',
-    alt: 'Corte en proceso, detalle de contorno',
+    src: ritualPompadour,
+    alt: 'Peinado pompadour terminado con toalla caliente',
+    servicio: 'ritual-el-patron',
+    barbero: 'camilo-rojas',
     span: 'lg:col-span-2 lg:row-span-1',
   },
   {
-    src: 'https://images.unsplash.com/photo-1512690459411-b9245aed614b?w=1200&q=80',
-    alt: 'Barbero perfilando la barba de un cliente',
+    src: corteTijera,
+    alt: 'Corte a tijera en el mostrador',
+    servicio: 'corte-clasico',
+    barbero: 'julian-herrera',
+    span: 'lg:col-span-1 lg:row-span-1',
+  },
+  {
+    src: arregloNavaja,
+    alt: 'Perfilado de barba a navaja, línea de precisión',
+    servicio: 'arreglo-de-barba',
+    barbero: 'camilo-rojas',
     span: 'lg:col-span-1 lg:row-span-2',
   },
   {
-    src: 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1200&q=80',
-    alt: 'Cliente en la silla durante su ritual',
-    span: 'lg:col-span-1 lg:row-span-2',
+    src: resultadoEspejo,
+    alt: 'Cliente revisando el resultado final en el espejo',
+    servicio: 'corte-mas-barba',
+    span: 'lg:col-span-1 lg:row-span-1',
   },
   {
-    src: 'https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=1200&q=80',
-    alt: 'Resultado final: corte y barba alineados',
+    src: clipperNuca,
+    alt: 'Remate de nuca con máquina',
+    servicio: 'corte-clasico',
+    span: 'lg:col-span-1 lg:row-span-1',
+  },
+  {
+    src: sillonVintage,
+    alt: 'Sillón de barbero clásico, de cuero',
+    servicio: 'ritual-el-patron',
     span: 'lg:col-span-2 lg:row-span-1',
   },
 ];
@@ -61,6 +123,10 @@ const fotos = [
         <h2 class="titulo-seccion mt-5 text-brand-950">
           Cortes que<br /><span class="text-accent-600">hablan solos</span>
         </h2>
+        <p class="mt-5 max-w-md text-sm leading-relaxed text-brand-600">
+          Cada foto es un servicio real, con su precio y su barbero. Toca cualquiera para
+          reservarlo directo.
+        </p>
       </div>
 
       <div class="flex flex-col items-start gap-4 sm:items-end" data-reveal>
@@ -83,33 +149,72 @@ const fotos = [
 
     <!-- Mosaico irregular: alturas de fila fijas + empaquetado denso -->
     <div
-      class="mt-12 grid grid-flow-dense auto-rows-[8.5rem] grid-cols-2 gap-2.5 sm:auto-rows-[10rem] sm:grid-cols-3 lg:auto-rows-[11.5rem] lg:grid-cols-4"
+      class="mt-12 grid grid-flow-dense auto-rows-[11rem] grid-cols-2 gap-2.5 sm:auto-rows-[12.5rem] sm:grid-cols-3 lg:auto-rows-[13.5rem] lg:grid-cols-4"
       data-reveal-group
     >
-      {fotos.map((foto, i) => (
-        <figure
-          class:list={[
-            'foto-bn-hover group relative overflow-hidden bg-brand-100',
-            foto.span,
-            // En pantallas pequeñas la primera pieza manda el ritmo
-            i === 0 && 'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2',
-          ]}
-        >
-          <img
-            src={foto.src}
-            alt={foto.alt}
-            class="foto-bn h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            decoding="async"
-          />
-          <!-- Marco interior ámbar al pasar el cursor -->
-          <span
-            class="pointer-events-none absolute inset-0 ring-inset ring-accent-500/0 transition-all duration-200 group-hover:ring-2 group-hover:ring-accent-500/80"
-            aria-hidden="true"
+      {fotos.map((foto, i) => {
+        const servicio = servicioPorId.get(foto.servicio);
+        const barbero = foto.barbero ? barberoPorId.get(foto.barbero) : undefined;
+        const etiqueta = servicio
+          ? `Reservar ${servicio.nombre}${barbero ? ` con ${barbero.nombre}` : ''}`
+          : foto.alt;
+        return (
+          <figure
+            class:list={[
+              'foto-bn-hover group relative overflow-hidden bg-brand-100',
+              foto.span,
+              // En pantallas pequeñas la primera pieza manda el ritmo
+              i === 0 && 'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2',
+            ]}
           >
-          </span>
-        </figure>
-      ))}
+            <a
+              href="#reservar"
+              data-reserva-servicio={foto.servicio}
+              class="absolute inset-0 block"
+              aria-label={etiqueta}
+            >
+              <Foto
+                src={foto.src}
+                alt={foto.alt}
+                widths={[400, 640, 900, 1200]}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                class="foto-bn h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <!-- Marco interior ámbar al pasar el cursor -->
+              <span
+                class="pointer-events-none absolute inset-0 ring-inset ring-accent-500/0 transition-all duration-200 group-hover:ring-2 group-hover:ring-accent-500/80"
+                aria-hidden="true"
+              >
+              </span>
+
+              {servicio && (
+                <>
+                  <!-- Degradado inferior: la etiqueta debe leerse siempre, no
+                       solo al hover (en móvil no hay hover). -->
+                  <span
+                    class="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-noche/85 via-noche/25 to-transparent"
+                    aria-hidden="true"
+                  >
+                  </span>
+                  <span class="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-3">
+                    <span class="flex items-baseline justify-between gap-2">
+                      <span class="font-display text-xs font-semibold tracking-[0.08em] text-white uppercase drop-shadow-sm">
+                        {servicio.nombre}
+                      </span>
+                      <span class="shrink-0 font-display text-xs font-bold whitespace-nowrap tabular-nums text-accent-400">
+                        {precioCOP(servicio.precio)}
+                      </span>
+                    </span>
+                    <span class="text-[0.6rem] font-semibold tracking-[0.16em] text-white/70 uppercase">
+                      {barbero ? barbero.nombre : `${servicio.duracion} min`}
+                    </span>
+                  </span>
+                </>
+              )}
+            </a>
+          </figure>
+        );
+      })}
     </div>
   </div>
 </section>

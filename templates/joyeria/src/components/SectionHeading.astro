@@ -26,11 +26,11 @@ const {
 <div class={centrado ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'} data-reveal>
   {(eyebrow || numero) && (
     <div class={`flex items-center gap-4 ${centrado ? 'justify-center' : ''}`}>
-      {numero && <span class={`section-num ${oscuro ? '!text-accent-400' : ''}`}>{numero}</span>}
+      {numero && <span class={`section-num ${oscuro ? '!text-accent-700' : ''}`}>{numero}</span>}
       {numero && (
-        <span class={`h-px w-8 ${oscuro ? 'bg-accent-400/50' : 'bg-accent-500/50'}`} aria-hidden="true"></span>
+        <span class={`h-px w-8 ${oscuro ? 'bg-accent-700/60' : 'bg-accent-500/50'}`} aria-hidden="true"></span>
       )}
-      {eyebrow && <span class={`micro ${oscuro ? 'text-accent-300' : 'text-accent-700'}`}>{eyebrow}</span>}
+      {eyebrow && <span class={`micro ${oscuro ? 'text-accent-800' : 'text-accent-700'}`}>{eyebrow}</span>}
     </div>
   )}
 
@@ -39,7 +39,7 @@ const {
     {acento && (
       <>
         {' '}
-        <em class={`font-normal italic ${oscuro ? 'text-accent-200' : 'text-accent-600'}`}>{acento}</em>
+        <em class={`font-normal italic ${oscuro ? 'text-accent-800' : 'text-accent-600'}`}>{acento}</em>
       </>
     )}
   </h2>
@@ -47,7 +47,7 @@ const {
   {descripcion && (
     <p
       class={`mt-6 max-w-xl text-[0.95rem] leading-[1.9] font-light ${centrado ? 'mx-auto' : ''} ${
-        oscuro ? 'text-brand-300' : 'text-brand-600'
+        oscuro ? 'text-brand-800' : 'text-brand-600'
       }`}
     >
       {descripcion}

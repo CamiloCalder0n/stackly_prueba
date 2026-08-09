@@ -1,18 +1,27 @@
 ---
 nombre: Collar Medallón Sol
-referencia: AUR-CO-001
+referencia: CJ-CO-001
 slug: collar-medallon-sol
 fotos:
-  - https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=1200&q=80
-  - https://images.unsplash.com/photo-1633810542706-90e5ff7557be?w=1200&q=80
-  - https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=1200&q=80
+  - ../../assets/fotos/collar-filigrana.jpg
+  - ../../assets/fotos/collar-cadena-fina.jpg
 categoria: collares
 material: oro
-piedras: Circonitas blancas en el borde del medallón
-peso: 6,2 g (cadena de 45 cm incluida)
-precio: 1980000
+ley: 18k
+piedras: Sin piedras
+peso: 6,9 g
+medidas: Cadena de 45 cm regulable a 42 cm · medallón de 22 mm
+acabado: Grabado a buril y pulido
+tallas: Cadena regulable
+precio: 1680000
 ocultarPrecio: false
-descripcion: Medallón grabado con motivo solar en oro amarillo de 18k, colgado de una cadena rolo de 45 cm. Una pieza con presencia que funciona sola o en capas con cadenas más finas. Incluye grabado de una inicial sin costo adicional.
+descripcion: Medallón redondo en oro de 18k con un sol grabado a buril, hecho a mano en el taller. Abre y guarda una foto o un mensaje adentro. Es la pieza que más se encarga para grados y para primeras comuniones.
 disponibilidad: disponible
-destacada: true
+unidades: 3
+ocasion:
+  - cumpleaños
+  - uso diario
+grabable: true
+nuevo: false
+destacada: false
 ---

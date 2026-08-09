@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * Imagen optimizada de la plantilla.
+ *
+ * Envuelve `astro:assets` con los ajustes que esta plantilla siempre quiere:
+ * AVIF con respaldo automático, srcset responsive y medidas explícitas para
+ * que no haya saltos de maquetación (CLS) mientras carga.
+ *
+ * Se encarga del recorte: pasa `ratio` y la foto se ajusta con object-cover,
+ * que es lo que necesitan las fichas de barbero y las tarjetas de la
+ * galería, donde las fotos llegan con proporciones distintas.
+ *
+ *   <Foto src={barbero.data.foto} alt={barbero.data.nombre} ratio="3/4" />
+ *   <Foto src={heroImg} alt="" ratio="auto" prioridad />   ← imagen LCP
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Proporción del recorte. `auto` respeta la proporción original. */
+  ratio?: '4/5' | '3/4' | '1/1' | '16/10' | '3/2' | '5/4' | 'auto';
+  /** Anchos generados para el srcset. */
+  widths?: number[];
+  /** Pista de tamaño para el navegador. */
+  sizes?: string;
+  /** Marca la imagen como LCP: carga inmediata y prioridad alta. */
+  prioridad?: boolean;
+  /** Clases extra sobre la propia <img>. */
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  ratio = 'auto',
+  widths = [400, 640, 900, 1200, 1600],
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+  prioridad = false,
+  class: clase = '',
+} = Astro.props;
+
+/* Tailwind necesita las clases completas en el código para generarlas,
+   así que se mapean en vez de interpolar `aspect-[${ratio}]`. */
+const proporciones: Record<string, string> = {
+  '4/5': 'aspect-[4/5] object-cover',
+  '3/4': 'aspect-[3/4] object-cover',
+  '1/1': 'aspect-square object-cover',
+  '16/10': 'aspect-[16/10] object-cover',
+  '3/2': 'aspect-[3/2] object-cover',
+  '5/4': 'aspect-[5/4] object-cover',
+  auto: '',
+};
+
+// Nunca pidas anchos mayores que el original: sharp no inventa píxeles.
+const anchos = widths.filter((w) => w <= src.width);
+---
+
+<Image
+  src={src}
+  alt={alt}
+  widths={anchos.length ? anchos : [src.width]}
+  sizes={sizes}
+  format="avif"
+  quality={72}
+  loading={prioridad ? 'eager' : 'lazy'}
+  fetchpriority={prioridad ? 'high' : 'auto'}
+  decoding={prioridad ? 'sync' : 'async'}
+  class={`w-full ${proporciones[ratio]} ${clase}`}
+/>

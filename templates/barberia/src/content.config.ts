@@ -8,7 +8,8 @@
  *
  * Los horarios de apertura viven en src/data/horarios.json (paso 3 del wizard).
  */
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'zod';
 import { glob } from 'astro/loaders';
 
 const servicios = defineCollection({
@@ -27,15 +28,23 @@ const servicios = defineCollection({
 
 const barberos = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/barberos' }),
-  schema: z.object({
-    nombre: z.string(),
-    /** URL de la foto (Unsplash en el demo) o imagen subida al CMS. */
-    foto: z.string(),
-    especialidad: z.string(),
-    instagram: z.string().optional(),
-    /** Si está inactivo no aparece ni en el equipo ni en el wizard. */
-    activo: z.boolean().default(true),
-  }),
+  /** `image()` exige que la foto viva en src/assets (no en public/ ni en una
+      URL externa): así Astro la procesa en el build y la sirve en AVIF con
+      srcset, igual que cualquier otra foto de la plantilla. */
+  schema: ({ image }) =>
+    z.object({
+      nombre: z.string(),
+      foto: image(),
+      especialidad: z.string(),
+      /** Años de oficio del barbero. Es la señal de confianza #1 que el
+          benchmark de barberías colombianas no resuelve: solo 1 de 13
+          competidores deja elegir barbero con una ficha real, y ninguno
+          publica su experiencia. */
+      aniosOficio: z.number().int().positive(),
+      instagram: z.string().optional(),
+      /** Si está inactivo no aparece ni en el equipo ni en el wizard. */
+      activo: z.boolean().default(true),
+    }),
 });
 
 export const collections = { servicios, barberos };

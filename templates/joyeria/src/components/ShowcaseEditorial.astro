@@ -1,0 +1,61 @@
+---
+// Showcase editorial (Figma 1:80): dos fotos grandes de ~658×719 lado a
+// lado sobre blanco, separadas por unos 25px, cada una con una etiqueta
+// flotante (nombre + precio + peso) que enlaza a la ficha. Se alimenta de
+// piezas reales para que la etiqueta no mienta: la foto es la de la propia
+// pieza etiquetada.
+//
+// La etiqueta del molde es una caja blanca lisa de 120×49 a canto vivo: sin
+// sombra, sin desenfoque de fondo y sin transparencia. La versión anterior
+// le ponía `shadow` + `backdrop-blur` + fondo al 95%, que es lenguaje de
+// interfaz y no de catálogo impreso.
+//
+// PENDIENTE del molde: el Figma marca la joya con un pin dorado (nodos
+// 1:81/1:87, un polígono + vector exportados). No se dibuja aquí porque no
+// existe ese glifo en `Icono.astro` y no corresponde inventarlo a mano.
+import type { CollectionEntry } from 'astro:content';
+import { precioCOP } from '../scripts/site';
+import Foto from './Foto.astro';
+
+interface Props {
+  /** Dos piezas destacadas que se ven bien en formato grande. */
+  piezas: CollectionEntry<'piezas'>[];
+}
+
+const { piezas } = Astro.props;
+---
+
+<section class="bg-surface py-8 md:py-12" aria-label="Piezas destacadas en detalle">
+  <div class="container-wide">
+    <div class="grid gap-6 md:grid-cols-2 md:gap-7">
+      {piezas.map((p) => {
+        const d = p.data;
+        const precio =
+          d.precio != null && !d.ocultarPrecio ? precioCOP(d.precio) : 'Consultar precio';
+        return (
+          <a
+            href={`/piezas/${d.slug}/`}
+            class="group relative block overflow-hidden bg-brand-200"
+          >
+            <Foto
+              src={d.fotos[0]}
+              alt={d.nombre}
+              ratio="1/1"
+              sizes="(max-width: 768px) 100vw, 44vw"
+              class="transition-transform duration-[1100ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
+            />
+            <div class="absolute bottom-6 left-6 min-w-[8.5rem] bg-surface px-3.5 py-2.5">
+              <p class="font-display text-[0.95rem] leading-tight font-normal text-brand-950">
+                {d.nombre}
+              </p>
+              <div class="mt-1 flex items-baseline justify-between gap-4">
+                <span class="precio text-[0.78rem] text-brand-900">{precio}</span>
+                {d.peso && <span class="precio text-[0.78rem] text-brand-500">{d.peso}</span>}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</section>

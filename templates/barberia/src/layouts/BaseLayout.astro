@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import { NEGOCIO } from '../scripts/site';
 import horarios from '../data/horarios.json';
@@ -52,24 +53,21 @@ const openingHours = Object.entries(horarios)
 
     <!-- Open Graph / redes sociales -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={NEGOCIO.nombre} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="es_CO" />
-    {image && <meta property="og:image" content={image} />}
+    {image && <meta property="og:image" content={new URL(image, Astro.site).href} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Tipografías (cámbialas junto con los tokens en global.css) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Las tipografías son variables y self-hosted: se declaran en
+         global.css, sin peticiones bloqueantes a un CDN externo. -->
 
     <!-- Datos estructurados: barbería local con horarios -->
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BarberShop',
@@ -91,8 +89,18 @@ const openingHours = Object.entries(horarios)
 
     <!-- Datos estructurados adicionales por página (ej. FAQPage) -->
     <slot name="head" />
+
+    <ClientRouter />
   </head>
   <body>
+    <!-- Enlace de salto: obligatorio para navegación por teclado.
+         El destino es el landmark `main#contenido` de index.astro. -->
+    <a
+      href="#contenido"
+      class="sr-only text-xs font-semibold tracking-widest uppercase focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent-500 focus:px-5 focus:py-3 focus:text-noche"
+    >
+      Saltar al contenido
+    </a>
     <slot />
     <script src="../scripts/animations.ts"></script>
   </body>

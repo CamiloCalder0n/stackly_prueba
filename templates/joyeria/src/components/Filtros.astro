@@ -1,0 +1,116 @@
+---
+/**
+ * Barra lateral de filtros del catálogo (molde de Figma: sidebar "Filtros"
+ * con acordeones). Componente de presentación: solo pinta controles y los
+ * `data-*` que el <script> de `catalogo.astro` lee para filtrar y recomponer
+ * la grilla con Flip.
+ *
+ * Grupos: Categoría, Precio y Disponibilidad. El Figma trae también "Talla",
+ * pero en los datos reales `tallas` es texto libre por pieza ("4 a 9",
+ * "Cadena de 42 cm", "Talla única"): no hay un conjunto discreto de tallas
+ * contra el que filtrar sin fingirlo, así que se omite en vez de simularlo.
+ *
+ * El contrato con el script se conserva: cada grupo es un `[data-filtro]` con
+ * botones `.chip-filtro[data-valor]`, más `#filtros-cuerpo` (el panel que el
+ * toggle móvil muestra/oculta), `#filtros-activos` y `[data-limpiar-filtros]`.
+ */
+import Icono from './Icono.astro';
+
+interface Opcion {
+  valor: string;
+  label: string;
+}
+
+interface Props {
+  categorias: Opcion[];
+  precios: Opcion[];
+  disponibilidades: Opcion[];
+}
+
+const { categorias, precios, disponibilidades } = Astro.props;
+
+const grupos = [
+  { nombre: 'categoria', label: 'Categoría', opciones: categorias, aria: 'Filtrar por tipo de pieza' },
+  { nombre: 'precio', label: 'Precio', opciones: precios, aria: 'Filtrar por presupuesto' },
+  {
+    nombre: 'disponibilidad',
+    label: 'Disponibilidad',
+    opciones: disponibilidades,
+    aria: 'Filtrar por disponibilidad',
+  },
+];
+---
+
+<!-- En móvil el panel arranca oculto y lo abre el toggle del top bar; en
+     ≥1024px el `lg:block` lo fuerza visible pase lo que pase con `hidden`. -->
+<div id="filtros-cuerpo" class="hidden lg:sticky lg:top-28 lg:block">
+  <!-- "Filtros" en Playfair 32px con un filete debajo, y cada grupo separado
+       por otro filete: así lo dibuja el molde (1:259 y las líneas 1:250-253). -->
+  <h2 class="font-display text-[2rem] font-normal text-brand-950">Filtros</h2>
+  <span class="mt-4 block rule-hair"></span>
+
+  {grupos.map((grupo) => (
+    <div data-filtro={grupo.nombre} role="group" aria-label={grupo.aria} class="border-b border-brand-300">
+      <button
+        type="button"
+        data-acordeon
+        class="flex w-full items-center justify-between gap-4 py-4 text-left"
+        aria-expanded="false"
+      >
+        <span class="font-display text-[1.25rem] font-normal text-brand-950">{grupo.label}</span>
+        <Icono nombre="flecha-abajo" tamano={13} class="shrink-0 text-brand-500 transition-transform duration-300" />
+      </button>
+      <div data-acordeon-cuerpo class="hidden pb-5">
+        <div class="flex flex-col items-start gap-2">
+          {grupo.opciones.map((o, i) => (
+            <button
+              type="button"
+              class="chip-filtro"
+              data-valor={o.valor}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+
+  <!-- Filtros aplicados: quitables uno a uno (los pinta el script). -->
+  <div id="filtros-activos" class="mt-6 hidden flex-wrap items-center gap-2" aria-label="Filtros aplicados"></div>
+
+  <button
+    type="button"
+    data-limpiar-filtros
+    class="mt-6 font-display text-[1rem] text-accent-700 hover:text-accent-600"
+  >
+    Limpiar todo
+  </button>
+</div>
+
+<script>
+  /* Acordeones del sidebar. La lógica de filtrado vive en catalogo.astro;
+     esto solo abre/cierra cada grupo. Se cuelga de astro:page-load para
+     sobrevivir a las navegaciones del ClientRouter. */
+  function montarAcordeones(): void {
+    document.querySelectorAll<HTMLButtonElement>('[data-acordeon]').forEach((btn) => {
+      const cuerpo = btn.nextElementSibling as HTMLElement | null;
+      btn.addEventListener('click', () => {
+        const abierto = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!abierto));
+        cuerpo?.classList.toggle('hidden', abierto);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', montarAcordeones);
+</script>
+
+<style>
+  /* El <svg> lo pinta <Icono> (componente hijo), fuera del scope de este
+     archivo: hace falta :global() para girar la flecha al abrir el grupo. */
+  [data-acordeon][aria-expanded='true'] :global(svg) {
+    transform: rotate(180deg);
+  }
+</style>

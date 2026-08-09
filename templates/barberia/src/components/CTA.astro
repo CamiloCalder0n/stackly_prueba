@@ -4,6 +4,7 @@
  * y titular monumental. Es el último golpe antes del pie de página.
  */
 import { waLink, NEGOCIO } from '../scripts/site';
+import Foto from './Foto.astro';
 
 interface Props {
   titulo?: string;
@@ -11,25 +12,25 @@ interface Props {
   botonTexto?: string;
   mensaje?: string;
   /** Imagen de fondo (se desatura y oscurece). */
-  imagen?: string;
+  imagen: ImageMetadata;
 }
 const {
   titulo = '¿Listo para empezar?',
   descripcion = 'Escríbenos por WhatsApp y te respondemos en minutos.',
   botonTexto = 'Hablar por WhatsApp',
   mensaje = `Hola, vengo de la página de ${NEGOCIO.nombre} y quiero más información.`,
-  imagen = 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1600&q=80',
+  imagen,
 } = Astro.props;
 ---
 
 <section class="grano vineta relative overflow-hidden bg-noche py-32 md:py-40" id="cta">
   <div class="absolute inset-0" data-parallax="0.1">
-    <img
+    <Foto
       src={imagen}
       alt=""
-      class="h-[112%] w-full object-cover opacity-40 grayscale contrast-125"
-      loading="lazy"
-      decoding="async"
+      widths={[900, 1300, 1800, 2200]}
+      sizes="100vw"
+      class="h-[112%] object-cover opacity-40 grayscale contrast-125"
     />
   </div>
   <div class="absolute inset-0 bg-gradient-to-b from-noche/80 via-noche/62 to-noche/95"></div>

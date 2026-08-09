@@ -1,98 +1,236 @@
 @import 'tailwindcss';
 
+/* ── Tipografías variables self-hosted ──
+   Se declaran a mano en vez de importar los CSS del paquete porque esos
+   traen los seis subconjuntos (cirílico, matemáticas, símbolos, vietnamita…)
+   que este sitio no usa jamás: solo sus reglas ya pesaban 7 kB de CSS
+   bloqueante y dejaban ocho .woff2 muertos en el build.
+
+   El subconjunto `latin` cubre todo el español —tildes, ñ, ¿, ¡, — y ·—,
+   así que con estas tres caras basta.
+
+   Playfair Display es la serif de titular que trae el molde de Figma tal
+   cual (antes se calcaba con Bodoni Moda para no sumar una fuente nueva;
+   el usuario prefirió el match literal). Solo trae eje de peso (wght), sin
+   `opsz` — por eso las utilidades de tipografía de abajo ya no tocan ese eje. */
+@font-face {
+  font-family: 'Playfair Display Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Playfair Display Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('@fontsource-variable/playfair-display/files/playfair-display-latin-wght-italic.woff2')
+    format('woff2-variations');
+}
+
+/* Inria Serif es la SEGUNDA cara del molde de Figma, y sustituye a la sans
+   (Jost) que traía la plantilla. En el Figma no hay una sola línea de palo
+   seco: descripciones, precios, pesos, fechas y citas van todas en Inria
+   Serif, y los titulares en Playfair. Ese emparejamiento serif+serif es la
+   razón principal de que la versión anterior "no se pareciera" — una sans
+   geométrica en el cuerpo cambia el carácter de toda la página por más que
+   el titular sea correcto.
+
+   Inria Serif no es variable: solo hay instancias estáticas. Traemos la
+   400 normal y su cursiva, que es todo lo que usa el molde. */
+@font-face {
+  font-family: 'Inria Serif';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('@fontsource/inria-serif/files/inria-serif-latin-400-normal.woff2')
+    format('woff2');
+}
+
+@font-face {
+  font-family: 'Inria Serif';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url('@fontsource/inria-serif/files/inria-serif-latin-400-italic.woff2')
+    format('woff2');
+}
+
 /* ═══════════════════════════════════════════════════════════════
    TOKENS DE MARCA — ESTE ES EL ÚNICO ARCHIVO QUE DEBES EDITAR
    PARA RE-TEMATIZAR LA PLANTILLA PARA UN NUEVO CLIENTE.
 
-   brand  → color principal (fondos oscuros, header, footer)
-   accent → color de acción (botones, links, precios, detalles)
-   Las clases resultantes son: bg-brand-900, text-accent-500, etc.
+   Dirección (rediseño sobre el molde de Figma del cliente): maison
+   editorial clara. Blanco y crudo cálido de fondo, tinta casi negra para
+   el texto, oro sobrio como único acento — el gesto contrario al "vitrina
+   de noche" de la versión anterior.
+
+   CÓMO LEER LAS RAMPAS:
+   ambas van de SUPERFICIE (50) a TINTA (950 / 900). El 50 es el fondo de
+   la página y el número más alto es el color del texto/énfasis. Esta es
+   la dirección "normal" (igual que `_base`): si el día de mañana el
+   cliente pide volver a un tema oscuro, basta con invertir otra vez los
+   valores de este bloque — ninguna clase del resto del proyecto cambia,
+   porque todo el sitio consume las rampas por rol (`text-brand-950` es
+   siempre "texto principal", `border-brand-200` siempre "filete sutil").
+
+   brand  → neutros cálidos, del blanco (50) a la tinta casi negra (950)
+   accent → oro sobrio, del champán más pálido (50) al bronce oscuro (900).
+            Se usa en filetes, precios y micro-etiquetas. Sobre blanco el
+            oro pesa menos que sobre negro: por eso el 500 aquí es más
+            profundo que un dorado de joyería típico, para que siga
+            leyéndose como metal y no como amarillo pastel.
    ═══════════════════════════════════════════════════════════════ */
 @theme {
-  /* Joyería: serif elegante para títulos + sans geométrica ligera para texto */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Jost', system-ui, sans-serif;
+  --font-display: 'Playfair Display Variable', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inria Serif', 'Playfair Display Variable', Georgia, serif;
 
-  /* brand → grafito cálido casi negro (fondos, header, footer) */
-  --color-brand-50: #f7f6f4;
-  --color-brand-100: #eae8e4;
-  --color-brand-200: #d4cfc8;
-  --color-brand-300: #b4ada2;
-  --color-brand-400: #8f877b;
-  --color-brand-500: #736a5f;
-  --color-brand-600: #5c544b;
-  --color-brand-700: #4a453e;
-  --color-brand-800: #383430;
-  --color-brand-900: #23211e;
-  --color-brand-950: #161412;
+  /* brand → NEUTROS, no cálidos. Este fue el otro gran desajuste contra el
+     molde: la plantilla pintaba secciones enteras de crudo (#f8f4ec) y el
+     Figma no tiene una sola superficie beige. Los valores reales que usa el
+     molde son exactamente tres: blanco, #f5f5f5 (la franja de testimonios y
+     el encabezado del catálogo) y #0b0b0c (la tinta). El único tono cálido
+     de todo el archivo es #e6e3dc, y solo aparece DEBAJO de las fotos de
+     producto como fondo de la caja de imagen.
 
-  /* accent → dorado champán refinado (botones, precios, detalles) */
-  --color-accent-50: #faf7ef;
-  --color-accent-100: #f4ecd7;
-  --color-accent-200: #e9d9ae;
-  --color-accent-300: #dcc17d;
-  --color-accent-400: #d1ab56;
-  --color-accent-500: #c3963c;
-  --color-accent-600: #a67930;
-  --color-accent-700: #855c2a;
-  --color-accent-800: #6e4a28;
-  --color-accent-900: #5e3e25;
+     O sea: en este diseño el calor lo pone la fotografía, no el fondo. Poner
+     crema en las secciones competía con las fotos y las apagaba.
 
-  --color-surface: #fdfcfa;
-  --color-ink: #23211e;
-  /* papel cálido: fondo de las secciones editoriales claras */
-  --color-paper: #f4f1ea;
+     De 500 en adelante la rampa está calibrada para texto: cualquiera de
+     esos tonos sobre `surface` o `paper` supera el 4.5:1 de la WCAG AA. Del
+     400 hacia abajo son tonos de fondo y filete: no los uses para texto. */
+  --color-brand-50: #ffffff;
+  --color-brand-100: #f5f5f5; /* franja gris del Figma (testimonios, cabecera de catálogo) */
+  --color-brand-200: #e6e3dc; /* greige del Figma: fondo de la caja de foto */
+  --color-brand-300: #c8c8c8; /* filete del Figma (bordes de la paginación) */
+  --color-brand-400: #8f8d8a;
+  --color-brand-500: #6b6966; /* 5.5:1 sobre blanco — el mínimo para texto */
+  --color-brand-600: #575553;
+  --color-brand-700: #454341;
+  --color-brand-800: #33312f;
+  --color-brand-900: #1f1e1e;
+  --color-brand-950: #0b0b0c; /* tinta exacta del Figma */
 
-  /* Bordes más sobrios: lenguaje visual de vitrina fina */
-  --radius-btn: 0.25rem;
-  --radius-card: 0.625rem;
+  /* accent → el oro del molde. El Figma usa un único dorado, #d4af37, para
+     absolutamente todo el acento: logo, titulares de sección, el relleno del
+     botón del hero, el filete de 2px de "Ver más" y el título del catálogo.
+     La versión anterior lo había oscurecido hasta #a67f34 por contraste, y
+     ese apagado es justo lo que hacía que la paleta no calzara.
+
+     Aquí #d4af37 vuelve a ser el 500 —el tono que consume casi todo el
+     código— con una salvedad de accesibilidad que no se puede saltar:
+     sobre blanco da 2.1:1, así que sirve como RELLENO (con tinta encima:
+     10:1) y como FILETE, pero no como color de texto. Por eso:
+       500 → rellenos, bordes, reglas · el oro literal del Figma
+       600 → 3.3:1 · titulares dorados de 40px+ (WCAG pide 3:1 en texto grande)
+       700 → 5.0:1 · cualquier texto dorado a tamaño de lectura */
+  --color-accent-50: #fbf5e6;
+  --color-accent-100: #f5e8c4;
+  --color-accent-200: #eeda9f;
+  --color-accent-300: #e4c877;
+  --color-accent-400: #dcbc55;
+  --color-accent-500: #d4af37; /* ORO DEL FIGMA, literal */
+  --color-accent-600: #a8892a;
+  --color-accent-700: #866d21;
+  --color-accent-800: #64511a;
+  --color-accent-900: #423612;
+
+  /* Superficies: blanco por defecto y el gris #f5f5f5 del molde para las
+     secciones alternas. `paper` ya no es crema. */
+  --color-surface: #ffffff;
+  --color-paper: #f5f5f5;
+  --color-ink: #0b0b0c;
+
+  /* Negro absoluto de vitrina. NO sigue el tema: es el velo que va sobre
+     las fotos (overlays de tarjeta destacada, hero, lightbox) y tiene que
+     seguir siendo oscuro aunque la superficie de la página sea blanca. */
+  --color-noche: #0a0908;
+
+  /* Verde WhatsApp oficial: se conserva sin retocar porque su
+     reconocibilidad es lo que convierte. Ver nota en `btn-whatsapp`. */
+  --color-whatsapp: #25d366;
+
+  /* CERO radio. Se verificó nodo por nodo con `get_design_context` sobre la
+     portada (hero 1:21, categorías 1:188, destacados 1:32, showcase 1:80,
+     Instagram 1:170) y el catálogo (1:245): no hay UN SOLO `border-radius`
+     en todo el archivo de Figma. Ni las fotos, ni las tarjetas, ni el botón
+     dorado del hero, ni las celdas de la paginación.
+
+     El canto vivo es lo que da el aire de catálogo impreso; cualquier radio,
+     por pequeño que sea, empuja la página hacia "tarjeta de app". Los tokens
+     se dejan como tokens (en vez de borrar cada `rounded-*` del código) para
+     que re-tematizar siga siendo editar solo este archivo. */
+  --radius-btn: 0px;
+  --radius-card: 0px;
 
   /* Curva de movimiento lenta y elegante (nada de rebotes) */
   --ease-silk: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ── Base ── */
-html {
+
+/* Lenis toma el control del scroll cuando está activo; sin él (o con
+   movimiento reducido) dejamos el scroll suave nativo. */
+html:not(.lenis) {
   scroll-behavior: smooth;
 }
 
+/* Inria Serif solo se sirve en 400: no hay cara Light. `font-weight: 300`
+   hacía que el navegador cayera igual en la 400, pero dejaba la intención
+   equivocada por todo el código. El molde es 400 de punta a punta. */
 body {
   font-family: var(--font-body);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-ink);
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
+/* Playfair Regular, no Medium. En el Figma TODO el texto —titulares
+   incluidos— es Regular; el 500 engordaba la serif y le quitaba el
+   contraste fino que es justo lo que la hace ver cara. */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
+  font-weight: 400;
 }
 
 /* Foco visible y consistente en toda la plantilla (accesibilidad) */
 :focus-visible {
-  outline: 2px solid var(--color-accent-500);
+  outline: 2px solid var(--color-accent-600);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* ── Estados iniciales de animación (GSAP los revela) ──
-   Si JS no carga o el usuario prefiere menos movimiento,
-   el contenido queda visible. */
+::selection {
+  background: var(--color-accent-300);
+  color: var(--color-brand-950);
+}
+
+/* ── Estados iniciales de animación ──
+   La clase `motion` la pone el propio motor de animaciones DESPUÉS de
+   cargar GSAP con éxito. Si el script falla, nunca se añade y el
+   contenido queda visible: nada de páginas en blanco por un error de JS. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-reveal],
-  html.js [data-reveal-group] > * {
+  html.motion [data-reveal],
+  html.motion [data-reveal-group] > * {
     opacity: 0;
-    transform: translateY(28px);
   }
-  /* Hairlines que se dibujan de izquierda a derecha */
-  html.js [data-rule] {
+  /* Filetes que se dibujan de izquierda a derecha */
+  html.motion [data-rule] {
     transform: scaleX(0);
     transform-origin: left center;
   }
   /* Imágenes que se revelan con máscara editorial */
-  html.js [data-reveal-mask] {
+  html.motion [data-reveal-mask] {
     clip-path: inset(0% 0% 100% 0%);
+  }
+  /* Titulares partidos por líneas: cada línea sube desde su propia máscara */
+  html.motion [data-split] {
+    opacity: 0;
   }
 }
 
@@ -121,43 +259,71 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Botón del molde: bloque rectangular, Playfair 20px, caja y baja. El
+   Figma NO tiene un solo botón en versalitas con tracking abierto — ese
+   gesto (0.75rem + 0.18em + uppercase) es lenguaje de e-commerce moderno y
+   chocaba de frente con la serif. Medidas tomadas del CTA del hero (1:30):
+   211×50 px con el texto a 20px. */
 @utility btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.75rem;
+  gap: 0.6rem;
+  padding: 0.8rem 1.65rem;
   border-radius: var(--radius-btn);
-  font-weight: 500;
-  font-size: 0.8rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  letter-spacing: 0.01em;
   transition: background-color 0.45s var(--ease-silk), color 0.45s var(--ease-silk),
     border-color 0.45s var(--ease-silk);
   cursor: pointer;
 }
 
+/* Sobre blanco el botón manda en oro macizo, plano, con la tinta oscura
+   encima: es el único bloque dorado grande que se permite en toda la
+   página. Nada de degradado brilloso ni sombra pesada — el benchmark de
+   maisons (Cartier, Van Cleef) es unánime: el acento se usa con extrema
+   moderación y sin efectos de "metal de e-commerce genérico". Sube un
+   tono al pasar el mouse, nada más. */
 @utility btn-primary {
   background: var(--color-accent-500);
   color: var(--color-brand-950);
   &:hover {
-    background: var(--color-accent-300);
+    background: var(--color-accent-600);
   }
 }
 
 @utility btn-outline {
   border: 1px solid var(--color-brand-300);
-  color: var(--color-brand-800);
+  color: var(--color-brand-900);
   background: transparent;
   &:hover {
     border-color: var(--color-brand-950);
     background: var(--color-brand-950);
-    color: #fff;
+    color: var(--color-brand-50);
   }
 }
 
+/* Variante para usar encima de una fotografía, donde el filete tiene que
+   apoyarse en el blanco de la foto y no en la rampa del tema. */
+@utility btn-outline-claro {
+  border: 1px solid rgb(255 255 255 / 0.55);
+  color: #fff;
+  background: transparent;
+  &:hover {
+    border-color: #fff;
+    background: #fff;
+    color: var(--color-brand-950);
+  }
+}
+
+/* El verde oficial de WhatsApp se mantiene intacto a propósito: es el
+   canal de cierre real del negocio y su reconocibilidad vale más que la
+   pureza cromática. Se reserva para el botón flotante y el CTA final;
+   dentro de las páginas el CTA principal usa `btn-primary` con el ícono. */
 @utility btn-whatsapp {
-  background: #25d366;
+  background: var(--color-whatsapp);
   color: #0b3d1e;
   &:hover {
     background: #1fb457;
@@ -165,80 +331,191 @@ h1, h2, h3, h4 {
   }
 }
 
-/* ── Escala tipográfica dramática (fluida: degrada bien en móvil) ── */
+/* ── Escala tipográfica (fluida: degrada bien en móvil) ── */
 
-/* Título de portada: el golpe visual de la página */
+/* Escala medida sobre el lienzo de 1400px del Figma, no inventada:
+     hero "Oro" 96px · título de catálogo 96px   → type-hero  (6rem)
+     "Explora Nuestras Categorias" 48px          → type-section (3rem)
+     "Nuestros Clientes" 40px                    → type-section en móvil/medio
+     nombre de categoría 32px                    → type-sub   (2rem)
+
+   El type-section anterior llegaba a 4.75rem (76px): un 58% más grande que
+   el molde. Ese solo número explicaba buena parte de la queja de "layout y
+   espaciado", porque un titular desbordado obliga a estirar todo lo demás.
+   Tracking a 0: el Figma no aprieta ni abre ninguna caja de texto. */
 @utility type-hero {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(2.9rem, 8.2vw, 6.75rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  font-size: clamp(3rem, 6.8vw, 6rem);
+  line-height: 1;
+  letter-spacing: 0;
 }
 
-/* Título de sección: enorme y contrastado con los micro-labels */
 @utility type-section {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(2.35rem, 5.6vw, 4.5rem);
-  line-height: 1;
-  letter-spacing: -0.015em;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: 0;
 }
 
-/* Subtítulo editorial / citas */
 @utility type-sub {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  font-size: clamp(1.375rem, 2.6vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
-/* Micro-label en mayúsculas: el contraste de escala ES el lujo */
-@utility micro {
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
+/* Encabezado menor de sección: "Joyas que amarás.", "Esenciales de
+   Instagram." En el Figma son Playfair 20px en tinta, alineados a la
+   izquierda — deliberadamente pequeños. El contraste entre estos rótulos
+   discretos y los titulares dorados de 48px es parte del ritmo del molde. */
+@utility type-rotulo {
+  font-family: var(--font-display);
   font-weight: 400;
-  letter-spacing: 0.28em;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* Micro-etiquetas. El molde de Figma no las usa en ningún sitio: donde la
+   plantilla ponía una versalita con 0.28em de tracking, el Figma pone
+   sencillamente Playfair o Inria en caja y baja. En portada y catálogo ya
+   se sustituyeron una a una; estas utilidades sobreviven porque las siguen
+   consumiendo las páginas fuera de alcance (ficha de pieza, encargos, guía
+   de tallas), pero se acercan al molde: serif en vez de palo seco y la
+   mitad de tracking, para que no desentonen con el resto del sitio. */
+@utility micro {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.4;
 }
 
 @utility micro-sm {
-  font-family: var(--font-body);
-  font-size: 0.625rem;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
   font-weight: 400;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1.4;
 }
 
 /* Numeración de sección: 01 / 02 / 03 */
 @utility section-num {
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
   font-weight: 400;
-  letter-spacing: 0.28em;
-  color: var(--color-accent-600);
+  letter-spacing: 0.14em;
+  color: var(--color-accent-700);
   font-variant-numeric: tabular-nums;
 }
 
 @utility eyebrow {
   display: inline-block;
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
   font-weight: 400;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent-700);
 }
 
-/* Precio: cifras tabulares, tracking ligero, nunca en negrita pesada */
+/* Precio: en el Figma es Inria Serif (= `--font-body`), muy pequeño y sin
+   tracking, justo debajo del nombre en Playfair. Las cifras tabulares se
+   conservan porque alinean la columna de precios en la grilla. */
 @utility precio {
   font-family: var(--font-body);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
+}
+
+/* ── Confianza: los sellos que el comprador colombiano exige ── */
+
+/* Ley del metal (18k / 750 / Plata 950). Sigue disponible para la ficha de
+   pieza y el catálogo interno, aunque el molde de Figma no la muestre en
+   las tarjetas de la portada. */
+@utility badge-ley {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--color-accent-500);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  line-height: 1;
+}
+
+/* Fila de ficha técnica: etiqueta a la izquierda, dato a la derecha,
+   separadas por un filete. Sustituye al "poder tocar la joya". */
+@utility dato-tecnico {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-items: baseline;
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-brand-200);
+  padding-block: 0.9rem;
+  @media (width >= 640px) {
+    grid-template-columns: 8rem 1fr;
+  }
+}
+
+/* Paso numerado de un proceso. Deliberadamente tenue, pero legible: a
+   este tamaño la WCAG pide 3:1 y este tono lo supera sobre blanco. */
+@utility paso-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-brand-500);
+}
+
+/* ── Controles de catálogo ── */
+
+/* Chip de filtro: texto con filete, lenguaje de vitrina y no de app */
+@utility chip-filtro {
+  position: relative;
+  border: 0;
+  padding: 0.35rem 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-brand-500);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.5s var(--ease-silk);
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-accent-500);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s var(--ease-silk);
+  }
+  &:hover {
+    color: var(--color-brand-900);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+  &[aria-pressed='true'] {
+    color: var(--color-brand-950);
+  }
+  &[aria-pressed='true']::after {
+    transform: scaleX(1);
+  }
 }
 
 /* ── Detalle de línea fina ── */
@@ -246,17 +523,20 @@ h1, h2, h3, h4 {
   display: block;
   height: 1px;
   width: 100%;
-  background: color-mix(in srgb, var(--color-accent-500) 60%, transparent);
+  background: color-mix(in srgb, var(--color-accent-500) 55%, transparent);
 }
 
+/* Filete neutro: el #c8c8c8 que usa el Figma en el sidebar de filtros y en
+   la paginación. `brand-200` (#e6e3dc) es el greige de FONDO de foto, no un
+   color de línea — usarlo aquí dejaba los filetes casi invisibles. */
 @utility rule-hair {
   display: block;
   height: 1px;
   width: 100%;
-  background: var(--color-brand-200);
+  background: var(--color-brand-300);
 }
 
-/* Link con subrayado hairline que se dibuja al hover */
+/* Enlace con subrayado fino que se redibuja al hover */
 @utility link-rule {
   position: relative;
   display: inline-flex;
@@ -285,4 +565,63 @@ h1, h2, h3, h4 {
 /* Marco sutil de vitrina: 1px, sin sombras pesadas */
 @utility frame-fine {
   border: 1px solid var(--color-brand-200);
+}
+
+/* ── Profundidad ──
+   Sombra cálida (tinta de la marca, no el gris genérico de Tailwind) para
+   que fotos y tarjetas se despeguen del fondo blanco. Dos niveles: `joya`
+   para el reposo de fotos/tarjetas, `joya-lg` para lo que de verdad flota
+   por encima de la página (etiquetas, el header fijo, las dos fotos
+   grandes del showcase). */
+/* El benchmark de maisons (Cartier, Van Cleef, Chopard) es unánime: las
+   fotos de producto no llevan sombra — la separación es aire (whitespace),
+   no elevación. `shadow-joya` queda casi imperceptible a propósito (un
+   contacto mínimo, no una elevación) y solo para las fotos de producto;
+   `shadow-joya-lg` se reserva para lo que de verdad necesita despegarse
+   de una foto para poder leerse (la etiqueta flotante del showcase, un
+   panel desplegable) — no para tarjetas en reposo. */
+@utility shadow-joya {
+  box-shadow: 0 1px 2px rgba(23, 18, 14, 0.05);
+}
+
+@utility shadow-joya-lg {
+  box-shadow: 0 10px 28px -14px rgba(23, 18, 14, 0.22);
+}
+
+/* Barrido de luz sobre metal: el brillo "premium" sin WebGL.
+   Se dispara al hover del contenedor con `group`. */
+@utility shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 0.5) 50%,
+      transparent 65%
+    );
+    background-size: 300% 100%;
+    background-position: 180% 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shine::after {
+    transition: background-position 1.1s var(--ease-silk);
+  }
+  .group:hover .shine::after,
+  .shine:hover::after {
+    background-position: -80% 0;
+  }
+}
+
+/* Titulares partidos por líneas: cada línea necesita su propia máscara
+   para que el texto suba "desde debajo del papel". */
+.linea-mascara {
+  overflow: hidden;
+  padding-bottom: 0.08em;
 }
